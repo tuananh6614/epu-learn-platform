@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -89,6 +89,7 @@ const DocumentsManagement = () => {
     description: "",
   });
   const { toast } = useToast();
+  const uploadFormRef = useRef<HTMLFormElement>(null);
   
   // Filter documents based on search term
   const filteredDocuments = documents.filter(doc => 
@@ -154,15 +155,23 @@ const DocumentsManagement = () => {
     e.preventDefault();
     
     const formData = new FormData(e.target);
+    const fileInput = e.target.querySelector('input[type="file"]');
+    let fileType = "";
+    
+    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+      const fileName = fileInput.files[0].name;
+      fileType = fileName.split('.').pop().toUpperCase();
+    }
+    
     const newDocument = {
       id: documents.length + 1,
-      title: formData.get("title"),
-      type: formData.get("file").name.split('.').pop().toUpperCase(),
+      title: String(formData.get("title")),
+      type: fileType || "PDF",
       size: "0 MB",
-      price: parseInt(formData.get("price")),
+      price: parseInt(String(formData.get("price")), 10) || 0,
       downloads: 0,
       date: new Date().toISOString().split('T')[0],
-      specialization: formData.get("specialization")
+      specialization: String(formData.get("specialization"))
     };
     
     setDocuments([...documents, newDocument]);
@@ -173,8 +182,10 @@ const DocumentsManagement = () => {
       description: "Tài liệu mới đã được thêm vào hệ thống",
     });
     
-    // Reset form - assuming the form has an id
-    document.getElementById("uploadForm").reset();
+    // Reset form
+    if (uploadFormRef.current) {
+      uploadFormRef.current.reset();
+    }
   };
 
   return (
@@ -203,7 +214,7 @@ const DocumentsManagement = () => {
             <CardDescription>Điền thông tin để đăng tải tài liệu cho học viên</CardDescription>
           </CardHeader>
           <CardContent>
-            <form id="uploadForm" className="space-y-4" onSubmit={handleNewDocumentSubmit}>
+            <form id="uploadForm" ref={uploadFormRef} className="space-y-4" onSubmit={handleNewDocumentSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="title">Tiêu đề</Label>
