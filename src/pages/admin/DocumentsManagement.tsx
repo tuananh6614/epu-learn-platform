@@ -1,376 +1,224 @@
 
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Plus, MoreHorizontal, Search, Edit, Trash2, ChevronDown, Upload, Download } from "lucide-react";
-import { mockDocuments, formatCurrency } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
+import { FileText, Search, Plus, Download, Edit, Trash2 } from "lucide-react";
+
+// Mock documents
+const mockDocuments = [
+  {
+    id: 1,
+    title: "Giáo trình Mạng máy tính",
+    type: "PDF",
+    size: "4.2 MB",
+    price: 150000,
+    downloads: 126,
+    date: "2025-04-01",
+    specialization: "CNTT"
+  },
+  {
+    id: 2,
+    title: "Tài liệu Bảo mật mạng",
+    type: "PDF",
+    size: "2.8 MB",
+    price: 100000,
+    downloads: 95,
+    date: "2025-03-28",
+    specialization: "ATTT"
+  },
+  {
+    id: 3,
+    title: "Slide môn học IoT",
+    type: "PPTX",
+    size: "6.5 MB",
+    price: 120000,
+    downloads: 78,
+    date: "2025-03-25",
+    specialization: "DTVT"
+  },
+  {
+    id: 4,
+    title: "Lab hướng dẫn Python",
+    type: "ZIP",
+    size: "8.2 MB",
+    price: 200000,
+    downloads: 105,
+    date: "2025-03-20",
+    specialization: "CNTT"
+  },
+];
 
 const DocumentsManagement = () => {
-  const { toast } = useToast();
-  const [documents, setDocuments] = useState([...mockDocuments]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentDocument, setCurrentDocument] = useState<any>(null);
+  const [isUploading, setIsUploading] = useState(false);
   
-  // Get unique categories from the documents
-  const categories = Array.from(
-    new Set(documents.map((doc) => doc.category_name))
+  // Filter documents based on search term
+  const filteredDocuments = mockDocuments.filter(doc => 
+    doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doc.specialization.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredDocuments = documents.filter(
-    (doc) =>
-      doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.category_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleAddNew = () => {
-    setIsEditing(false);
-    setCurrentDocument({
-      id: documents.length + 1,
-      title: "",
-      description: "",
-      preview_url: "",
-      file_path: "",
-      price: 0,
-      category_name: categories[0] || "Không phân loại",
-    });
-    setDialogOpen(true);
-  };
-
-  const handleEdit = (document: any) => {
-    setIsEditing(true);
-    setCurrentDocument({ ...document });
-    setDialogOpen(true);
-  };
-
-  const handleDelete = (id: number) => {
-    // In a real app, this would be an API call
-    setDocuments(documents.filter((d) => d.id !== id));
-    toast({
-      title: "Xóa thành công",
-      description: "Tài liệu đã được xóa khỏi hệ thống",
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // In a real app, this would be an API call
-    if (isEditing) {
-      setDocuments(
-        documents.map((d) => (d.id === currentDocument.id ? currentDocument : d))
-      );
-      toast({
-        title: "Cập nhật thành công",
-        description: "Thông tin tài liệu đã được cập nhật",
-      });
-    } else {
-      setDocuments([...documents, currentDocument]);
-      toast({
-        title: "Thêm mới thành công",
-        description: "Tài liệu mới đã được thêm vào hệ thống",
-      });
-    }
-    setDialogOpen(false);
-  };
-
-  const handleUploadClick = () => {
-    toast({
-      title: "Chức năng đang phát triển",
-      description: "Tính năng tải tệp lên sẽ sớm được cập nhật",
-    });
+  // Toggle upload form
+  const toggleUploadForm = () => {
+    setIsUploading(!isUploading);
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Quản lý Tài liệu</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Quản lý tài liệu</h1>
           <p className="text-muted-foreground">
-            Thêm, chỉnh sửa và quản lý các tài liệu học tập
+            Quản lý và theo dõi tài liệu học tập
           </p>
         </div>
-        <Button
-          className="bg-epu-primary hover:bg-epu-primary/90"
-          onClick={handleAddNew}
-        >
-          <Plus size={16} className="mr-2" />
-          Thêm tài liệu mới
+        <Button onClick={toggleUploadForm} className="md:w-auto w-full">
+          <Plus className="mr-2 h-4 w-4" />
+          {isUploading ? "Đóng form" : "Thêm tài liệu mới"}
         </Button>
       </div>
 
-      {/* Search and filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1 relative">
-          <Search
-            size={18}
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-          />
+      {/* Upload Form */}
+      {isUploading && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Đăng tải tài liệu mới</CardTitle>
+            <CardDescription>Điền thông tin để đăng tải tài liệu cho học viên</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Tiêu đề</Label>
+                  <Input id="title" placeholder="Nhập tiêu đề tài liệu" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="specialization">Chuyên ngành</Label>
+                  <select 
+                    id="specialization"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="">-- Chọn chuyên ngành --</option>
+                    <option value="CNTT">Công nghệ thông tin</option>
+                    <option value="ATTT">An toàn thông tin</option>
+                    <option value="DTVT">Điện tử viễn thông</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="price">Giá (VND)</Label>
+                  <Input id="price" type="number" placeholder="Ví dụ: 150000" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="file">Tệp tin</Label>
+                  <Input id="file" type="file" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Mô tả</Label>
+                <Textarea id="description" placeholder="Mô tả nội dung tài liệu" rows={4} />
+              </div>
+              <Button type="submit" className="w-full md:w-auto">Đăng tài liệu</Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Search */}
+      <div className="flex items-center space-x-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Tìm kiếm tài liệu..."
+            className="pl-8"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
           />
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full sm:w-auto flex gap-2">
-              <ChevronDown size={16} />
-              Lọc theo danh mục
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>Tất cả tài liệu</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {categories.map((category) => (
-              <DropdownMenuItem key={category}>{category}</DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
 
       {/* Documents Table */}
-      <div className="border rounded-md">
-        <Table>
-          <TableCaption>Danh sách tất cả tài liệu</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Tên tài liệu</TableHead>
-              <TableHead className="hidden md:table-cell">Danh mục</TableHead>
-              <TableHead className="text-center">Giá</TableHead>
-              <TableHead className="text-right">Hành động</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredDocuments.length > 0 ? (
-              filteredDocuments.map((doc) => (
+      <Card>
+        <CardHeader>
+          <CardTitle>Danh sách tài liệu</CardTitle>
+          <CardDescription>
+            Tổng cộng {filteredDocuments.length} tài liệu
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tiêu đề</TableHead>
+                <TableHead>Dạng</TableHead>
+                <TableHead>Kích thước</TableHead>
+                <TableHead>Chuyên ngành</TableHead>
+                <TableHead>Giá (VND)</TableHead>
+                <TableHead>Lượt tải</TableHead>
+                <TableHead>Thao tác</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredDocuments.map((doc) => (
                 <TableRow key={doc.id}>
-                  <TableCell className="font-medium">{doc.id}</TableCell>
+                  <TableCell className="font-medium flex items-center">
+                    <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {doc.title}
+                  </TableCell>
+                  <TableCell>{doc.type}</TableCell>
+                  <TableCell>{doc.size}</TableCell>
+                  <TableCell>{doc.specialization}</TableCell>
+                  <TableCell>{new Intl.NumberFormat('vi-VN').format(doc.price)}</TableCell>
+                  <TableCell>{doc.downloads}</TableCell>
                   <TableCell>
-                    <div className="max-w-sm">
-                      <div className="font-medium">{doc.title}</div>
-                      <div className="text-xs text-muted-foreground truncate">
-                        {doc.description}
-                      </div>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="icon" title="Tải xuống">
+                        <Download className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="icon" title="Chỉnh sửa">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="icon" title="Xóa" className="text-red-500 hover:text-red-700">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <Badge variant="outline">{doc.category_name}</Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {formatCurrency(doc.price)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal size={16} />
-                          <span className="sr-only">Mở menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(doc)}>
-                          <Edit size={14} className="mr-2" />
-                          Chỉnh sửa
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={handleUploadClick}>
-                          <Upload size={14} className="mr-2" />
-                          Tải tệp mới
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={handleUploadClick}>
-                          <Download size={14} className="mr-2" />
-                          Tải xuống
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(doc.id)}
-                          className="text-red-600"
-                        >
-                          <Trash2 size={14} className="mr-2" />
-                          Xóa
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
-                  <p className="text-muted-foreground">
-                    Không tìm thấy tài liệu nào
-                  </p>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
-      {/* Add/Edit Document Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>
-              {isEditing ? "Chỉnh sửa tài liệu" : "Thêm tài liệu mới"}
-            </DialogTitle>
-            <DialogDescription>
-              {isEditing
-                ? "Cập nhật thông tin tài liệu"
-                : "Điền thông tin tài liệu mới"}
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="title">Tên tài liệu</Label>
-                <Input
-                  id="title"
-                  value={currentDocument?.title || ""}
-                  onChange={(e) =>
-                    setCurrentDocument({ ...currentDocument, title: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Mô tả</Label>
-                <Textarea
-                  id="description"
-                  value={currentDocument?.description || ""}
-                  onChange={(e) =>
-                    setCurrentDocument({
-                      ...currentDocument,
-                      description: e.target.value,
-                    })
-                  }
-                  rows={3}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="category">Danh mục</Label>
-                <Select
-                  value={currentDocument?.category_name}
-                  onValueChange={(value) =>
-                    setCurrentDocument({
-                      ...currentDocument,
-                      category_name: value,
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn danh mục" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="price">Giá (VNĐ)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  min="0"
-                  step="1000"
-                  value={currentDocument?.price || 0}
-                  onChange={(e) =>
-                    setCurrentDocument({
-                      ...currentDocument,
-                      price: parseInt(e.target.value),
-                    })
-                  }
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="file">Tệp tài liệu</Label>
-                <div className="flex">
-                  <Input
-                    id="file_path"
-                    value={currentDocument?.file_path || ""}
-                    onChange={(e) =>
-                      setCurrentDocument({
-                        ...currentDocument,
-                        file_path: e.target.value,
-                      })
-                    }
-                    className="rounded-r-none"
-                  />
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    className="rounded-l-none"
-                    onClick={handleUploadClick}
-                  >
-                    <Upload size={14} className="mr-2" />
-                    Chọn tệp
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Chọn tệp PDF, DOC hoặc DOCX. Kích thước tối đa 10MB.
-                </p>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-              >
-                Hủy
-              </Button>
-              <Button type="submit" className="bg-epu-primary hover:bg-epu-primary/90">
-                {isEditing ? "Cập nhật" : "Thêm mới"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {/* Downloads Stats */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Thống kê lượt tải</CardTitle>
+          <CardDescription>Phân tích lượt tải tài liệu theo thời gian</CardDescription>
+        </CardHeader>
+        <CardContent className="h-80 flex items-center justify-center">
+          <div className="text-center text-muted-foreground">
+            <FileText className="h-16 w-16 mx-auto mb-4 opacity-20" />
+            <p>Biểu đồ thống kê sẽ được hiển thị ở đây</p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -27,6 +27,9 @@ import ProfilePage from "@/pages/profile/ProfilePage";
 // Admin Pages
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import UsersManagement from "@/pages/admin/UsersManagement";
+import DocumentsManagement from "@/pages/admin/DocumentsManagement";
+import PublishCourse from "@/pages/admin/PublishCourse";
+import FinanceManagement from "@/pages/admin/FinanceManagement";
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
@@ -66,12 +69,10 @@ const App = () => (
               }>
                 <Route index element={<AdminDashboard />} />
                 <Route path="users" element={<UsersManagement />} />
-                <Route path="stats" element={<AdminDashboard />} />
-                <Route path="database" element={<AdminDashboard />} />
-                <Route path="system" element={<AdminDashboard />} />
-                <Route path="security" element={<AdminDashboard />} />
+                <Route path="documents" element={<DocumentsManagement />} />
+                <Route path="publish/courses" element={<PublishCourse />} />
+                <Route path="finance" element={<FinanceManagement />} />
                 <Route path="settings" element={<AdminDashboard />} />
-                <Route path="profile" element={<ProfilePage />} />
               </Route>
               
               {/* Catch-all route */}

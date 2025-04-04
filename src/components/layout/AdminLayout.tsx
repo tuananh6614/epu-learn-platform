@@ -4,32 +4,22 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   BarChart2,
-  Settings,
-  Users,
-  Activity,
-  ChevronLeft,
-  Home,
+  FileText,
+  PlusCircle,
   LogOut,
   User,
   Menu,
   X,
-  Database,
-  Shield,
-  Server,
-  LucideIcon,
+  DollarSign,
+  Settings,
+  ChevronLeft
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type NavItemProps = {
-  icon: LucideIcon;
+  icon: React.ElementType;
   label: string;
   to: string;
   isActive: boolean;
@@ -74,12 +64,10 @@ const AdminLayout = () => {
   };
   
   const navItems = [
-    { icon: Home, label: "Tổng quan", to: "/admin" },
-    { icon: Users, label: "Quản lý người dùng", to: "/admin/users" },
-    { icon: Activity, label: "Hoạt động", to: "/admin/stats" },
-    { icon: Database, label: "Cơ sở dữ liệu", to: "/admin/database" },
-    { icon: Server, label: "Hệ thống", to: "/admin/system" },
-    { icon: Shield, label: "Bảo mật", to: "/admin/security" },
+    { icon: BarChart2, label: "Thống kê", to: "/admin" },
+    { icon: PlusCircle, label: "Đăng khóa học", to: "/admin/publish/courses" },
+    { icon: FileText, label: "Quản lý tài liệu", to: "/admin/documents" },
+    { icon: DollarSign, label: "Quản lý tài chính", to: "/admin/finance" },
     { icon: Settings, label: "Cài đặt", to: "/admin/settings" },
   ];
 
