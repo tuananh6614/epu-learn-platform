@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AuthForm from "@/components/auth/AuthForm";
@@ -15,14 +14,19 @@ const Login = () => {
   const from = location.state?.from?.pathname || "/";
   
   useEffect(() => {
-    // If user is already logged in, redirect them
+    // If user is already logged in, redirect them based on role
     if (user) {
-      navigate(from, { replace: true });
+      if (user.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/courses", { replace: true });
+      }
     }
-  }, [user, navigate, from]);
+  }, [user, navigate]);
 
   const handleSuccess = () => {
-    navigate(from, { replace: true });
+    // The redirection is now handled in the login function of useAuth
+    // No need to handle redirection here
   };
 
   return (

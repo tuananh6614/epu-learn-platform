@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "@/components/auth/AuthForm";
@@ -11,14 +10,19 @@ const Register = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    // If user is already logged in, redirect them to home
+    // If user is already logged in, redirect them based on role
     if (user) {
-      navigate("/");
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/courses");
+      }
     }
   }, [user, navigate]);
 
   const handleSuccess = () => {
-    navigate("/");
+    // The redirection is now handled in the register function of useAuth
+    // No need to handle redirection here
   };
 
   return (

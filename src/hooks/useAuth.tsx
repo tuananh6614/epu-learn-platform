@@ -43,7 +43,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const storedUser = localStorage.getItem("epu_user");
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        
+        // Auto-redirect based on role when app loads
+        if (parsedUser.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/courses");
+        }
       } catch (error) {
         localStorage.removeItem("epu_user");
       }
@@ -70,6 +78,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Đăng nhập thành công",
         description: `Chào mừng ${user.fullName} quay trở lại EPU Learn`,
       });
+      
+      // Redirect based on user role
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/courses");
+      }
       
       return true;
     } else {
@@ -114,6 +129,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       title: "Đăng ký thành công",
       description: `Chào mừng ${fullName} đến với EPU Learn`,
     });
+    
+    // Redirect new users to the courses page
+    navigate("/courses");
     
     return true;
   };

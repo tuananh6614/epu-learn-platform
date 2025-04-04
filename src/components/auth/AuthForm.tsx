@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, LogIn, UserPlus, User, Mail } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/hooks/useAuth";
 
 type AuthFormProps = {
   type: "login" | "register";
@@ -21,6 +21,7 @@ type FormData = {
 
 export const AuthForm = ({ type, onSuccess }: AuthFormProps) => {
   const { toast } = useToast();
+  const { login, register } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -29,18 +30,12 @@ export const AuthForm = ({ type, onSuccess }: AuthFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock data for demonstration
-  const mockUsers = [
-    { email: "admin@epu.edu.vn", password: "admin123", role: "admin", fullName: "Admin" },
-    { email: "user@epu.edu.vn", password: "user123", role: "user", fullName: "User Demo" },
-  ];
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -55,36 +50,14 @@ export const AuthForm = ({ type, onSuccess }: AuthFormProps) => {
       return;
     }
 
-    // Simulate network delay
-    setTimeout(() => {
-      // In real app, this would be API calls
+    try {
       if (type === "login") {
-        const user = mockUsers.find(
-          (u) => u.email === formData.email && u.password === formData.password
-        );
-        
-        if (user) {
-          localStorage.setItem("epu_user", JSON.stringify({
-            email: user.email,
-            role: user.role,
-            fullName: user.fullName
-          }));
-          
-          toast({
-            title: "Đăng nhập thành công",
-            description: "Chào mừng bạn quay trở lại EPU Learn",
-          });
-          
-          if (onSuccess) onSuccess();
-        } else {
-          toast({
-            title: "Đăng nhập thất bại",
-            description: "Email hoặc mật khẩu không chính xác",
-            variant: "destructive",
-          });
+        const success = await login(formData.email, formData.password);
+        if (success && onSuccess) {
+          onSuccess();
         }
       } else {
-        // Register logic - in real app would create user in database
+        // Register flow
         if (!formData.fullName) {
           toast({
             title: "Thông báo",
@@ -95,32 +68,20 @@ export const AuthForm = ({ type, onSuccess }: AuthFormProps) => {
           return;
         }
         
-        // Check if email already exists
-        if (mockUsers.some(u => u.email === formData.email)) {
-          toast({
-            title: "Đăng ký thất bại",
-            description: "Email đã được sử dụng",
-            variant: "destructive",
-          });
-          setIsLoading(false);
-          return;
+        const success = await register(formData.fullName, formData.email, formData.password);
+        if (success && onSuccess) {
+          onSuccess();
         }
-        
-        localStorage.setItem("epu_user", JSON.stringify({
-          email: formData.email,
-          role: "user",
-          fullName: formData.fullName
-        }));
-        
-        toast({
-          title: "Đăng ký thành công",
-          description: "Chào mừng bạn đến với EPU Learn",
-        });
-        
-        if (onSuccess) onSuccess();
       }
+    } catch (error) {
+      toast({
+        title: "Lỗi",
+        description: "Có lỗi xảy ra, vui lòng thử lại sau",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const toggleShowPassword = () => setShowPassword(!showPassword);
