@@ -19,7 +19,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FileText, Search, Plus, Download, Edit, Trash2 } from "lucide-react";
+import { FileText, Search, Plus, Edit, Trash2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 // Mock documents
 const mockDocuments = [
@@ -68,9 +77,21 @@ const mockDocuments = [
 const DocumentsManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [documents, setDocuments] = useState(mockDocuments);
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    id: null,
+    title: "",
+    price: 0,
+    specialization: "",
+    description: "",
+  });
+  const { toast } = useToast();
   
   // Filter documents based on search term
-  const filteredDocuments = mockDocuments.filter(doc => 
+  const filteredDocuments = documents.filter(doc => 
     doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     doc.specialization.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -78,6 +99,82 @@ const DocumentsManagement = () => {
   // Toggle upload form
   const toggleUploadForm = () => {
     setIsUploading(!isUploading);
+  };
+
+  // Handle edit document
+  const handleEditClick = (document) => {
+    setSelectedDocument(document);
+    setEditForm({
+      id: document.id,
+      title: document.title,
+      price: document.price,
+      specialization: document.specialization,
+      description: "Mô tả chi tiết về tài liệu", // Assuming there's a description field
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  // Handle edit form submission
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    
+    setDocuments(documents.map(doc => 
+      doc.id === editForm.id 
+        ? { ...doc, title: editForm.title, price: editForm.price, specialization: editForm.specialization }
+        : doc
+    ));
+    
+    setIsEditDialogOpen(false);
+    toast({
+      title: "Cập nhật thành công",
+      description: "Thông tin tài liệu đã được cập nhật",
+    });
+  };
+
+  // Handle delete document
+  const handleDeleteClick = (document) => {
+    setSelectedDocument(document);
+    setIsDeleteDialogOpen(true);
+  };
+
+  // Confirm delete document
+  const confirmDelete = () => {
+    setDocuments(documents.filter(doc => doc.id !== selectedDocument.id));
+    setIsDeleteDialogOpen(false);
+    
+    toast({
+      title: "Xóa thành công",
+      description: "Tài liệu đã được xóa khỏi hệ thống",
+      variant: "default",
+    });
+  };
+
+  // Handle new document submission
+  const handleNewDocumentSubmit = (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const newDocument = {
+      id: documents.length + 1,
+      title: formData.get("title"),
+      type: formData.get("file").name.split('.').pop().toUpperCase(),
+      size: "0 MB",
+      price: parseInt(formData.get("price")),
+      downloads: 0,
+      date: new Date().toISOString().split('T')[0],
+      specialization: formData.get("specialization")
+    };
+    
+    setDocuments([...documents, newDocument]);
+    setIsUploading(false);
+    
+    toast({
+      title: "Thêm tài liệu thành công",
+      description: "Tài liệu mới đã được thêm vào hệ thống",
+    });
+    
+    // Reset form - assuming the form has an id
+    document.getElementById("uploadForm").reset();
   };
 
   return (
@@ -106,17 +203,19 @@ const DocumentsManagement = () => {
             <CardDescription>Điền thông tin để đăng tải tài liệu cho học viên</CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form id="uploadForm" className="space-y-4" onSubmit={handleNewDocumentSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="title">Tiêu đề</Label>
-                  <Input id="title" placeholder="Nhập tiêu đề tài liệu" />
+                  <Input id="title" name="title" placeholder="Nhập tiêu đề tài liệu" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="specialization">Chuyên ngành</Label>
                   <select 
                     id="specialization"
+                    name="specialization"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    required
                   >
                     <option value="">-- Chọn chuyên ngành --</option>
                     <option value="CNTT">Công nghệ thông tin</option>
@@ -126,16 +225,16 @@ const DocumentsManagement = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="price">Giá (VND)</Label>
-                  <Input id="price" type="number" placeholder="Ví dụ: 150000" />
+                  <Input id="price" name="price" type="number" placeholder="Ví dụ: 150000" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="file">Tệp tin</Label>
-                  <Input id="file" type="file" />
+                  <Input id="file" name="file" type="file" required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">Mô tả</Label>
-                <Textarea id="description" placeholder="Mô tả nội dung tài liệu" rows={4} />
+                <Textarea id="description" name="description" placeholder="Mô tả nội dung tài liệu" rows={4} />
               </div>
               <Button 
                 type="submit" 
@@ -196,13 +295,22 @@ const DocumentsManagement = () => {
                   <TableCell>{doc.downloads}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="icon" title="Tải xuống" className="border-amber-200 hover:bg-amber-50">
-                        <Download className="h-4 w-4 text-amber-600" />
-                      </Button>
-                      <Button variant="outline" size="icon" title="Chỉnh sửa" className="border-amber-200 hover:bg-amber-50">
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        title="Chỉnh sửa" 
+                        className="border-amber-200 hover:bg-amber-50"
+                        onClick={() => handleEditClick(doc)}
+                      >
                         <Edit className="h-4 w-4 text-amber-600" />
                       </Button>
-                      <Button variant="outline" size="icon" title="Xóa" className="text-red-500 hover:text-red-700 border-red-200 hover:bg-red-50">
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        title="Xóa" 
+                        className="text-red-500 hover:text-red-700 border-red-200 hover:bg-red-50"
+                        onClick={() => handleDeleteClick(doc)}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -214,11 +322,106 @@ const DocumentsManagement = () => {
         </CardContent>
       </Card>
 
+      {/* Edit Document Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Chỉnh sửa tài liệu</DialogTitle>
+            <DialogDescription>
+              Cập nhật thông tin cho tài liệu. Nhấn lưu khi hoàn tất.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleEditSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-title">Tiêu đề</Label>
+                <Input
+                  id="edit-title"
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-specialization">Chuyên ngành</Label>
+                <select 
+                  id="edit-specialization"
+                  value={editForm.specialization}
+                  onChange={(e) => setEditForm({...editForm, specialization: e.target.value})}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="CNTT">Công nghệ thông tin</option>
+                  <option value="ATTT">An toàn thông tin</option>
+                  <option value="DTVT">Điện tử viễn thông</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-price">Giá (VND)</Label>
+                <Input
+                  id="edit-price"
+                  type="number"
+                  value={editForm.price}
+                  onChange={(e) => setEditForm({...editForm, price: parseInt(e.target.value)})}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-description">Mô tả</Label>
+                <Textarea
+                  id="edit-description"
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                  rows={4}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                Hủy
+              </Button>
+              <Button type="submit" className="bg-amber-600 hover:bg-amber-700">
+                Lưu thay đổi
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Xác nhận xóa tài liệu</DialogTitle>
+            <DialogDescription>
+              Bạn có chắc chắn muốn xóa tài liệu này? Hành động này không thể hoàn tác.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedDocument && (
+            <div className="py-4">
+              <p className="font-medium">{selectedDocument.title}</p>
+              <p className="text-sm text-muted-foreground">Chuyên ngành: {selectedDocument.specialization}</p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+              Hủy
+            </Button>
+            <Button 
+              type="button" 
+              variant="destructive"
+              onClick={confirmDelete}
+            >
+              Xóa tài liệu
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Downloads Stats */}
       <Card className="border-amber-200">
         <CardHeader className="bg-amber-50">
           <CardTitle>Thống kê lượt tải</CardTitle>
-          <CardDescription>Phân tích lượt tải tài liệu theo thời gian</CardDescription>
+          <CardDescription>Phân tích lượt tài tài liệu theo thời gian</CardDescription>
         </CardHeader>
         <CardContent className="h-80 flex items-center justify-center">
           <div className="text-center text-muted-foreground">
