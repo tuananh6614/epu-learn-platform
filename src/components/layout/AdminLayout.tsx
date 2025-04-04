@@ -10,17 +10,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  BookOpen,
-  FileText,
+  BarChart2,
+  Settings,
   Users,
+  Activity,
   ChevronLeft,
   Home,
   LogOut,
   User,
-  BarChart2,
   Menu,
   X,
-  Settings,
+  Database,
+  Shield,
+  Server,
   LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -73,10 +75,11 @@ const AdminLayout = () => {
   
   const navItems = [
     { icon: Home, label: "Tổng quan", to: "/admin" },
-    { icon: BookOpen, label: "Khóa học", to: "/admin/courses" },
-    { icon: FileText, label: "Tài liệu", to: "/admin/documents" },
-    { icon: Users, label: "Người dùng", to: "/admin/users" },
-    { icon: BarChart2, label: "Thống kê", to: "/admin/stats" },
+    { icon: Users, label: "Quản lý người dùng", to: "/admin/users" },
+    { icon: Activity, label: "Hoạt động", to: "/admin/stats" },
+    { icon: Database, label: "Cơ sở dữ liệu", to: "/admin/database" },
+    { icon: Server, label: "Hệ thống", to: "/admin/system" },
+    { icon: Shield, label: "Bảo mật", to: "/admin/security" },
     { icon: Settings, label: "Cài đặt", to: "/admin/settings" },
   ];
 
@@ -111,7 +114,7 @@ const AdminLayout = () => {
             <div className="bg-epu-primary text-white font-bold p-1 rounded-md">
               EPU
             </div>
-            <span className="font-bold">Admin</span>
+            <span className="font-bold">Admin Dashboard</span>
           </div>
           
           <div className="flex flex-col gap-1">

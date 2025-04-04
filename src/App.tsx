@@ -25,8 +25,6 @@ import DocumentsPage from "@/pages/documents/DocumentsPage";
 
 // Admin Pages
 import AdminDashboard from "@/pages/admin/AdminDashboard";
-import CoursesManagement from "@/pages/admin/CoursesManagement";
-import DocumentsManagement from "@/pages/admin/DocumentsManagement";
 import UsersManagement from "@/pages/admin/UsersManagement";
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
@@ -61,9 +59,12 @@ const App = () => (
                 </AuthGuard>
               }>
                 <Route index element={<AdminDashboard />} />
-                <Route path="courses" element={<CoursesManagement />} />
-                <Route path="documents" element={<DocumentsManagement />} />
                 <Route path="users" element={<UsersManagement />} />
+                <Route path="stats" element={<AdminDashboard />} />
+                <Route path="database" element={<AdminDashboard />} />
+                <Route path="system" element={<AdminDashboard />} />
+                <Route path="security" element={<AdminDashboard />} />
+                <Route path="settings" element={<AdminDashboard />} />
               </Route>
               
               {/* Catch-all route */}
