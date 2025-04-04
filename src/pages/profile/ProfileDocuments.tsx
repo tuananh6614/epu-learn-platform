@@ -59,7 +59,7 @@ const ProfileDocuments = () => {
                     <div>
                       <h3 className="font-medium">{document.title}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {document.format} • {document.pages} trang
+                        {document.category_name} • {document.price / 1000}k VND
                       </p>
                     </div>
                   </div>
@@ -74,7 +74,7 @@ const ProfileDocuments = () => {
                   </Button>
                 </div>
                 <div className="mt-2 text-sm text-muted-foreground">
-                  <span>Ngày mua: {document.publishedAt}</span>
+                  <span>Ngày mua: {new Date().toLocaleDateString('vi-VN')}</span>
                 </div>
               </div>
             ))}

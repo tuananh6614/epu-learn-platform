@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
-import CourseCard from "@/components/courses/CourseCard";
 import { mockCourses } from "@/lib/utils";
 import { ArrowUpRight, BookOpenCheck } from "lucide-react";
 
@@ -61,7 +60,7 @@ const ProfileCourses = () => {
                     <div
                       className="w-full h-full bg-cover bg-center"
                       style={{
-                        backgroundImage: `url(${course.image})`,
+                        backgroundImage: `url(${course.thumbnail})`,
                       }}
                     />
                   </div>
