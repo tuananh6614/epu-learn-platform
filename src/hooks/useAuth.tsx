@@ -14,7 +14,6 @@ type AuthContextType = {
 
 type User = {
   email: string;
-  role: "admin" | "user";
   fullName: string;
 };
 
@@ -36,8 +35,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   
   // Mock users for demo
   const mockUsers = [
-    { email: "admin@epu.edu.vn", password: "admin123", role: "admin", fullName: "Admin EPU" },
-    { email: "user@epu.edu.vn", password: "user123", role: "user", fullName: "Học Viên Demo" },
+    { email: "admin@epu.edu.vn", password: "admin123", fullName: "Admin EPU" },
+    { email: "user@epu.edu.vn", password: "user123", fullName: "Học Viên Demo" },
   ];
   
   useEffect(() => {
@@ -47,12 +46,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
         
-        // Auto-redirect based on role when app loads
-        if (parsedUser.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/courses");
-        }
+        // Redirect to courses page when app loads if user is logged in
+        navigate("/courses");
       } catch (error) {
         localStorage.removeItem("epu_user");
       }
@@ -69,7 +64,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (user) {
       const userData = {
         email: user.email,
-        role: user.role as "admin" | "user",
         fullName: user.fullName,
       };
       setUser(userData);
@@ -80,12 +74,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         description: `Chào mừng ${user.fullName} quay trở lại EPU Learn`,
       });
       
-      // Redirect based on user role
-      if (user.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/courses");
-      }
+      // Redirect to courses page
+      navigate("/courses");
       
       return true;
     } else {
@@ -119,7 +109,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // In a real app, this would be an API call to register the user
     const newUser = {
       email,
-      role: "user" as const,
       fullName,
     };
     

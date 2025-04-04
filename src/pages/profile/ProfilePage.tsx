@@ -1,13 +1,13 @@
 
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Settings, BookOpen, FileText, Eye, EyeOff } from "lucide-react";
+import { User, Settings, BookOpen, FileText, Eye, EyeOff, Mail } from "lucide-react";
 import ProfileCourses from "@/pages/profile/ProfileCourses";
 import ProfileDocuments from "@/pages/profile/ProfileDocuments";
 
@@ -113,16 +113,20 @@ const ProfilePage = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="flex items-center gap-2">
+                    Email <Mail size={16} className="text-muted-foreground" />
+                  </Label>
                   <Input
                     id="email"
                     name="email"
                     type="email"
                     value={formData.email}
-                    onChange={handleChange}
                     readOnly={true}
                     className="bg-muted"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Email dùng để đăng nhập và không thể thay đổi được
+                  </p>
                 </div>
                 
                 {isEditing && (
