@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -102,11 +101,8 @@ const MainLayout = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => navigate("/admin/courses")}>
-                    Quản lý khóa học
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/admin/documents")}>
-                    Quản lý tài liệu
+                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    Dashboard
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/admin/users")}>
                     Quản lý người dùng
@@ -133,10 +129,10 @@ const MainLayout = () => {
                     <DropdownMenuItem onClick={() => navigate("/profile")}>
                       Thông tin cá nhân
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/my-courses")}>
+                    <DropdownMenuItem onClick={() => navigate("/profile")}>
                       Khóa học của tôi
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/my-documents")}>
+                    <DropdownMenuItem onClick={() => navigate("/profile")}>
                       Tài liệu đã mua
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -213,16 +209,10 @@ const MainLayout = () => {
                           Quản trị viên
                         </div>
                         <Link
-                          to="/admin/courses"
+                          to="/admin"
                           className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
                         >
-                          Quản lý khóa học
-                        </Link>
-                        <Link
-                          to="/admin/documents"
-                          className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
-                        >
-                          Quản lý tài liệu
+                          Dashboard
                         </Link>
                         <Link
                           to="/admin/users"
@@ -254,14 +244,14 @@ const MainLayout = () => {
                         <Button
                           variant="outline"
                           className="w-full justify-start"
-                          onClick={() => navigate("/my-courses")}
+                          onClick={() => navigate("/profile")}
                         >
                           Khóa học của tôi
                         </Button>
                         <Button
                           variant="outline"
                           className="w-full justify-start"
-                          onClick={() => navigate("/my-documents")}
+                          onClick={() => navigate("/profile")}
                         >
                           Tài liệu đã mua
                         </Button>

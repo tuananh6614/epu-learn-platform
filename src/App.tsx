@@ -22,6 +22,7 @@ import Register from "@/pages/auth/Register";
 // User Pages
 import CoursesPage from "@/pages/courses/CoursesPage";
 import DocumentsPage from "@/pages/documents/DocumentsPage";
+import ProfilePage from "@/pages/profile/ProfilePage";
 
 // Admin Pages
 import AdminDashboard from "@/pages/admin/AdminDashboard";
@@ -46,6 +47,11 @@ const App = () => (
                 <Route index element={<Index />} />
                 <Route path="courses" element={<CoursesPage />} />
                 <Route path="documents" element={<DocumentsPage />} />
+                <Route path="profile" element={
+                  <AuthGuard requiredRole="user">
+                    <ProfilePage />
+                  </AuthGuard>
+                } />
               </Route>
               
               {/* Auth Routes */}
@@ -65,6 +71,7 @@ const App = () => (
                 <Route path="system" element={<AdminDashboard />} />
                 <Route path="security" element={<AdminDashboard />} />
                 <Route path="settings" element={<AdminDashboard />} />
+                <Route path="profile" element={<ProfilePage />} />
               </Route>
               
               {/* Catch-all route */}
