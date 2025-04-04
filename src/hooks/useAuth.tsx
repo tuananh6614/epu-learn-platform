@@ -2,7 +2,6 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import { authService } from "@/services/api";
 
 type AuthContextType = {
   user: User | null;
@@ -16,8 +15,7 @@ type AuthContextType = {
 type User = {
   email: string;
   fullName: string;
-  role: "admin" | "user";
-  userId?: number;
+  role: "admin" | "user"; // Added the role property back
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -36,6 +34,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
+  // Mock users for demo
+  const mockUsers = [
+    { email: "admin@epu.edu.vn", password: "admin123", fullName: "Admin EPU", role: "admin" as const },
+    { email: "user@epu.edu.vn", password: "user123", fullName: "Học Viên Demo", role: "user" as const },
+  ];
+  
   useEffect(() => {
     const storedUser = localStorage.getItem("epu_user");
     if (storedUser) {
@@ -53,29 +57,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
   
   const login = async (email: string, password: string) => {
-    try {
-      const response = await authService.login(email, password);
-      
+    // In a real app, this would be an API call
+    const user = mockUsers.find(
+      (u) => u.email === email && u.password === password
+    );
+    
+    if (user) {
       const userData = {
-        email: response.user.email,
-        fullName: response.user.full_name,
-        role: response.user.role,
-        userId: response.user.user_id
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role
       };
-      
       setUser(userData);
       localStorage.setItem("epu_user", JSON.stringify(userData));
       
       toast({
         title: "Đăng nhập thành công",
-        description: `Chào mừng ${userData.fullName} quay trở lại EPU Learn`,
+        description: `Chào mừng ${user.fullName} quay trở lại EPU Learn`,
       });
       
       // Redirect to courses page
       navigate("/courses");
       
       return true;
-    } catch (error) {
+    } else {
       toast({
         title: "Đăng nhập thất bại",
         description: "Email hoặc mật khẩu không chính xác",
@@ -93,68 +98,55 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
   
   const register = async (fullName: string, email: string, password: string) => {
-    try {
-      const response = await authService.register(fullName, email, password);
-      
-      const userData = {
-        email: response.email,
-        fullName: response.full_name,
-        role: response.role,
-        userId: response.user_id
-      };
-      
-      setUser(userData);
-      localStorage.setItem("epu_user", JSON.stringify(userData));
-      
-      toast({
-        title: "Đăng ký thành công",
-        description: `Chào mừng ${fullName} đến với EPU Learn`,
-      });
-      
-      // Redirect new users to the courses page
-      navigate("/courses");
-      
-      return true;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Đã xảy ra lỗi khi đăng ký";
-      
+    // Check if email already exists
+    if (mockUsers.some((u) => u.email === email)) {
       toast({
         title: "Đăng ký thất bại",
-        description: errorMessage,
+        description: "Email đã được sử dụng",
         variant: "destructive",
       });
-      
       return false;
     }
+    
+    // In a real app, this would be an API call to register the user
+    const newUser = {
+      email,
+      fullName,
+      role: "user" as const
+    };
+    
+    setUser(newUser);
+    localStorage.setItem("epu_user", JSON.stringify(newUser));
+    
+    toast({
+      title: "Đăng ký thành công",
+      description: `Chào mừng ${fullName} đến với EPU Learn`,
+    });
+    
+    // Redirect new users to the courses page
+    navigate("/courses");
+    
+    return true;
   };
 
-  const updateUserInfo = async (updates: { fullName?: string; newPassword?: string }) => {
-    // Trong thực tế, đây sẽ gọi API để cập nhật thông tin người dùng
+  const updateUserInfo = (updates: { fullName?: string; newPassword?: string }) => {
+    // In a real app, this would make an API call to update user info
     if (user) {
-      try {
-        // Giả định gọi API cập nhật ở đây
+      // Update fullName if provided
+      if (updates.fullName) {
+        const updatedUser = {
+          ...user,
+          fullName: updates.fullName,
+        };
         
-        // Cập nhật thông tin local
-        if (updates.fullName) {
-          const updatedUser = {
-            ...user,
-            fullName: updates.fullName,
-          };
-          
-          setUser(updatedUser);
-          localStorage.setItem("epu_user", JSON.stringify(updatedUser));
-          
-          toast({
-            title: "Cập nhật thành công",
-            description: "Thông tin người dùng đã được cập nhật",
-          });
-        }
-      } catch (error) {
-        toast({
-          title: "Cập nhật thất bại",
-          description: "Đã xảy ra lỗi khi cập nhật thông tin người dùng",
-          variant: "destructive",
-        });
+        setUser(updatedUser);
+        localStorage.setItem("epu_user", JSON.stringify(updatedUser));
+      }
+      
+      // In a real app, would update password on backend
+      if (updates.newPassword) {
+        // This is just a mock update, in a real app this would make an API call
+        console.log("Password would be updated to:", updates.newPassword);
       }
     }
   };
