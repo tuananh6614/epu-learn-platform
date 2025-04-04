@@ -85,10 +85,10 @@ const AdminDashboard = () => {
 
       {/* Stats Overview */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="border-amber-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Tổng người dùng</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-amber-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{statistics.totalUsers}</div>
@@ -98,10 +98,10 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-amber-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Khóa học đã đăng</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <BookOpen className="h-4 w-4 text-amber-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{statistics.coursesPublished}</div>
@@ -111,10 +111,10 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-amber-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Tài liệu đã đăng</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="h-4 w-4 text-amber-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{statistics.documentsPublished}</div>
@@ -124,17 +124,17 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-amber-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Doanh thu (VND)</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="h-4 w-4 text-amber-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {new Intl.NumberFormat('vi-VN').format(statistics.revenue)}
             </div>
             <p className="text-xs text-muted-foreground">
-              <TrendingUp className="inline h-3 w-3 mr-1" />
+              <TrendingUp className="inline h-3 w-3 mr-1 text-green-500" />
               Tăng 8% so với tháng trước
             </p>
           </CardContent>
@@ -142,8 +142,8 @@ const AdminDashboard = () => {
       </div>
 
       {/* Recent Transactions */}
-      <Card className="col-span-1">
-        <CardHeader>
+      <Card className="col-span-1 border-amber-200">
+        <CardHeader className="bg-amber-50">
           <CardTitle>Giao dịch gần đây</CardTitle>
           <CardDescription>
             Các giao dịch được thực hiện trong 48 giờ qua
@@ -152,7 +152,7 @@ const AdminDashboard = () => {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-amber-50">
                 <TableHead>Người dùng</TableHead>
                 <TableHead>Nội dung</TableHead>
                 <TableHead>Ngày</TableHead>
@@ -188,8 +188,8 @@ const AdminDashboard = () => {
       </Card>
 
       {/* System Alerts */}
-      <Card className="col-span-1">
-        <CardHeader>
+      <Card className="col-span-1 border-amber-200">
+        <CardHeader className="bg-amber-50">
           <CardTitle>Thông báo hệ thống</CardTitle>
           <CardDescription>
             Các vấn đề cần xử lý

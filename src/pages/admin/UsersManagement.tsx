@@ -123,7 +123,7 @@ const UsersManagement = () => {
           </p>
         </div>
         <Button
-          className="bg-epu-primary hover:bg-epu-primary/90"
+          className="bg-amber-600 hover:bg-amber-700 text-white"
           onClick={handleAddNew}
         >
           <Plus size={16} className="mr-2" />
@@ -147,7 +147,7 @@ const UsersManagement = () => {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full sm:w-auto flex gap-2">
+            <Button variant="outline" className="w-full sm:w-auto flex gap-2 border-amber-200">
               <ChevronDown size={16} />
               Lọc theo vai trò
             </Button>
@@ -161,11 +161,11 @@ const UsersManagement = () => {
       </div>
 
       {/* Users Table */}
-      <div className="border rounded-md">
+      <div className="border rounded-md border-amber-200">
         <Table>
           <TableCaption>Danh sách tất cả người dùng</TableCaption>
           <TableHeader>
-            <TableRow>
+            <TableRow className="bg-amber-50">
               <TableHead>ID</TableHead>
               <TableHead>Tên đầy đủ</TableHead>
               <TableHead className="hidden md:table-cell">Email</TableHead>
@@ -181,11 +181,11 @@ const UsersManagement = () => {
                   <TableCell className="font-medium">{user.id}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-epu-primary/10 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
                         {user.role === "admin" ? (
-                          <Shield size={14} className="text-epu-primary" />
+                          <Shield size={14} className="text-amber-600" />
                         ) : (
-                          <UserIcon size={14} className="text-epu-primary" />
+                          <UserIcon size={14} className="text-amber-600" />
                         )}
                       </div>
                       <span>{user.fullName}</span>
@@ -195,7 +195,7 @@ const UsersManagement = () => {
                   <TableCell className="text-center">
                     <Badge
                       variant={user.role === "admin" ? "default" : "outline"}
-                      className={user.role === "admin" ? "bg-epu-primary" : ""}
+                      className={user.role === "admin" ? "bg-amber-600 hover:bg-amber-700" : "border-amber-200 text-amber-800"}
                     >
                       {user.role === "admin" ? "Quản trị viên" : "Người dùng"}
                     </Badge>
@@ -211,15 +211,15 @@ const UsersManagement = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleEdit(user)}>
-                          <Edit size={14} className="mr-2" />
+                          <Edit size={14} className="mr-2 text-amber-600" />
                           Chỉnh sửa
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          <BookOpen size={14} className="mr-2" />
+                          <BookOpen size={14} className="mr-2 text-amber-600" />
                           Xem khóa học đã đăng ký
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          <FileText size={14} className="mr-2" />
+                          <FileText size={14} className="mr-2 text-amber-600" />
                           Xem tài liệu đã mua
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -326,10 +326,11 @@ const UsersManagement = () => {
                 type="button"
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
+                className="border-amber-200"
               >
                 Hủy
               </Button>
-              <Button type="submit" className="bg-epu-primary hover:bg-epu-primary/90">
+              <Button type="submit" className="bg-amber-600 hover:bg-amber-700 text-white">
                 {isEditing ? "Cập nhật" : "Thêm mới"}
               </Button>
             </DialogFooter>
