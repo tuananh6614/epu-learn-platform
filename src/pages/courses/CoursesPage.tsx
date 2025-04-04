@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
@@ -9,10 +10,11 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, X } from "lucide-react";
+import { Search, X, Sparkles } from "lucide-react";
 import CourseCard from "@/components/courses/CourseCard";
 import { CourseType } from "@/components/courses/CourseCard";
 import { mockCourses } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 // List of specializations/programs
 const specializations = [
@@ -69,17 +71,46 @@ const CoursesPage = () => {
   // Check if any filter is active
   const isFilterActive = searchTerm !== "" || sortBy !== "newest" || selectedSpecialization !== "all";
 
+  // Animation variants for staggered list
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
     <div className="container px-4 md:px-6 py-10">
-      <div className="flex flex-col mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Khóa học</h1>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col mb-8"
+      >
+        <div className="flex items-center gap-2">
+          <Sparkles className="text-epu-secondary h-8 w-8" />
+          <h1 className="text-3xl md:text-4xl font-bold mb-1">Khóa học</h1>
+        </div>
         <p className="text-muted-foreground">
           Khám phá các khóa học chất lượng để nâng cao kiến thức và kỹ năng của bạn
         </p>
-      </div>
+      </motion.div>
       
       {/* Filter section */}
-      <div className="flex flex-col gap-4 mb-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="flex flex-col gap-4 mb-8 bg-white p-5 rounded-xl shadow-md"
+      >
         {/* Search and Sort controls */}
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
@@ -87,7 +118,7 @@ const CoursesPage = () => {
               placeholder="Tìm kiếm khóa học..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 w-full"
+              className="pl-9 w-full shadow-sm focus:shadow-md transition-shadow"
             />
             <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
             {searchTerm && (
@@ -103,7 +134,7 @@ const CoursesPage = () => {
           </div>
           <div className="w-full sm:w-48">
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger>
+              <SelectTrigger className="shadow-sm">
                 <SelectValue placeholder="Sắp xếp theo" />
               </SelectTrigger>
               <SelectContent>
@@ -122,7 +153,7 @@ const CoursesPage = () => {
             <Badge
               key={spec.id}
               variant={selectedSpecialization === spec.id ? "default" : "outline"}
-              className="cursor-pointer hover:bg-secondary/80 transition-colors"
+              className="cursor-pointer hover:bg-epu-secondary hover:text-white transition-colors px-3 py-1 shadow-sm"
               onClick={() => setSelectedSpecialization(spec.id)}
             >
               {spec.name}
@@ -140,29 +171,41 @@ const CoursesPage = () => {
             </Button>
           )}
         </div>
-      </div>
+      </motion.div>
       
       {/* Course Grid */}
       {filteredCourses.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div 
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
           {filteredCourses.map((course) => (
-            <CourseCard key={course.id} course={course} />
+            <motion.div key={course.id} variants={item}>
+              <CourseCard course={course} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       ) : (
-        <div className="text-center py-12">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-center py-12 bg-white rounded-xl shadow-md"
+        >
           <h3 className="text-lg font-medium mb-2">Không tìm thấy khóa học</h3>
           <p className="text-muted-foreground">
             Không có khóa học nào phù hợp với tìm kiếm của bạn
           </p>
           <Button 
             variant="outline" 
-            className="mt-4"
+            className="mt-4 shadow-sm hover:shadow-md transition-shadow"
             onClick={resetFilters}
           >
             Xóa tìm kiếm
           </Button>
-        </div>
+        </motion.div>
       )}
     </div>
   );

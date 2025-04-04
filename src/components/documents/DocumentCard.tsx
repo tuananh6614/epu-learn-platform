@@ -32,14 +32,14 @@ const DocumentCard = ({ document, onPurchase }: DocumentCardProps) => {
   };
 
   return (
-    <Card className="h-full overflow-hidden hover:shadow-md transition-all duration-300">
-      <div className="p-4 bg-slate-50 flex items-center justify-center border-b">
-        <FileText size={60} className="text-epu-primary opacity-70" />
+    <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 group border border-slate-200 hover:border-slate-300">
+      <div className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center border-b group-hover:bg-gradient-to-br group-hover:from-slate-100 group-hover:to-white transition-colors duration-300">
+        <FileText size={60} className="text-epu-primary opacity-70 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
       <CardContent className="pt-4">
         <div className="flex items-start justify-between">
-          <h3 className="font-bold line-clamp-2">{document.title}</h3>
-          <Badge className="ml-2 bg-epu-accent/20 text-epu-accent whitespace-nowrap">
+          <h3 className="font-bold line-clamp-2 group-hover:text-epu-primary transition-colors duration-300">{document.title}</h3>
+          <Badge className="ml-2 bg-epu-accent text-white whitespace-nowrap shadow-sm">
             {document.category_name}
           </Badge>
         </div>
@@ -54,7 +54,7 @@ const DocumentCard = ({ document, onPurchase }: DocumentCardProps) => {
         {document.purchased ? (
           <Button
             size="sm"
-            className="bg-epu-primary hover:bg-epu-primary/90"
+            className="bg-epu-primary hover:bg-epu-primary/90 shadow-md hover:shadow-lg transition-all duration-300"
             onClick={handleClick}
           >
             <Download size={16} className="mr-2" />
@@ -64,7 +64,7 @@ const DocumentCard = ({ document, onPurchase }: DocumentCardProps) => {
           <Button
             size="sm"
             variant="outline"
-            className="border-epu-primary text-epu-primary hover:bg-epu-primary/10"
+            className="border-epu-primary text-epu-primary hover:bg-epu-primary/10 shadow-sm hover:shadow-md transition-all duration-300"
             onClick={handleClick}
           >
             <ShoppingCart size={16} className="mr-2" />
