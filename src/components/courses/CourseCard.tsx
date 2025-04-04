@@ -13,6 +13,7 @@ export type CourseType = {
   lessonCount?: number;
   enrollmentCount?: number;
   enrolled?: boolean;
+  specialization?: string;
 };
 
 const CourseCard = ({ course }: { course: CourseType }) => {
@@ -27,6 +28,15 @@ const CourseCard = ({ course }: { course: CourseType }) => {
           />
           {course.enrolled && (
             <Badge className="absolute top-2 right-2 bg-epu-primary">Đã đăng ký</Badge>
+          )}
+          {course.specialization && (
+            <Badge variant="outline" className="absolute bottom-2 left-2 bg-background/80 backdrop-blur-sm">
+              {course.specialization === "CNTT" && "Công nghệ thông tin"}
+              {course.specialization === "DTVT" && "Điện tử viễn thông"}
+              {course.specialization === "KTDL" && "Kỹ thuật điện lạnh"}
+              {course.specialization === "KTDK" && "Kỹ thuật điều khiển"}
+              {course.specialization === "ATTT" && "An toàn thông tin"}
+            </Badge>
           )}
         </div>
         <CardContent className="pt-4">

@@ -8,14 +8,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import CourseCard from "@/components/courses/CourseCard";
 import { mockCourses } from "@/lib/utils";
+
+// List of specializations/programs
+const specializations = [
+  { id: "all", name: "Tất cả chuyên ngành" },
+  { id: "CNTT", name: "Công nghệ thông tin" },
+  { id: "DTVT", name: "Điện tử viễn thông" },
+  { id: "KTDL", name: "Kỹ thuật điện lạnh" },
+  { id: "KTDK", name: "Kỹ thuật điều khiển" },
+  { id: "ATTT", name: "An toàn thông tin" },
+];
 
 const CoursesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [selectedSpecialization, setSelectedSpecialization] = useState("all");
   
   const courses = [...mockCourses]; // Clone to prevent mutation
   
@@ -36,11 +48,26 @@ const CoursesPage = () => {
     return 0;
   });
   
-  // Apply filtering
-  const filteredCourses = sortedCourses.filter(course => 
-    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Apply filtering (search term + specialization)
+  const filteredCourses = sortedCourses.filter(course => {
+    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          course.description.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesSpecialization = selectedSpecialization === "all" || 
+                                 (course.specialization && course.specialization === selectedSpecialization);
+    
+    return matchesSearch && matchesSpecialization;
+  });
+
+  // Reset all filters
+  const resetFilters = () => {
+    setSearchTerm("");
+    setSortBy("newest");
+    setSelectedSpecialization("all");
+  };
+
+  // Check if any filter is active
+  const isFilterActive = searchTerm !== "" || sortBy !== "newest" || selectedSpecialization !== "all";
 
   return (
     <div className="container px-4 md:px-6 py-10">
@@ -51,29 +78,67 @@ const CoursesPage = () => {
         </p>
       </div>
       
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
-        <div className="flex-1 relative">
-          <Input
-            placeholder="Tìm kiếm khóa học..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 w-full"
-          />
-          <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+      {/* Filter section */}
+      <div className="flex flex-col gap-4 mb-8">
+        {/* Search and Sort controls */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Input
+              placeholder="Tìm kiếm khóa học..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 w-full"
+            />
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-5 w-5"
+                onClick={() => setSearchTerm("")}
+              >
+                <X size={14} />
+              </Button>
+            )}
+          </div>
+          <div className="w-full sm:w-48">
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sắp xếp theo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Mới nhất</SelectItem>
+                <SelectItem value="popular">Phổ biến nhất</SelectItem>
+                <SelectItem value="title-asc">Tên A-Z</SelectItem>
+                <SelectItem value="title-desc">Tên Z-A</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <div className="w-full sm:w-48">
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger>
-              <SelectValue placeholder="Sắp xếp theo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Mới nhất</SelectItem>
-              <SelectItem value="popular">Phổ biến nhất</SelectItem>
-              <SelectItem value="title-asc">Tên A-Z</SelectItem>
-              <SelectItem value="title-desc">Tên Z-A</SelectItem>
-            </SelectContent>
-          </Select>
+        
+        {/* Specialization filter */}
+        <div className="flex flex-wrap gap-2">
+          {specializations.map((spec) => (
+            <Badge
+              key={spec.id}
+              variant={selectedSpecialization === spec.id ? "default" : "outline"}
+              className="cursor-pointer hover:bg-secondary/80 transition-colors"
+              onClick={() => setSelectedSpecialization(spec.id)}
+            >
+              {spec.name}
+            </Badge>
+          ))}
+          
+          {isFilterActive && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-xs h-7"
+              onClick={resetFilters}
+            >
+              <X size={14} className="mr-1" /> Xóa bộ lọc
+            </Button>
+          )}
         </div>
       </div>
       
@@ -93,7 +158,7 @@ const CoursesPage = () => {
           <Button 
             variant="outline" 
             className="mt-4"
-            onClick={() => setSearchTerm("")}
+            onClick={resetFilters}
           >
             Xóa tìm kiếm
           </Button>
