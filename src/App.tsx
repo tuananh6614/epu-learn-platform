@@ -1,10 +1,34 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import { AuthProvider } from "@/hooks/useAuth";
+
+// Layouts
+import MainLayout from "@/components/layout/MainLayout";
+import AdminLayout from "@/components/layout/AdminLayout";
+
+// Pages
+import Index from "@/pages/Index";
+import NotFound from "@/pages/NotFound";
+
+// Auth Pages
+import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
+
+// User Pages
+import CoursesPage from "@/pages/courses/CoursesPage";
+import DocumentsPage from "@/pages/documents/DocumentsPage";
+
+// Admin Pages
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import CoursesManagement from "@/pages/admin/CoursesManagement";
+import DocumentsManagement from "@/pages/admin/DocumentsManagement";
+import UsersManagement from "@/pages/admin/UsersManagement";
+
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -14,11 +38,35 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            {/* Main Layout Routes */}
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Index />} />
+              <Route path="courses" element={<CoursesPage />} />
+              <Route path="documents" element={<DocumentsPage />} />
+            </Route>
+            
+            {/* Auth Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={
+              <AuthGuard requiredRole="admin">
+                <AdminLayout />
+              </AuthGuard>
+            }>
+              <Route index element={<AdminDashboard />} />
+              <Route path="courses" element={<CoursesManagement />} />
+              <Route path="documents" element={<DocumentsManagement />} />
+              <Route path="users" element={<UsersManagement />} />
+            </Route>
+            
+            {/* Catch-all route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
