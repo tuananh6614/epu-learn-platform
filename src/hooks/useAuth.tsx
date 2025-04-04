@@ -1,5 +1,5 @@
 
-import { useState, useEffect, createContext, useContext } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -87,10 +87,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     localStorage.removeItem("epu_user");
     navigate("/");
-    toast({
-      title: "Đã đăng xuất",
-      description: "Hẹn gặp lại bạn tại EPU Learn",
-    });
   };
   
   const register = async (fullName: string, email: string, password: string) => {

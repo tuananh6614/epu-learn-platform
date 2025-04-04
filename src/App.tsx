@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,46 +31,49 @@ import UsersManagement from "@/pages/admin/UsersManagement";
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
+// Create a new QueryClient instance
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            {/* Main Layout Routes */}
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Index />} />
-              <Route path="courses" element={<CoursesPage />} />
-              <Route path="documents" element={<DocumentsPage />} />
-            </Route>
-            
-            {/* Auth Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin" element={
-              <AuthGuard requiredRole="admin">
-                <AdminLayout />
-              </AuthGuard>
-            }>
-              <Route index element={<AdminDashboard />} />
-              <Route path="courses" element={<CoursesManagement />} />
-              <Route path="documents" element={<DocumentsManagement />} />
-              <Route path="users" element={<UsersManagement />} />
-            </Route>
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              {/* Main Layout Routes */}
+              <Route path="/" element={<MainLayout />}>
+                <Route index element={<Index />} />
+                <Route path="courses" element={<CoursesPage />} />
+                <Route path="documents" element={<DocumentsPage />} />
+              </Route>
+              
+              {/* Auth Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin" element={
+                <AuthGuard requiredRole="admin">
+                  <AdminLayout />
+                </AuthGuard>
+              }>
+                <Route index element={<AdminDashboard />} />
+                <Route path="courses" element={<CoursesManagement />} />
+                <Route path="documents" element={<DocumentsManagement />} />
+                <Route path="users" element={<UsersManagement />} />
+              </Route>
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
 
 export default App;
