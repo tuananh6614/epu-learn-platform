@@ -8,6 +8,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   register: (fullName: string, email: string, password: string) => Promise<boolean>;
+  updateUserInfo: (updates: { fullName?: string; newPassword?: string }) => void;
   loading: boolean;
 };
 
@@ -135,9 +136,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     return true;
   };
+
+  const updateUserInfo = (updates: { fullName?: string; newPassword?: string }) => {
+    // In a real app, this would make an API call to update user info
+    if (user) {
+      // Update fullName if provided
+      if (updates.fullName) {
+        const updatedUser = {
+          ...user,
+          fullName: updates.fullName,
+        };
+        
+        setUser(updatedUser);
+        localStorage.setItem("epu_user", JSON.stringify(updatedUser));
+      }
+      
+      // In a real app, would update password on backend
+      if (updates.newPassword) {
+        // This is just a mock update, in a real app this would make an API call
+        console.log("Password would be updated to:", updates.newPassword);
+      }
+    }
+  };
   
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUserInfo, loading }}>
       {children}
     </AuthContext.Provider>
   );

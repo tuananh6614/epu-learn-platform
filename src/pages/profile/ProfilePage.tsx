@@ -7,17 +7,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Settings, BookOpen, FileText } from "lucide-react";
+import { User, Settings, BookOpen, FileText, Eye, EyeOff } from "lucide-react";
 import ProfileCourses from "@/pages/profile/ProfileCourses";
 import ProfileDocuments from "@/pages/profile/ProfileDocuments";
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, updateUserInfo } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: user?.fullName || "",
     email: user?.email || "",
+    currentPassword: "",
+    newPassword: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,12 +31,34 @@ const ProfilePage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would be an API call to update user data
+    
+    // In a real app, this would validate the current password before updating
+    updateUserInfo({
+      fullName: formData.fullName,
+      newPassword: formData.newPassword.length > 0 ? formData.newPassword : undefined
+    });
+    
     toast({
       title: "Thông tin đã được cập nhật",
       description: "Thông tin cá nhân của bạn đã được cập nhật thành công",
     });
+    
+    // Reset password fields
+    setFormData(prev => ({
+      ...prev,
+      currentPassword: "",
+      newPassword: ""
+    }));
+    
     setIsEditing(false);
+  };
+
+  const togglePasswordVisibility = (field: 'current' | 'new') => {
+    if (field === 'current') {
+      setShowPassword(!showPassword);
+    } else {
+      setShowNewPassword(!showNewPassword);
+    }
   };
 
   return (
@@ -94,20 +120,73 @@ const ProfilePage = () => {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    readOnly={!isEditing}
-                    className={!isEditing ? "bg-muted" : ""}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="role">Vai trò</Label>
-                  <Input
-                    id="role"
-                    value={user?.role === "admin" ? "Quản trị viên" : "Người dùng"}
-                    readOnly
+                    readOnly={true}
                     className="bg-muted"
                   />
                 </div>
+                
+                {isEditing && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="currentPassword">Mật khẩu hiện tại</Label>
+                      <div className="relative">
+                        <Input
+                          id="currentPassword"
+                          name="currentPassword"
+                          type={showPassword ? "text" : "password"}
+                          value={formData.currentPassword}
+                          onChange={handleChange}
+                          className="pr-10"
+                          placeholder="Nhập mật khẩu hiện tại"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0"
+                          onClick={() => togglePasswordVisibility('current')}
+                        >
+                          {showPassword ? (
+                            <EyeOff size={18} className="text-muted-foreground" />
+                          ) : (
+                            <Eye size={18} className="text-muted-foreground" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="newPassword">Mật khẩu mới</Label>
+                      <div className="relative">
+                        <Input
+                          id="newPassword"
+                          name="newPassword"
+                          type={showNewPassword ? "text" : "password"}
+                          value={formData.newPassword}
+                          onChange={handleChange}
+                          className="pr-10"
+                          placeholder="Nhập mật khẩu mới"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0"
+                          onClick={() => togglePasswordVisibility('new')}
+                        >
+                          {showNewPassword ? (
+                            <EyeOff size={18} className="text-muted-foreground" />
+                          ) : (
+                            <Eye size={18} className="text-muted-foreground" />
+                          )}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Để trống nếu bạn không muốn đổi mật khẩu
+                      </p>
+                    </div>
+                  </>
+                )}
               </CardContent>
               
               <CardFooter className="flex justify-between">
@@ -121,6 +200,8 @@ const ProfilePage = () => {
                         setFormData({
                           fullName: user?.fullName || "",
                           email: user?.email || "",
+                          currentPassword: "",
+                          newPassword: "",
                         });
                       }}
                     >
