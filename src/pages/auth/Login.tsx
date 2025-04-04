@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AuthForm from "@/components/auth/AuthForm";
 import { useAuth } from "@/hooks/useAuth";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const { user } = useAuth();
@@ -24,34 +25,82 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 py-12 px-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-epu-primary/90 via-epu-primary to-epu-dark py-12 px-4 overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-epu-secondary/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-epu-accent/20 rounded-full blur-3xl"></div>
+      </div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-md space-y-8 relative z-10"
+      >
         <div className="text-center">
-          <div className="flex justify-center mb-2">
-            <div className="bg-epu-primary text-white font-bold p-2 rounded-md text-xl">
+          <motion.div 
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 260, 
+              damping: 20, 
+              delay: 0.2 
+            }}
+            className="flex justify-center mb-6"
+          >
+            <div className="bg-white text-epu-primary font-bold p-3 rounded-xl shadow-lg text-3xl transform -rotate-3 hover:rotate-0 transition-transform duration-300">
               EPU
             </div>
-          </div>
-          <h2 className="text-2xl font-bold">Đăng nhập vào EPU Learn</h2>
-          <p className="text-muted-foreground mt-2">
+          </motion.div>
+          
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-3xl font-bold text-white"
+          >
+            Đăng nhập vào EPU Learn
+          </motion.h2>
+          
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-white/80 mt-3"
+          >
             Nhập thông tin đăng nhập của bạn để tiếp tục
-          </p>
+          </motion.p>
         </div>
         
-        <AuthForm type="login" onSuccess={handleSuccess} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+        >
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-2">
+            <AuthForm type="login" onSuccess={handleSuccess} />
+          </div>
+        </motion.div>
         
-        <div className="text-center text-sm text-muted-foreground">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          className="text-center text-sm text-white/70 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/10"
+        >
           <p>
-            Để demo, vui lòng sử dụng:{" "}
+            Để demo, vui lòng sử dụng:
           </p>
-          <p className="mt-1">
+          <p className="mt-1 font-medium text-white">
             <strong>Admin:</strong> admin@epu.edu.vn / admin123
           </p>
-          <p className="mt-1">
+          <p className="mt-1 font-medium text-white">
             <strong>User:</strong> user@epu.edu.vn / user123
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
