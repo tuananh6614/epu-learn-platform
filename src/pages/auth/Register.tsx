@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "@/components/auth/AuthForm";
@@ -22,7 +23,7 @@ const Register = () => {
 
   const handleSuccess = () => {
     // The redirection is now handled in the register function of useAuth
-    // No need to handle redirection here
+    // which will send users to the login page after successful registration
   };
 
   return (

@@ -109,22 +109,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
     
     // In a real app, this would be an API call to register the user
-    const newUser = {
-      email,
-      fullName,
-      role: "user" as const
-    };
-    
-    setUser(newUser);
-    localStorage.setItem("epu_user", JSON.stringify(newUser));
+    // Changed: Don't set the user or store in localStorage here
+    // Let the user login manually after registration
     
     toast({
       title: "Đăng ký thành công",
-      description: `Chào mừng ${fullName} đến với EPU Learn`,
+      description: `Tài khoản đã được tạo. Vui lòng đăng nhập để tiếp tục.`,
     });
     
-    // Redirect new users to the courses page
-    navigate("/courses");
+    // Redirect to login page instead of courses
+    navigate("/login");
     
     return true;
   };
