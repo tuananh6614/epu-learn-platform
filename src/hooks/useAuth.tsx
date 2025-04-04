@@ -15,6 +15,7 @@ type AuthContextType = {
 type User = {
   email: string;
   fullName: string;
+  role: "admin" | "user"; // Added the role property back
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -35,8 +36,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   
   // Mock users for demo
   const mockUsers = [
-    { email: "admin@epu.edu.vn", password: "admin123", fullName: "Admin EPU" },
-    { email: "user@epu.edu.vn", password: "user123", fullName: "Học Viên Demo" },
+    { email: "admin@epu.edu.vn", password: "admin123", fullName: "Admin EPU", role: "admin" as const },
+    { email: "user@epu.edu.vn", password: "user123", fullName: "Học Viên Demo", role: "user" as const },
   ];
   
   useEffect(() => {
@@ -65,6 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const userData = {
         email: user.email,
         fullName: user.fullName,
+        role: user.role
       };
       setUser(userData);
       localStorage.setItem("epu_user", JSON.stringify(userData));
@@ -110,6 +112,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const newUser = {
       email,
       fullName,
+      role: "user" as const
     };
     
     setUser(newUser);

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
 import CourseCard from "@/components/courses/CourseCard";
+import { CourseType } from "@/components/courses/CourseCard";
 import { mockCourses } from "@/lib/utils";
 
 // List of specializations/programs
@@ -29,7 +29,7 @@ const CoursesPage = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [selectedSpecialization, setSelectedSpecialization] = useState("all");
   
-  const courses = [...mockCourses]; // Clone to prevent mutation
+  const courses = [...mockCourses] as CourseType[]; // Cast to CourseType to ensure compatibility
   
   // Apply sorting
   const sortedCourses = courses.sort((a, b) => {
@@ -37,7 +37,7 @@ const CoursesPage = () => {
       return b.id - a.id;
     }
     if (sortBy === "popular") {
-      return b.enrollmentCount! - a.enrollmentCount!;
+      return (b.enrollmentCount || 0) - (a.enrollmentCount || 0);
     }
     if (sortBy === "title-asc") {
       return a.title.localeCompare(b.title);
@@ -54,7 +54,7 @@ const CoursesPage = () => {
                           course.description.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesSpecialization = selectedSpecialization === "all" || 
-                                 (course.specialization && course.specialization === selectedSpecialization);
+                                 course.specialization === selectedSpecialization;
     
     return matchesSearch && matchesSpecialization;
   });

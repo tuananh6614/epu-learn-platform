@@ -1,4 +1,3 @@
-
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -24,6 +23,7 @@ export const mockCourses = [
     chapterCount: 5,
     lessonCount: 25,
     enrollmentCount: 120,
+    specialization: "CNTT"
   },
   {
     id: 2,
@@ -33,6 +33,7 @@ export const mockCourses = [
     chapterCount: 8,
     lessonCount: 42,
     enrollmentCount: 85,
+    specialization: "CNTT"
   },
   {
     id: 3,
@@ -42,6 +43,7 @@ export const mockCourses = [
     chapterCount: 6,
     lessonCount: 30,
     enrollmentCount: 65,
+    specialization: "ATTT"
   },
   {
     id: 4,
@@ -51,6 +53,7 @@ export const mockCourses = [
     chapterCount: 7,
     lessonCount: 35,
     enrollmentCount: 95,
+    specialization: "ATTT"
   },
   {
     id: 5,
@@ -60,6 +63,7 @@ export const mockCourses = [
     chapterCount: 9,
     lessonCount: 45,
     enrollmentCount: 150,
+    specialization: "CNTT"
   },
   {
     id: 6,
@@ -69,6 +73,7 @@ export const mockCourses = [
     chapterCount: 6,
     lessonCount: 28,
     enrollmentCount: 70,
+    specialization: "DTVT"
   }
 ];
 

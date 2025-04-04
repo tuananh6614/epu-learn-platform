@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
@@ -10,10 +11,10 @@ type User = {
   email: string;
   role: "admin" | "user";
   fullName: string;
-} | null;
+};
 
 export const AuthGuard = ({ children, requiredRole = null }: AuthGuardProps) => {
-  const [user, setUser] = useState<User>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   
