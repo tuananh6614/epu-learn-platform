@@ -11,14 +11,72 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { BookOpen, PlusCircle, ImagePlus, X } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { BookOpen, PlusCircle, ImagePlus, X, Video, LayoutList, Image } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+type MediaItem = {
+  type: "image" | "video";
+  url: string;
+  title: string;
+};
+
+type LessonPage = {
+  title: string;
+  content: string;
+  media: MediaItem[];
+};
+
+type Lesson = {
+  title: string;
+  description: string;
+  pages: LessonPage[];
+};
+
+type Chapter = {
+  title: string;
+  lessons: Lesson[];
+};
 
 const PublishCourse = () => {
-  const [chapters, setChapters] = useState([{ title: "", lessons: [{ title: "", description: "" }] }]);
+  const { toast } = useToast();
+  const [chapters, setChapters] = useState<Chapter[]>([
+    { 
+      title: "", 
+      lessons: [{ 
+        title: "", 
+        description: "", 
+        pages: [{ 
+          title: "Trang 1", 
+          content: "", 
+          media: [] 
+        }] 
+      }] 
+    }
+  ]);
+
+  const [selectedMedia, setSelectedMedia] = useState<{
+    chapterIndex: number;
+    lessonIndex: number;
+    pageIndex: number;
+    type: "image" | "video";
+  } | null>(null);
   
   // Add new chapter
   const addChapter = () => {
-    setChapters([...chapters, { title: "", lessons: [{ title: "", description: "" }] }]);
+    setChapters([...chapters, { 
+      title: "", 
+      lessons: [{ 
+        title: "", 
+        description: "", 
+        pages: [{ 
+          title: "Trang 1", 
+          content: "", 
+          media: [] 
+        }] 
+      }] 
+    }]);
   };
   
   // Remove chapter
@@ -29,7 +87,15 @@ const PublishCourse = () => {
   // Add lesson to chapter
   const addLesson = (chapterIndex: number) => {
     const updatedChapters = [...chapters];
-    updatedChapters[chapterIndex].lessons.push({ title: "", description: "" });
+    updatedChapters[chapterIndex].lessons.push({ 
+      title: "", 
+      description: "", 
+      pages: [{ 
+        title: "Trang 1", 
+        content: "", 
+        media: [] 
+      }] 
+    });
     setChapters(updatedChapters);
   };
   
@@ -49,11 +115,160 @@ const PublishCourse = () => {
     setChapters(updatedChapters);
   };
   
-  // Update lesson
+  // Update lesson basic info
   const updateLesson = (chapterIndex: number, lessonIndex: number, field: 'title' | 'description', value: string) => {
     const updatedChapters = [...chapters];
     updatedChapters[chapterIndex].lessons[lessonIndex][field] = value;
     setChapters(updatedChapters);
+  };
+
+  // Add page to lesson
+  const addPage = (chapterIndex: number, lessonIndex: number) => {
+    const updatedChapters = [...chapters];
+    const pageNumber = updatedChapters[chapterIndex].lessons[lessonIndex].pages.length + 1;
+    updatedChapters[chapterIndex].lessons[lessonIndex].pages.push({
+      title: `Trang ${pageNumber}`,
+      content: "",
+      media: []
+    });
+    setChapters(updatedChapters);
+  };
+
+  // Remove page
+  const removePage = (chapterIndex: number, lessonIndex: number, pageIndex: number) => {
+    const updatedChapters = [...chapters];
+    // Prevent removing the last page
+    if (updatedChapters[chapterIndex].lessons[lessonIndex].pages.length > 1) {
+      updatedChapters[chapterIndex].lessons[lessonIndex].pages = 
+        updatedChapters[chapterIndex].lessons[lessonIndex].pages.filter(
+          (_, index) => index !== pageIndex
+        );
+      setChapters(updatedChapters);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Không thể xóa",
+        description: "Bài học phải có ít nhất một trang"
+      });
+    }
+  };
+
+  // Update page content
+  const updatePageContent = (chapterIndex: number, lessonIndex: number, pageIndex: number, field: 'title' | 'content', value: string) => {
+    const updatedChapters = [...chapters];
+    updatedChapters[chapterIndex].lessons[lessonIndex].pages[pageIndex][field] = value;
+    setChapters(updatedChapters);
+  };
+
+  // Add media to page
+  const addMedia = (chapterIndex: number, lessonIndex: number, pageIndex: number, media: MediaItem) => {
+    const updatedChapters = [...chapters];
+    updatedChapters[chapterIndex].lessons[lessonIndex].pages[pageIndex].media.push(media);
+    setChapters(updatedChapters);
+    setSelectedMedia(null);
+    
+    toast({
+      title: "Đã thêm media",
+      description: `${media.type === 'image' ? 'Hình ảnh' : 'Video'} đã được thêm vào trang`,
+    });
+  };
+
+  // Remove media from page
+  const removeMedia = (chapterIndex: number, lessonIndex: number, pageIndex: number, mediaIndex: number) => {
+    const updatedChapters = [...chapters];
+    updatedChapters[chapterIndex].lessons[lessonIndex].pages[pageIndex].media = 
+      updatedChapters[chapterIndex].lessons[lessonIndex].pages[pageIndex].media.filter(
+        (_, index) => index !== mediaIndex
+      );
+    setChapters(updatedChapters);
+  };
+
+  // Handle media upload
+  const handleMediaSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (!selectedMedia) return;
+    
+    const formData = new FormData(e.currentTarget);
+    const title = formData.get("mediaTitle") as string;
+    const url = formData.get("mediaUrl") as string;
+    
+    if (!title || !url) {
+      toast({
+        variant: "destructive",
+        title: "Thiếu thông tin",
+        description: "Vui lòng nhập đầy đủ thông tin",
+      });
+      return;
+    }
+    
+    const { chapterIndex, lessonIndex, pageIndex, type } = selectedMedia;
+    
+    addMedia(chapterIndex, lessonIndex, pageIndex, {
+      type,
+      title,
+      url,
+    });
+  };
+
+  // Handle form submission
+  const handleSubmitCourse = () => {
+    // Validation
+    let isValid = true;
+    let errorMessage = "";
+    
+    // Check if course has at least one chapter
+    if (chapters.length === 0) {
+      isValid = false;
+      errorMessage = "Khóa học phải có ít nhất một chương";
+    }
+    
+    // Check if each chapter has a title and at least one lesson
+    chapters.forEach((chapter, idx) => {
+      if (!chapter.title.trim()) {
+        isValid = false;
+        errorMessage = `Chương ${idx + 1} chưa có tiêu đề`;
+      }
+      
+      if (chapter.lessons.length === 0) {
+        isValid = false;
+        errorMessage = `Chương ${idx + 1} phải có ít nhất một bài học`;
+      }
+      
+      // Check if each lesson has a title
+      chapter.lessons.forEach((lesson, lessonIdx) => {
+        if (!lesson.title.trim()) {
+          isValid = false;
+          errorMessage = `Bài học ${lessonIdx + 1} trong chương ${idx + 1} chưa có tiêu đề`;
+        }
+        
+        // Check if each page has content
+        lesson.pages.forEach((page, pageIdx) => {
+          if (!page.content.trim()) {
+            isValid = false;
+            errorMessage = `Trang ${pageIdx + 1} trong bài học ${lessonIdx + 1}, chương ${idx + 1} chưa có nội dung`;
+          }
+        });
+      });
+    });
+    
+    if (!isValid) {
+      toast({
+        variant: "destructive",
+        title: "Lỗi xác thực",
+        description: errorMessage,
+      });
+      return;
+    }
+    
+    // Submit the course data
+    toast({
+      title: "Đã đăng khóa học",
+      description: "Khóa học của bạn đã được đăng thành công",
+    });
+    
+    // Reset or redirect would go here
+    console.log("Course data:", chapters);
   };
   
   return (
@@ -165,7 +380,7 @@ const PublishCourse = () => {
                   {chapter.lessons.map((lesson, lessonIndex) => (
                     <div
                       key={`${chapterIndex}-${lessonIndex}`}
-                      className="border rounded-md p-3 space-y-2"
+                      className="border rounded-md p-3 space-y-3"
                     >
                       <div className="flex items-center justify-between">
                         <Label className="text-sm">Bài học {lessonIndex + 1}</Label>
@@ -178,6 +393,7 @@ const PublishCourse = () => {
                           <X className="h-3 w-3" />
                         </Button>
                       </div>
+                      
                       <Input
                         value={lesson.title}
                         onChange={(e) =>
@@ -186,6 +402,7 @@ const PublishCourse = () => {
                         placeholder="Tên bài học"
                         className="text-sm"
                       />
+                      
                       <Textarea
                         value={lesson.description}
                         onChange={(e) =>
@@ -200,6 +417,190 @@ const PublishCourse = () => {
                         rows={2}
                         className="text-sm"
                       />
+                      
+                      {/* Pages Tabs */}
+                      <Tabs defaultValue={`page-0`} className="w-full">
+                        <div className="flex items-center justify-between mb-2">
+                          <Label className="text-xs font-medium text-muted-foreground">Trang bài học</Label>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addPage(chapterIndex, lessonIndex)}
+                            className="h-7 text-xs"
+                          >
+                            <PlusCircle className="mr-1 h-3 w-3" />
+                            Thêm trang
+                          </Button>
+                        </div>
+                        
+                        <TabsList className="w-full flex overflow-x-auto mb-2">
+                          {lesson.pages.map((page, pageIndex) => (
+                            <TabsTrigger
+                              key={`page-${pageIndex}`}
+                              value={`page-${pageIndex}`}
+                              className="flex-1 min-w-[80px] whitespace-nowrap"
+                            >
+                              {page.title}
+                            </TabsTrigger>
+                          ))}
+                        </TabsList>
+                        
+                        {lesson.pages.map((page, pageIndex) => (
+                          <TabsContent key={`page-content-${pageIndex}`} value={`page-${pageIndex}`} className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 mr-2">
+                                <Input
+                                  value={page.title}
+                                  onChange={(e) => 
+                                    updatePageContent(chapterIndex, lessonIndex, pageIndex, "title", e.target.value)
+                                  }
+                                  placeholder="Tiêu đề trang"
+                                  className="text-sm"
+                                />
+                              </div>
+                              {lesson.pages.length > 1 && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => removePage(chapterIndex, lessonIndex, pageIndex)}
+                                  className="h-7 w-7 text-red-500 hover:text-red-700"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                            
+                            <Textarea
+                              value={page.content}
+                              onChange={(e) =>
+                                updatePageContent(
+                                  chapterIndex,
+                                  lessonIndex,
+                                  pageIndex,
+                                  "content",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Nội dung trang bài học"
+                              rows={4}
+                              className="text-sm"
+                            />
+                            
+                            {/* Media section */}
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <Label className="text-xs font-medium text-muted-foreground">
+                                  Media ({page.media.length})
+                                </Label>
+                                <div className="flex gap-1">
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        className="h-7 text-xs"
+                                        onClick={() => setSelectedMedia({
+                                          chapterIndex,
+                                          lessonIndex,
+                                          pageIndex,
+                                          type: "image"
+                                        })}
+                                      >
+                                        <Image className="mr-1 h-3 w-3" />
+                                        Hình ảnh
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                      <DialogHeader>
+                                        <DialogTitle>Thêm hình ảnh</DialogTitle>
+                                      </DialogHeader>
+                                      <form onSubmit={handleMediaSubmit} className="space-y-4 mt-2">
+                                        <div className="space-y-2">
+                                          <Label htmlFor="mediaTitle">Tiêu đề</Label>
+                                          <Input id="mediaTitle" name="mediaTitle" placeholder="Tiêu đề hình ảnh" />
+                                        </div>
+                                        <div className="space-y-2">
+                                          <Label htmlFor="mediaUrl">URL hình ảnh</Label>
+                                          <Input id="mediaUrl" name="mediaUrl" placeholder="https://example.com/image.png" />
+                                        </div>
+                                        <div className="flex justify-end">
+                                          <Button type="submit">Thêm</Button>
+                                        </div>
+                                      </form>
+                                    </DialogContent>
+                                  </Dialog>
+                                  
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        className="h-7 text-xs"
+                                        onClick={() => setSelectedMedia({
+                                          chapterIndex,
+                                          lessonIndex,
+                                          pageIndex,
+                                          type: "video"
+                                        })}
+                                      >
+                                        <Video className="mr-1 h-3 w-3" />
+                                        Video
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                      <DialogHeader>
+                                        <DialogTitle>Thêm video</DialogTitle>
+                                      </DialogHeader>
+                                      <form onSubmit={handleMediaSubmit} className="space-y-4 mt-2">
+                                        <div className="space-y-2">
+                                          <Label htmlFor="mediaTitle">Tiêu đề</Label>
+                                          <Input id="mediaTitle" name="mediaTitle" placeholder="Tiêu đề video" />
+                                        </div>
+                                        <div className="space-y-2">
+                                          <Label htmlFor="mediaUrl">URL video (YouTube, Vimeo, v.v.)</Label>
+                                          <Input id="mediaUrl" name="mediaUrl" placeholder="https://youtube.com/watch?v=..." />
+                                        </div>
+                                        <div className="flex justify-end">
+                                          <Button type="submit">Thêm</Button>
+                                        </div>
+                                      </form>
+                                    </DialogContent>
+                                  </Dialog>
+                                </div>
+                              </div>
+
+                              {/* Media list */}
+                              {page.media.length > 0 && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                                  {page.media.map((media, mediaIndex) => (
+                                    <div key={mediaIndex} className="flex items-start p-2 border rounded-md bg-muted/30">
+                                      <div className="flex-1">
+                                        <div className="flex items-center gap-1 text-xs font-medium">
+                                          {media.type === "image" ? (
+                                            <Image className="h-3 w-3" />
+                                          ) : (
+                                            <Video className="h-3 w-3" />
+                                          )}
+                                          {media.title}
+                                        </div>
+                                        <p className="text-xs text-muted-foreground truncate">{media.url}</p>
+                                      </div>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => removeMedia(chapterIndex, lessonIndex, pageIndex, mediaIndex)}
+                                        className="h-5 w-5 text-red-500 hover:bg-red-100"
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </TabsContent>
+                        ))}
+                      </Tabs>
                     </div>
                   ))}
                   <Button
@@ -221,7 +622,7 @@ const PublishCourse = () => {
       {/* Submission Buttons */}
       <div className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
         <Button variant="outline">Lưu nháp</Button>
-        <Button>Đăng khóa học</Button>
+        <Button onClick={handleSubmitCourse}>Đăng khóa học</Button>
       </div>
     </div>
   );
