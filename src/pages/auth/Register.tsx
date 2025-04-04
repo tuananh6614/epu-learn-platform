@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AuthForm from "@/components/auth/AuthForm";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
+import Particles from "@/components/ui/Particles";
 
 const Register = () => {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ const Register = () => {
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-epu-secondary/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 left-1/4 w-96 h-96 bg-epu-accent/20 rounded-full blur-3xl"></div>
+        <Particles />
       </div>
       
       <motion.div 

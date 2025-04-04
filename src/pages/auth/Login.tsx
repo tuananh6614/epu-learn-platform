@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import AuthForm from "@/components/auth/AuthForm";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
+import Particles from "@/components/ui/Particles";
 
 const Login = () => {
   const { user } = useAuth();
@@ -30,6 +31,7 @@ const Login = () => {
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-epu-secondary/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-epu-accent/20 rounded-full blur-3xl"></div>
+        <Particles />
       </div>
       
       <motion.div 
