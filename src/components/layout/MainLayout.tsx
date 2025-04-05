@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -16,11 +15,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap } from "lucide-react";
+import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap, Phone, Mail, MapPin } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
+import { Separator } from "@/components/ui/separator";
 
 const MainLayout = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -61,7 +61,6 @@ const MainLayout = () => {
     { name: "Tài liệu", path: "/documents", icon: FileText },
   ];
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -80,7 +79,6 @@ const MainLayout = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header */}
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-700 ${
           isScrolled 
@@ -103,7 +101,6 @@ const MainLayout = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <motion.nav 
             className="hidden md:flex items-center gap-6"
             variants={containerVariants}
@@ -148,7 +145,6 @@ const MainLayout = () => {
             )}
           </motion.nav>
 
-          {/* Authentication Section */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
             
@@ -199,7 +195,6 @@ const MainLayout = () => {
               </div>
             )}
 
-            {/* Mobile Navigation Trigger */}
             <Sheet>
               <SheetTrigger asChild>
                 <Button
@@ -335,14 +330,21 @@ const MainLayout = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1">
         <Outlet />
       </main>
 
-      {/* Footer */}
-      <footer className="bg-epu-dark text-white py-8 dark:bg-black border-t dark:border-slate-800">
-        <div className="container px-4 md:px-6">
+      <footer className="bg-[#2A3142] text-white py-10 dark:bg-[#1A1F2C] border-t dark:border-slate-800 relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 left-10 w-3 h-3 rounded-full bg-blue-500 opacity-30"></div>
+          <div className="absolute top-40 left-20 w-2 h-2 rounded-full bg-green-500 opacity-30"></div>
+          <div className="absolute top-20 right-40 w-2 h-2 rounded-full bg-red-500 opacity-30"></div>
+          <div className="absolute bottom-20 right-20 w-3 h-3 rounded-full bg-yellow-500 opacity-30"></div>
+          <div className="absolute bottom-40 left-1/3 w-2 h-2 rounded-full bg-purple-500 opacity-30"></div>
+          <div className="absolute top-1/4 right-1/4 w-3 h-3 rounded-full bg-orange-500 opacity-30"></div>
+        </div>
+        
+        <div className="container px-4 md:px-6 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
@@ -352,39 +354,60 @@ const MainLayout = () => {
                 </div>
                 <span className="font-bold text-lg">Learn</span>
               </div>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-gray-300 max-w-xs">
                 Nền tảng học tập trực tuyến hàng đầu của Trường Đại học Điện Lực
               </p>
             </div>
+            
             <div>
               <h3 className="text-lg font-bold mb-4">Liên kết nhanh</h3>
-              <ul className="space-y-2">
-                {navItems.map((item) => (
-                  <li key={item.path}>
-                    <Link
-                      to={item.path}
-                      className="text-gray-300 hover:text-white transition-colors flex items-center gap-2"
-                    >
-                      <item.icon size={16} />
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
+              <ul className="space-y-3">
+                <li>
+                  <Link to="/" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                    <Home size={16} />
+                    Trang chủ
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/courses" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                    <BookOpen size={16} />
+                    Khóa học
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/documents" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                    <FileText size={16} />
+                    Tài liệu
+                  </Link>
+                </li>
               </ul>
             </div>
+            
             <div>
               <h3 className="text-lg font-bold mb-4">Liên hệ</h3>
-              <p className="text-sm text-gray-300">
-                Trường Đại học Điện Lực <br />
-                235 Hoàng Quốc Việt, Cổ Nhuế, Bắc Từ Liêm, Hà Nội
-              </p>
-              <p className="text-sm text-gray-300 mt-2">
-                Email: info@epu.edu.vn <br />
-                Điện thoại: 024.38362672
-              </p>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-300 font-medium">
+                  Trường Đại học Điện Lực
+                </p>
+                <p className="text-sm text-gray-300 flex items-start gap-2">
+                  <MapPin size={16} className="mt-0.5 flex-shrink-0" />
+                  <span>235 Hoàng Quốc Việt, Cổ Nhuế, Bắc Từ Liêm, Hà Nội</span>
+                </p>
+                <p className="text-sm text-gray-300 flex items-center gap-2">
+                  <Mail size={16} />
+                  <span>Email: info@epu.edu.vn</span>
+                </p>
+                <p className="text-sm text-gray-300 flex items-center gap-2">
+                  <Phone size={16} />
+                  <span>Điện thoại: 024.38362672</span>
+                </p>
+              </div>
             </div>
           </div>
-          <div className="mt-8 pt-4 border-t border-gray-700 text-center text-sm text-gray-400">
+          
+          <Separator className="my-6 bg-gray-700" />
+          
+          <div className="text-center text-sm text-gray-400">
             &copy; {new Date().getFullYear()} EPU Learn. Đã đăng ký bản quyền.
           </div>
         </div>
