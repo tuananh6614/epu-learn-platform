@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -81,7 +82,7 @@ const HomePage = () => {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] md:min-h-[75vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[80vh] md:min-h-[70vh] flex items-center overflow-hidden">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-epu-primary via-blue-700 to-epu-accent bg-size-200 animate-gradient-shift"></div>
         
@@ -90,16 +91,16 @@ const HomePage = () => {
         <FloatingParticles />
         <AnimatedWaves />
         
-        <div className="container px-4 md:px-6 flex flex-col items-center text-center relative z-10 py-16 md:py-24">
+        <div className="container px-4 md:px-6 flex flex-col items-center text-center relative z-10 py-12 md:py-16">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="max-w-4xl mx-auto"
+            className="max-w-3xl mx-auto"
           >
             <motion.div 
               variants={itemVariants}
-              className="inline-block bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6"
+              className="inline-block bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-4"
             >
               <span className="text-white/90 font-medium tracking-wide text-sm">
                 Nền tảng học tập hàng đầu
@@ -108,24 +109,24 @@ const HomePage = () => {
             
             <motion.h1 
               variants={itemVariants}
-              className="hero-title font-poppins"
+              className="text-4xl md:text-5xl font-bold leading-tight tracking-tight text-white drop-shadow-md mb-3 mx-auto"
             >
               EPU Learn
-              <span className="block text-2xl sm:text-3xl md:text-4xl mt-2 font-light opacity-95">
+              <span className="block text-xl sm:text-2xl md:text-3xl mt-2 font-light opacity-95">
                 Nền tảng học tập trực tuyến của Đại học Điện Lực
               </span>
             </motion.h1>
             
             <motion.p 
               variants={itemVariants}
-              className="hero-subtitle"
+              className="text-base sm:text-lg text-white/90 drop-shadow-sm mb-6 max-w-xl mx-auto leading-relaxed"
             >
               Khám phá kho tàng kiến thức với các khóa học chất lượng cao và tài liệu học tập phong phú
             </motion.p>
             
             <motion.div 
               variants={itemVariants}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              className="flex flex-col sm:flex-row gap-3 justify-center"
             >
               <motion.div
                 variants={buttonVariants}
