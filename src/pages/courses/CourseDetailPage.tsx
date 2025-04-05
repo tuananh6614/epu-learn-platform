@@ -1,12 +1,12 @@
 
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { BookOpen, Users, Clock, Calendar, ChevronLeft, Play, ShoppingCart, CheckCircle } from "lucide-react";
+import { BookOpen, Users, Calendar, ChevronLeft, Play, CheckCircle } from "lucide-react";
 import { mockCourses } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
@@ -17,10 +17,12 @@ const CourseDetailPage = () => {
   const numericCourseId = Number(courseId);
   const { toast } = useToast();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [currentProgress, setCurrentProgress] = useState(30); // Mock progress - would come from API
+  const [currentProgress, setCurrentProgress] = useState(0);
+  const [firstContentId, setFirstContentId] = useState<number | null>(null);
   
   // Find course from mock data
   const course = mockCourses.find(c => c.id === numericCourseId);
@@ -163,10 +165,19 @@ const CourseDetailPage = () => {
       setLoading(false);
       // Mock check if user is enrolled
       setIsEnrolled(user ? Math.random() > 0.5 : false);
+      
+      // Find the first available content item
+      const firstChapter = courseChapters[0];
+      if (firstChapter && firstChapter.lessons && firstChapter.lessons[0]) {
+        const firstLesson = firstChapter.lessons[0];
+        if (firstLesson.contentItems && firstLesson.contentItems[0]) {
+          setFirstContentId(firstLesson.contentItems[0].id);
+        }
+      }
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, [user]);
+  }, [user, courseChapters]);
 
   const handleContentItemClick = (chapterId: number, lessonId: number, contentItem: ContentItemType) => {
     if (contentItem.locked) {
@@ -210,7 +221,7 @@ const CourseDetailPage = () => {
     
     setCourseChapters(updatedChapters);
     
-    // Update progress (in a real app, this would be handled by the backend)
+    // Update progress
     const totalItems = courseChapters.reduce((total, chapter) => 
       total + chapter.lessons.reduce((lessonTotal, lesson) => 
         lessonTotal + lesson.contentItems.length, 0), 0);
@@ -238,6 +249,26 @@ const CourseDetailPage = () => {
     });
     
     setIsEnrolled(true);
+    // After enrollment, set the active tab to "content" to show available lessons
+    setActiveTab("content");
+  };
+  
+  const startLearning = () => {
+    if (firstContentId) {
+      // In a real app, we would navigate to a lesson viewer page
+      toast({
+        title: "Bắt đầu học",
+        description: "Đang chuyển hướng đến bài học đầu tiên"
+      });
+      // For now just switch to content tab
+      setActiveTab("content");
+    } else {
+      toast({
+        title: "Không tìm thấy bài học",
+        description: "Không có bài học nào khả dụng",
+        variant: "destructive"
+      });
+    }
   };
 
   if (loading) {
@@ -297,21 +328,12 @@ const CourseDetailPage = () => {
               </Badge>
             </div>
             
-            <div className="rounded-xl overflow-hidden mb-8 shadow-md relative group">
+            <div className="rounded-xl overflow-hidden mb-8 shadow-md">
               <img
                 src={course.thumbnail || "/placeholder.svg"}
                 alt={course.title}
                 className="w-full aspect-video object-cover"
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <motion.div 
-                  className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center cursor-pointer border border-white/30"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Play size={36} className="text-white ml-1" />
-                </motion.div>
-              </div>
             </div>
             
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
@@ -405,24 +427,26 @@ const CourseDetailPage = () => {
                       <span>{courseChapters.reduce((total, chapter) => total + chapter.lessons.length, 0)} bài học</span>
                     </div>
                     <div className="flex items-center">
-                      <Clock size={16} className="text-epu-primary dark:text-epu-accent mr-2" />
-                      <span>Thời lượng: 8 giờ học</span>
-                    </div>
-                    <div className="flex items-center">
                       <Calendar size={16} className="text-epu-primary dark:text-epu-accent mr-2" />
                       <span>Truy cập không giới hạn</span>
                     </div>
                   </div>
                   
                   {isEnrolled ? (
-                    <Button className="w-full mb-4 bg-epu-primary hover:bg-epu-primary/90">
+                    <Button 
+                      onClick={startLearning} 
+                      className="w-full mb-4 bg-epu-primary hover:bg-epu-primary/90"
+                    >
                       <Play size={16} className="mr-2" />
-                      Tiếp tục học
+                      Bắt đầu học
                     </Button>
                   ) : (
-                    <Button onClick={handleEnroll} className="w-full mb-4 bg-epu-primary hover:bg-epu-primary/90 group">
-                      <ShoppingCart size={16} className="mr-2 group-hover:animate-bounce" />
-                      Đăng ký ngay
+                    <Button 
+                      onClick={handleEnroll} 
+                      className="w-full mb-4 bg-epu-primary hover:bg-epu-primary/90"
+                    >
+                      <CheckCircle size={16} className="mr-2" />
+                      Đăng ký miễn phí
                     </Button>
                   )}
                   
