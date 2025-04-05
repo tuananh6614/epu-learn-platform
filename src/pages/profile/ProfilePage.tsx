@@ -17,6 +17,7 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: user?.fullName || "",
     email: user?.email || "",
@@ -29,28 +30,62 @@ const ProfilePage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // In a real app, this would validate the current password before updating
-    updateUserInfo({
-      fullName: formData.fullName,
-      newPassword: formData.newPassword.length > 0 ? formData.newPassword : undefined
-    });
-    
-    toast({
-      title: "Thông tin đã được cập nhật",
-      description: "Thông tin cá nhân của bạn đã được cập nhật thành công",
-    });
-    
-    // Reset password fields
-    setFormData(prev => ({
-      ...prev,
-      currentPassword: "",
-      newPassword: ""
-    }));
-    
-    setIsEditing(false);
+    try {
+      // Xác định thông tin cần cập nhật
+      const updates: {
+        fullName?: string;
+        currentPassword?: string;
+        newPassword?: string;
+      } = {};
+      
+      // Chỉ gửi fullName nếu có thay đổi
+      if (formData.fullName && formData.fullName !== user?.fullName) {
+        updates.fullName = formData.fullName;
+      }
+      
+      // Chỉ gửi mật khẩu nếu có nhập mật khẩu mới
+      if (formData.newPassword) {
+        updates.currentPassword = formData.currentPassword;
+        updates.newPassword = formData.newPassword;
+      }
+      
+      // Kiểm tra nếu không có thông tin cần cập nhật
+      if (Object.keys(updates).length === 0) {
+        toast({
+          title: "Không có thay đổi",
+          description: "Không có thông tin nào được thay đổi",
+        });
+        setIsEditing(false);
+        setIsSubmitting(false);
+        return;
+      }
+      
+      const success = await updateUserInfo(updates);
+      
+      if (success) {
+        // Reset trường mật khẩu
+        setFormData(prev => ({
+          ...prev,
+          currentPassword: "",
+          newPassword: ""
+        }));
+        
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast({
+        title: "Lỗi",
+        description: "Có lỗi xảy ra khi cập nhật thông tin",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const togglePasswordVisibility = (field: 'current' | 'new') => {
@@ -208,11 +243,16 @@ const ProfilePage = () => {
                           newPassword: "",
                         });
                       }}
+                      disabled={isSubmitting}
                     >
                       Huỷ
                     </Button>
-                    <Button type="submit" className="bg-epu-primary hover:bg-epu-primary/90">
-                      Lưu thay đổi
+                    <Button 
+                      type="submit" 
+                      className="bg-epu-primary hover:bg-epu-primary/90"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}
                     </Button>
                   </>
                 ) : (

@@ -14,7 +14,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   register: (fullName: string, email: string, password: string) => Promise<boolean>;
-  updateUserInfo: (updates: { fullName?: string; newPassword?: string }) => void;
+  updateUserInfo: (updates: { fullName?: string; currentPassword?: string; newPassword?: string }) => Promise<boolean>;
   loading: boolean;
 };
 
@@ -148,11 +148,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     navigate("/login");
   };
 
-  const updateUserInfo = async (updates: { fullName?: string; newPassword?: string }) => {
-    if (!user) return;
+  const updateUserInfo = async (updates: { fullName?: string; currentPassword?: string; newPassword?: string }) => {
+    if (!user) return false;
 
     try {
       const token = localStorage.getItem("epu_token");
+      if (!token) {
+        toast({
+          title: "Lỗi xác thực",
+          description: "Vui lòng đăng nhập lại",
+          variant: "destructive",
+        });
+        logout();
+        return false;
+      }
+
+      // Chỉ gửi request nếu có thông tin cần cập nhật
+      if (!updates.fullName && !updates.newPassword) {
+        toast({
+          title: "Không có thay đổi",
+          description: "Không có thông tin nào cần cập nhật",
+        });
+        return false;
+      }
+
+      // Kiểm tra nếu đổi mật khẩu thì phải có mật khẩu hiện tại
+      if (updates.newPassword && !updates.currentPassword) {
+        toast({
+          title: "Thiếu thông tin",
+          description: "Vui lòng nhập mật khẩu hiện tại",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      console.log("Đang gửi yêu cầu cập nhật:", updates);
+      
       const response = await fetch('http://localhost:5000/api/auth/update-profile', {
         method: 'PUT',
         headers: {
@@ -163,15 +194,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       const data = await response.json();
+      console.log("Phản hồi từ server:", data);
 
       if (!response.ok) {
-        throw new Error(data.message);
+        throw new Error(data.message || "Không thể cập nhật thông tin");
       }
 
-      if (updates.fullName) {
+      // Cập nhật thông tin người dùng trong state và localStorage
+      if (updates.fullName && data.user) {
         const updatedUser = {
           ...user,
-          fullName: updates.fullName,
+          fullName: data.user.fullName,
         };
         setUser(updatedUser);
         localStorage.setItem("epu_user", JSON.stringify(updatedUser));
@@ -179,15 +212,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       toast({
         title: "Cập nhật thành công",
-        description: "Thông tin của bạn đã được cập nhật",
+        description: data.message || "Thông tin của bạn đã được cập nhật",
       });
-    } catch (error) {
+      
+      return true;
+    } catch (error: any) {
       console.error("Update profile error:", error);
       toast({
         title: "Lỗi",
-        description: "Không thể cập nhật thông tin",
+        description: error.message || "Không thể cập nhật thông tin",
         variant: "destructive",
       });
+      return false;
     }
   };
 
