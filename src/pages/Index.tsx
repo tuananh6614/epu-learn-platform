@@ -137,12 +137,12 @@ const HomePage = () => {
             </div>
 
             <TabsContent value="courses" className="mt-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
                 {featuredCourses.map((course) => (
                   <CourseCard key={course.id} course={course} />
                 ))}
               </div>
-              <div className="mt-10 text-center">
+              <div className="mt-8 text-center">
                 <Button 
                   className="btn-primary text-base px-6 py-2.5 rounded-lg"
                   onClick={() => navigate("/courses")}
