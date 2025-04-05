@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "next-themes";
+import { FloatingParticles } from "@/components/ui/FloatingParticles";
 
 // Layouts
 import MainLayout from "@/components/layout/MainLayout";
@@ -42,6 +43,7 @@ const App = () => (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
+          <FloatingParticles />
           <Toaster />
           <Sonner />
           <BrowserRouter>
