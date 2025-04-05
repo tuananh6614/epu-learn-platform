@@ -1,9 +1,11 @@
+
 import { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import AuthForm from "@/components/auth/AuthForm";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import Particles from "@/components/ui/Particles";
+import { Home } from "lucide-react";
 
 const Login = () => {
   const { user } = useAuth();
@@ -31,6 +33,19 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-epu-primary/90 via-epu-primary to-epu-dark py-12 px-4 overflow-hidden">
+      {/* Home navigation button */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="absolute top-6 left-6 z-20"
+      >
+        <Link to="/" className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-white hover:bg-white/20 transition-all duration-300">
+          <Home size={18} />
+          <span>Trang chủ</span>
+        </Link>
+      </motion.div>
+      
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-epu-secondary/20 rounded-full blur-3xl"></div>

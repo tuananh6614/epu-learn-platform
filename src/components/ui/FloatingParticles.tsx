@@ -19,18 +19,20 @@ export const FloatingParticles = () => {
   const { theme } = useTheme();
 
   const generateParticles = useCallback(() => {
-    const particlesCount = window.innerWidth < 768 ? 50 : 80;
+    const particlesCount = window.innerWidth < 768 ? 100 : 150; // Increased particle count
     const newParticles: Particle[] = [];
     
-    // Enhanced vibrant color palette
+    // Enhanced vibrant color palette with better visibility in dark mode
     const lightModeColors = [
       "#4299E1", "#38B2AC", "#ED8936", "#805AD5", "#E53E3E", 
-      "#DD6B20", "#3182CE", "#2C7A7B", "#D69E2E", "#6B46C1"
+      "#DD6B20", "#3182CE", "#2C7A7B", "#D69E2E", "#6B46C1",
+      "#F56565", "#48BB78", "#ECC94B", "#9F7AEA", "#F687B3"
     ];
     
     const darkModeColors = [
       "#63B3ED", "#4FD1C5", "#F6AD55", "#9F7AEA", "#FC8181", 
-      "#FBD38D", "#90CDF4", "#81E6D9", "#FEB2B2", "#D6BCFA"
+      "#FBD38D", "#90CDF4", "#81E6D9", "#FEB2B2", "#D6BCFA",
+      "#B794F4", "#68D391", "#F6E05E", "#76E4F7", "#FBB6CE"
     ];
     
     const colors = theme === "dark" ? darkModeColors : lightModeColors;
@@ -40,9 +42,9 @@ export const FloatingParticles = () => {
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
-        size: Math.random() * 8 + 2, // Slightly larger particles
-        opacity: Math.random() * 0.6 + 0.2, // More visible particles
-        duration: Math.random() * 25 + 15, // Slower, more gentle movement
+        size: Math.random() * 10 + 2, // Larger size range
+        opacity: Math.random() * 0.7 + 0.2, // More visible particles
+        duration: Math.random() * 25 + 15, // Smooth movement
         delay: Math.random() * 5,
         color: colors[Math.floor(Math.random() * colors.length)],
       });

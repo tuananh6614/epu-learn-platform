@@ -16,10 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown } from "lucide-react";
+import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 
 const MainLayout = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -60,87 +61,120 @@ const MainLayout = () => {
     { name: "Tài liệu", path: "/documents", icon: FileText },
   ];
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: -10 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+        className={`sticky top-0 z-40 w-full transition-all duration-700 ${
           isScrolled 
-            ? "bg-background/95 backdrop-blur-sm shadow-sm dark:bg-background/90" 
+            ? "bg-background/80 backdrop-blur-lg shadow-lg dark:shadow-slate-800/30 dark:bg-black/90" 
             : "bg-transparent"
         }`}
       >
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-2">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="bg-epu-primary text-white font-bold p-1 rounded-md">
-                EPU
-              </div>
-              <span className="font-bold text-lg md:text-xl">Learn</span>
-            </Link>
-          </div>
+          <Link to="/" className="flex items-center gap-2 group">
+            <motion.div 
+              whileHover={{ rotate: 5, scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-gradient-to-r from-epu-primary to-epu-accent text-white font-bold p-2 rounded-md shadow-md group-hover:shadow-lg transition-all duration-300"
+            >
+              <Sparkles size={16} className="inline-block mr-1" />
+              EPU
+            </motion.div>
+            <span className="font-bold text-lg md:text-xl relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 group-hover:after:scale-x-100 group-hover:after:origin-bottom-left">
+              Learn
+            </span>
+          </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
+          <motion.nav 
+            className="hidden md:flex items-center gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+          >
             {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-1 text-sm hover:text-epu-primary transition-colors ${
-                  isActive(item.path) ? "text-epu-primary font-medium" : "text-foreground"
-                }`}
-              >
-                <item.icon size={16} />
-                {item.name}
-              </Link>
+              <motion.div key={item.path} variants={itemVariants}>
+                <Link
+                  to={item.path}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm transition-all duration-300 hover:bg-primary/10 dark:hover:bg-primary/20 ${
+                    isActive(item.path) 
+                      ? "text-primary font-medium bg-primary/5 dark:bg-primary/15" 
+                      : "text-foreground"
+                  }`}
+                >
+                  <item.icon size={18} className="text-primary" />
+                  {item.name}
+                </Link>
+              </motion.div>
             ))}
 
             {user?.role === "admin" && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-1">
-                    Quản trị <ChevronDown size={14} />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => navigate("/admin")}>
-                    Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/admin/users")}>
-                    Quản lý người dùng
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <motion.div variants={itemVariants}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-1 dark:text-white">
+                      <GraduationCap size={18} className="text-primary" />
+                      Quản trị <ChevronDown size={14} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="dark:bg-slate-900 dark:border-slate-800 w-56">
+                    <DropdownMenuItem onClick={() => navigate("/admin")} className="dark:hover:bg-slate-800 dark:focus:bg-slate-800">
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/admin/users")} className="dark:hover:bg-slate-800 dark:focus:bg-slate-800">
+                      Quản lý người dùng
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </motion.div>
             )}
-          </nav>
+          </motion.nav>
 
           {/* Authentication Section */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <ThemeToggle />
             
             {user ? (
               <div className="hidden md:flex items-center gap-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex items-center gap-2">
-                      <User size={16} />
+                    <Button variant="outline" className="flex items-center gap-2 dark:border-slate-700 dark:bg-slate-900 dark:text-white">
+                      <User size={16} className="text-primary" />
                       {user.fullName}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Tài khoản của bạn</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  <DropdownMenuContent align="end" className="dark:bg-slate-900 dark:border-slate-800 w-56">
+                    <DropdownMenuLabel className="dark:text-white">Tài khoản của bạn</DropdownMenuLabel>
+                    <DropdownMenuSeparator className="dark:bg-slate-700" />
+                    <DropdownMenuItem onClick={() => navigate("/profile")} className="dark:hover:bg-slate-800 dark:focus:bg-slate-800">
                       Thông tin cá nhân
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <DropdownMenuItem onClick={() => navigate("/profile")} className="dark:hover:bg-slate-800 dark:focus:bg-slate-800">
                       Khóa học của tôi
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <DropdownMenuItem onClick={() => navigate("/profile")} className="dark:hover:bg-slate-800 dark:focus:bg-slate-800">
                       Tài liệu đã mua
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-500">
+                    <DropdownMenuSeparator className="dark:bg-slate-700" />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-500 dark:text-red-400 dark:hover:bg-slate-800 dark:focus:bg-slate-800">
                       <LogOut size={16} className="mr-2" />
                       Đăng xuất
                     </DropdownMenuItem>
@@ -151,13 +185,13 @@ const MainLayout = () => {
               <div className="hidden md:flex gap-2">
                 <Button
                   variant="outline"
-                  className="text-epu-primary"
+                  className="border-primary text-primary hover:bg-primary/10 dark:border-primary dark:text-primary"
                   onClick={() => navigate("/login")}
                 >
                   Đăng nhập
                 </Button>
                 <Button
-                  className="bg-epu-primary hover:bg-epu-primary/90"
+                  className="bg-gradient-to-r from-epu-primary to-epu-accent hover:opacity-90 transition-opacity"
                   onClick={() => navigate("/register")}
                 >
                   Đăng ký
@@ -171,17 +205,18 @@ const MainLayout = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="md:hidden flex"
+                  className="md:hidden flex dark:border-slate-700 dark:bg-slate-900"
                 >
                   <Menu size={18} />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[80%] sm:w-[300px]">
+              <SheetContent side="right" className="w-[80%] sm:w-[300px] dark:bg-black dark:border-slate-800">
                 <div className="flex flex-col gap-6 p-2 h-full">
                   <div className="flex justify-between items-center">
-                    <Link to="/" className="flex items-center gap-2">
-                      <div className="bg-epu-primary text-white font-bold p-1 rounded-md">
+                    <Link to="/" className="flex items-center gap-2 group">
+                      <div className="bg-gradient-to-r from-epu-primary to-epu-accent text-white font-bold p-2 rounded-md">
+                        <Sparkles size={16} className="inline-block mr-1" />
                         EPU
                       </div>
                       <span className="font-bold text-lg">Learn</span>
@@ -189,7 +224,7 @@ const MainLayout = () => {
                     <div className="flex items-center gap-2">
                       <ThemeToggle />
                       <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="dark:hover:bg-white/10">
                           <X size={18} />
                         </Button>
                       </SheetTrigger>
@@ -201,30 +236,32 @@ const MainLayout = () => {
                       <Link
                         key={item.path}
                         to={item.path}
-                        className={`flex items-center gap-2 p-2 rounded-md hover:bg-muted ${
-                          isActive(item.path) ? "bg-muted text-epu-primary font-medium" : ""
+                        className={`flex items-center gap-2 p-3 rounded-md hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors duration-200 ${
+                          isActive(item.path) ? "bg-primary/5 dark:bg-primary/15 text-primary font-medium" : ""
                         }`}
                       >
-                        <item.icon size={18} />
+                        <item.icon size={18} className="text-primary" />
                         {item.name}
                       </Link>
                     ))}
 
                     {user?.role === "admin" && (
                       <>
-                        <div className="text-sm font-medium text-muted-foreground py-2">
+                        <div className="text-sm font-medium text-muted-foreground py-2 mt-2 border-t dark:border-slate-800">
                           Quản trị viên
                         </div>
                         <Link
                           to="/admin"
-                          className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
+                          className="flex items-center gap-2 p-3 rounded-md hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors duration-200"
                         >
+                          <GraduationCap size={18} className="text-primary" />
                           Dashboard
                         </Link>
                         <Link
                           to="/admin/users"
-                          className="flex items-center gap-2 p-2 rounded-md hover:bg-muted"
+                          className="flex items-center gap-2 p-3 rounded-md hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors duration-200"
                         >
+                          <User size={18} className="text-primary" />
                           Quản lý người dùng
                         </Link>
                       </>
@@ -234,30 +271,32 @@ const MainLayout = () => {
                   <div className="mt-auto flex flex-col gap-2">
                     {user ? (
                       <>
-                        <div className="flex items-center gap-2 p-2">
-                          <User size={18} className="text-epu-primary" />
+                        <div className="flex items-center gap-2 p-3 border-t dark:border-slate-800">
+                          <div className="bg-primary/10 dark:bg-primary/20 p-2 rounded-full">
+                            <User size={18} className="text-primary" />
+                          </div>
                           <div>
-                            <p className="font-medium">{user.fullName}</p>
+                            <p className="font-medium dark:text-white">{user.fullName}</p>
                             <p className="text-xs text-muted-foreground">{user.email}</p>
                           </div>
                         </div>
                         <Button
                           variant="outline"
-                          className="w-full justify-start"
+                          className="w-full justify-start dark:border-slate-700 dark:text-white"
                           onClick={() => navigate("/profile")}
                         >
                           Thông tin cá nhân
                         </Button>
                         <Button
                           variant="outline"
-                          className="w-full justify-start"
+                          className="w-full justify-start dark:border-slate-700 dark:text-white"
                           onClick={() => navigate("/profile")}
                         >
                           Khóa học của tôi
                         </Button>
                         <Button
                           variant="outline"
-                          className="w-full justify-start"
+                          className="w-full justify-start dark:border-slate-700 dark:text-white"
                           onClick={() => navigate("/profile")}
                         >
                           Tài liệu đã mua
@@ -275,13 +314,13 @@ const MainLayout = () => {
                       <>
                         <Button
                           variant="outline"
-                          className="w-full"
+                          className="w-full dark:border-slate-700 dark:text-white"
                           onClick={() => navigate("/login")}
                         >
                           Đăng nhập
                         </Button>
                         <Button
-                          className="w-full bg-epu-primary hover:bg-epu-primary/90"
+                          className="w-full bg-gradient-to-r from-epu-primary to-epu-accent hover:opacity-90 transition-opacity"
                           onClick={() => navigate("/register")}
                         >
                           Đăng ký
@@ -302,12 +341,13 @@ const MainLayout = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-epu-dark text-white py-8 dark:bg-slate-900">
+      <footer className="bg-epu-dark text-white py-8 dark:bg-black border-t dark:border-slate-800">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="bg-white text-epu-primary font-bold p-1 rounded-md">
+                <div className="bg-gradient-to-r from-epu-primary to-epu-accent p-2 rounded-md text-white">
+                  <Sparkles size={16} className="inline-block mr-1" />
                   EPU
                 </div>
                 <span className="font-bold text-lg">Learn</span>
@@ -323,8 +363,9 @@ const MainLayout = () => {
                   <li key={item.path}>
                     <Link
                       to={item.path}
-                      className="text-gray-300 hover:text-white transition-colors"
+                      className="text-gray-300 hover:text-white transition-colors flex items-center gap-2"
                     >
+                      <item.icon size={16} />
                       {item.name}
                     </Link>
                   </li>
