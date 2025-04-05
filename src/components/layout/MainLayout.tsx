@@ -18,6 +18,8 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const MainLayout = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,6 +27,7 @@ const MainLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -42,10 +45,6 @@ const MainLayout = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleLogin = () => {
-    navigate("/login");
-  };
 
   const handleLogout = () => {
     logout();
@@ -66,7 +65,9 @@ const MainLayout = () => {
       {/* Header */}
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-300 ${
-          isScrolled ? "bg-background/95 backdrop-blur-sm shadow-sm" : "bg-transparent"
+          isScrolled 
+            ? "bg-background/95 backdrop-blur-sm shadow-sm dark:bg-background/90" 
+            : "bg-transparent"
         }`}
       >
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
@@ -115,6 +116,8 @@ const MainLayout = () => {
 
           {/* Authentication Section */}
           <div className="flex items-center gap-2">
+            <ThemeToggle />
+            
             {user ? (
               <div className="hidden md:flex items-center gap-4">
                 <DropdownMenu>
@@ -175,7 +178,7 @@ const MainLayout = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[80%] sm:w-[300px]">
-                <div className="flex flex-col gap-6 p-2">
+                <div className="flex flex-col gap-6 p-2 h-full">
                   <div className="flex justify-between items-center">
                     <Link to="/" className="flex items-center gap-2">
                       <div className="bg-epu-primary text-white font-bold p-1 rounded-md">
@@ -183,11 +186,14 @@ const MainLayout = () => {
                       </div>
                       <span className="font-bold text-lg">Learn</span>
                     </Link>
-                    <SheetTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <X size={18} />
-                      </Button>
-                    </SheetTrigger>
+                    <div className="flex items-center gap-2">
+                      <ThemeToggle />
+                      <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <X size={18} />
+                        </Button>
+                      </SheetTrigger>
+                    </div>
                   </div>
 
                   <nav className="flex flex-col gap-2">
@@ -296,7 +302,7 @@ const MainLayout = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-epu-dark text-white py-8">
+      <footer className="bg-epu-dark text-white py-8 dark:bg-slate-900">
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 type NavItemProps = {
   icon: React.ElementType;
@@ -32,7 +33,7 @@ const NavItem = ({ icon: Icon, label, to, isActive, onClick }: NavItemProps) => 
     to={to}
     className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
       isActive 
-        ? "bg-amber-600 text-white" 
+        ? "bg-amber-600 text-white dark:bg-amber-500" 
         : "hover:bg-amber-600/10 text-foreground"
     }`}
     onClick={onClick}
@@ -74,41 +75,44 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-neutral-50">
+    <div className="min-h-screen flex flex-col md:flex-row bg-neutral-50 dark:bg-slate-900">
       {/* Mobile Header */}
-      <header className="md:hidden flex items-center justify-between p-4 bg-amber-600 text-white shadow-md">
+      <header className="md:hidden flex items-center justify-between p-4 bg-amber-600 text-white shadow-md dark:bg-amber-700">
         <div className="flex items-center gap-2">
-          <div className="bg-white text-amber-600 font-bold p-1 rounded-md">
+          <div className="bg-white text-amber-600 font-bold p-1 rounded-md dark:bg-slate-900">
             EPU
           </div>
           <span className="font-bold">Quản trị viên</span>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="text-white hover:bg-amber-700"
-        >
-          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-        </Button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="text-white hover:bg-amber-700 dark:hover:bg-amber-800"
+          >
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </Button>
+        </div>
       </header>
 
       {/* Sidebar */}
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 w-64 bg-white md:shadow-md border-r transition-transform fixed md:sticky top-0 bottom-0 left-0 z-30 md:z-0 overflow-y-auto`}
+        } md:translate-x-0 w-64 bg-white dark:bg-slate-800 md:shadow-md border-r dark:border-slate-700 transition-transform fixed md:sticky top-0 bottom-0 left-0 z-30 md:z-0 overflow-y-auto`}
         style={{ height: isMobile ? "calc(100vh - 64px)" : "100vh", marginTop: isMobile ? "64px" : 0 }}
       >
         <div className="p-4 flex flex-col h-full">
           {/* Admin Logo */}
           <div className="flex items-center gap-2 mb-6 md:mb-8 hidden md:flex">
-            <div className="p-2 bg-amber-600 text-white rounded-md">
+            <div className="p-2 bg-amber-600 text-white rounded-md dark:bg-amber-500">
               <Shield size={18} />
             </div>
             <div>
-              <div className="font-bold text-amber-600">EPU Admin</div>
-              <div className="text-xs text-gray-500">Hệ thống quản trị</div>
+              <div className="font-bold text-amber-600 dark:text-amber-500">EPU Admin</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Hệ thống quản trị</div>
             </div>
           </div>
           
@@ -126,13 +130,13 @@ const AdminLayout = () => {
           </div>
 
           <div className="mt-4">
-            <Separator className="bg-gray-200" />
+            <Separator className="bg-gray-200 dark:bg-gray-700" />
           </div>
           
           <div className="mt-auto pt-4">
             <Button
               variant="outline"
-              className="w-full justify-start text-amber-600 border-amber-200 mb-2 hover:bg-amber-50"
+              className="w-full justify-start text-amber-600 dark:text-amber-500 border-amber-200 dark:border-amber-800 mb-2 hover:bg-amber-50 dark:hover:bg-amber-900/30"
               onClick={() => {
                 navigate("/");
                 closeSidebar();
@@ -152,9 +156,9 @@ const AdminLayout = () => {
           </div>
 
           {user && (
-            <div className="mt-4 p-3 border rounded-md bg-amber-50 border-amber-200">
+            <div className="mt-4 p-3 border rounded-md bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800">
               <div className="flex items-center gap-2">
-                <User size={20} className="text-amber-600" />
+                <User size={20} className="text-amber-600 dark:text-amber-500" />
                 <div>
                   <p className="text-sm font-medium">{user.fullName}</p>
                   <p className="text-xs text-muted-foreground">{user.email}</p>
@@ -168,27 +172,28 @@ const AdminLayout = () => {
       {/* Backdrop for mobile */}
       {isMobile && sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/30 z-20"
+          className="fixed inset-0 bg-black/30 dark:bg-black/50 z-20"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Main Content */}
-      <main className="flex-1 min-h-screen bg-neutral-50">
+      <main className="flex-1 min-h-screen bg-neutral-50 dark:bg-slate-900">
         {/* Admin header for desktop */}
-        <div className="hidden md:block bg-amber-600 text-white p-4 shadow-md">
+        <div className="hidden md:block bg-amber-600 text-white p-4 shadow-md dark:bg-amber-700">
           <div className="container max-w-7xl mx-auto flex justify-between items-center">
             <h1 className="text-xl font-bold">Hệ thống Quản trị EPU</h1>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               {user && (
                 <span className="text-sm mr-4">
                   Xin chào, {user.fullName}
                 </span>
               )}
+              <ThemeToggle />
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-white hover:bg-amber-700"
+                className="text-white hover:bg-amber-700 dark:hover:bg-amber-800"
                 onClick={handleLogout}
               >
                 <LogOut size={16} className="mr-2" />
