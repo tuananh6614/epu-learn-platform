@@ -77,43 +77,42 @@ const CoursesPage = () => {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.05
+        staggerChildren: 0.1
       }
     }
   };
   
   const item = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
   };
 
   return (
-    <div className="container px-4 md:px-6 py-8">
+    <div className="container px-4 md:px-6 py-10">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col mb-6"
+        transition={{ duration: 0.6 }}
+        className="flex flex-col mb-8"
       >
         <div className="flex items-center gap-2">
-          <Sparkles className="text-epu-secondary h-6 w-6" />
-          <h1 className="text-2xl md:text-3xl font-bold">Khóa học</h1>
+          <Sparkles className="text-epu-secondary h-8 w-8" />
+          <h1 className="text-3xl md:text-4xl font-bold mb-1">Khóa học</h1>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground">
           Khám phá các khóa học chất lượng để nâng cao kiến thức và kỹ năng của bạn
         </p>
       </motion.div>
       
       {/* Filter section */}
       <motion.div 
-        initial={{ opacity: 0, y: 15 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        className="flex flex-col gap-3 mb-6 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm"
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="flex flex-col gap-4 mb-8 bg-white p-5 rounded-xl shadow-md"
       >
         {/* Search and Sort controls */}
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
             <Input
               placeholder="Tìm kiếm khóa học..."
@@ -121,7 +120,7 @@ const CoursesPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-9 w-full shadow-sm focus:shadow-md transition-shadow"
             />
-            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
             {searchTerm && (
               <Button
                 variant="ghost"
@@ -133,9 +132,9 @@ const CoursesPage = () => {
               </Button>
             )}
           </div>
-          <div className="w-full sm:w-44">
+          <div className="w-full sm:w-48">
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="shadow-sm h-9">
+              <SelectTrigger className="shadow-sm">
                 <SelectValue placeholder="Sắp xếp theo" />
               </SelectTrigger>
               <SelectContent>
@@ -149,12 +148,12 @@ const CoursesPage = () => {
         </div>
         
         {/* Specialization filter */}
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {specializations.map((spec) => (
             <Badge
               key={spec.id}
               variant={selectedSpecialization === spec.id ? "default" : "outline"}
-              className="cursor-pointer hover:bg-epu-secondary hover:text-white transition-colors py-0.5 px-2 text-xs shadow-sm"
+              className="cursor-pointer hover:bg-epu-secondary hover:text-white transition-colors px-3 py-1 shadow-sm"
               onClick={() => setSelectedSpecialization(spec.id)}
             >
               {spec.name}
@@ -165,10 +164,10 @@ const CoursesPage = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-xs h-6 ml-1"
+              className="text-xs h-7"
               onClick={resetFilters}
             >
-              <X size={12} className="mr-1" /> Xóa bộ lọc
+              <X size={14} className="mr-1" /> Xóa bộ lọc
             </Button>
           )}
         </div>
@@ -180,7 +179,7 @@ const CoursesPage = () => {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {filteredCourses.map((course) => (
             <motion.div key={course.id} variants={item}>
@@ -192,16 +191,16 @@ const CoursesPage = () => {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="text-center py-8 bg-white dark:bg-slate-900 rounded-xl shadow-sm"
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-center py-12 bg-white rounded-xl shadow-md"
         >
-          <h3 className="text-base font-medium mb-2">Không tìm thấy khóa học</h3>
-          <p className="text-sm text-muted-foreground">
+          <h3 className="text-lg font-medium mb-2">Không tìm thấy khóa học</h3>
+          <p className="text-muted-foreground">
             Không có khóa học nào phù hợp với tìm kiếm của bạn
           </p>
           <Button 
             variant="outline" 
-            className="mt-3 shadow-sm hover:shadow-md transition-shadow text-sm"
+            className="mt-4 shadow-sm hover:shadow-md transition-shadow"
             onClick={resetFilters}
           >
             Xóa tìm kiếm
