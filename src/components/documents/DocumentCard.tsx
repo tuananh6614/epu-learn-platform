@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,7 @@ export type DocumentType = {
   price: number;
   category_name: string;
   file_path: string;
+  created_at: string;
   purchased?: boolean;
 };
 

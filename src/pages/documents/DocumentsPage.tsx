@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,10 +41,13 @@ const DocumentsPage = () => {
         const data = await response.json();
         setDocuments(data);
         
-        // Extract unique categories from documents
-        const uniqueCategories = Array.from(
+        // Extract unique categories from documents, with proper type handling
+        const uniqueCategories: string[] = Array.from(
           new Set(data.map((doc: DocumentType) => doc.category_name))
+        ).filter((category): category is string => 
+          typeof category === 'string' && category !== null && category !== undefined
         );
+        
         setCategories(uniqueCategories);
         
         setIsLoading(false);
