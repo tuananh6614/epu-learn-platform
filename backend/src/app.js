@@ -8,6 +8,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Static file serving
+app.use('/uploads', express.static('uploads'));
+
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -16,6 +19,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api', require('./routes/document.routes'));
 
 // 404 handler
 app.use((req, res) => {
