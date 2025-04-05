@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,10 @@ const HomePage = () => {
   const { toast } = useToast();
   
   const featuredCourses = mockCourses.slice(0, 3);
-  const featuredDocuments = mockDocuments.slice(0, 4);
+  const featuredDocuments = mockDocuments.slice(0, 4).map(doc => ({
+    ...doc,
+    created_at: doc.created_at || new Date().toISOString()
+  }));
   
   const handlePurchaseDocument = (documentId: number) => {
     if (!user) {
@@ -40,7 +42,6 @@ const HomePage = () => {
     });
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
