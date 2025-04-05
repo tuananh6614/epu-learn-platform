@@ -1,3 +1,4 @@
+
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -8,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Static file serving
+// Static file serving for uploads
 app.use('/uploads', express.static('uploads'));
 
 // Request logging middleware
@@ -19,7 +20,8 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
-app.use('/api', require('./routes/document.routes'));
+app.use('/api/users', require('./routes/user.routes'));
+app.use('/api/documents', require('./routes/document.routes'));
 
 // 404 handler
 app.use((req, res) => {

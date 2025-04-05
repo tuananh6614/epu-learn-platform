@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, Info } from "lucide-react";
+import { FileText, Download, Info, Loader2 } from "lucide-react";
 
 const ProfileDocuments = () => {
   const { toast } = useToast();
@@ -45,10 +45,9 @@ const ProfileDocuments = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        {[1, 2].map((i) => (
-          <Card key={i} className="h-32 animate-pulse bg-muted" />
-        ))}
+      <div className="flex items-center justify-center py-10">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
+        <p>Đang tải dữ liệu...</p>
       </div>
     );
   }
@@ -67,8 +66,8 @@ const ProfileDocuments = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-md bg-epu-primary/10 flex items-center justify-center">
-                      <FileText size={20} className="text-epu-primary" />
+                    <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center">
+                      <FileText size={20} className="text-primary" />
                     </div>
                     <div>
                       <h3 className="font-medium">{document.title}</h3>
@@ -95,7 +94,7 @@ const ProfileDocuments = () => {
           </div>
         </div>
       ) : (
-        <div className="text-center py-12 bg-white/5 dark:bg-slate-800/10 rounded-xl p-8 backdrop-blur-sm border border-slate-200/20 dark:border-slate-700/20 shadow-sm">
+        <div className="text-center py-12 bg-card rounded-xl p-8 border shadow-sm">
           <FileText size={64} className="mx-auto text-muted-foreground mb-4 opacity-30" />
           <h3 className="text-lg font-medium mb-2">Bạn chưa mua tài liệu nào</h3>
           <p className="text-muted-foreground max-w-md mx-auto">

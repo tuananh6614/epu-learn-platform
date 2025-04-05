@@ -31,10 +31,14 @@ type NavItemProps = {
 const NavItem = ({ icon: Icon, label, to, isActive, onClick }: NavItemProps) => (
   <Link
     to={to}
-    className={`admin-nav-item ${isActive ? 'active' : ''}`}
+    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+      isActive 
+        ? "bg-primary/10 text-primary font-medium" 
+        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10"
+    }`}
     onClick={onClick}
   >
-    <Icon size={18} />
+    <Icon size={18} className={isActive ? "text-primary" : "text-gray-500 dark:text-gray-400"} />
     <span>{label}</span>
   </Link>
 );
@@ -71,11 +75,11 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 dark:bg-admin-darker">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 dark:bg-slate-900">
       {/* Mobile Header */}
-      <header className="md:hidden flex items-center justify-between p-4 admin-header">
+      <header className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-800 border-b dark:border-slate-700">
         <div className="flex items-center gap-2">
-          <div className="bg-white text-admin-primary font-bold p-1 rounded-md dark:bg-admin-dark">
+          <div className="bg-primary text-white font-bold p-1.5 rounded-md">
             EPU
           </div>
           <span className="font-bold">Quản trị viên</span>
@@ -86,7 +90,6 @@ const AdminLayout = () => {
             variant="ghost"
             size="icon"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-white hover:bg-white/10"
           >
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </Button>
@@ -97,22 +100,22 @@ const AdminLayout = () => {
       <aside
         className={`${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 w-64 admin-sidebar md:shadow-md border-r dark:border-admin-border fixed md:sticky top-0 bottom-0 left-0 z-30 md:z-0 overflow-y-auto`}
+        } md:translate-x-0 w-56 bg-white dark:bg-slate-800 border-r dark:border-slate-700 fixed md:sticky top-0 bottom-0 left-0 z-30 md:z-0 overflow-y-auto transition-transform`}
         style={{ height: isMobile ? "calc(100vh - 64px)" : "100vh", marginTop: isMobile ? "64px" : 0 }}
       >
         <div className="p-4 flex flex-col h-full">
           {/* Admin Logo */}
           <div className="flex items-center gap-2 mb-6 md:mb-8 hidden md:flex">
-            <div className="p-2 bg-gradient-to-r from-admin-primary to-admin-accent text-white rounded-md">
+            <div className="p-2 bg-primary text-white rounded-md">
               <Shield size={18} />
             </div>
             <div>
-              <div className="font-bold bg-gradient-to-r from-admin-primary to-admin-accent bg-clip-text text-transparent">EPU Admin</div>
+              <div className="font-bold text-primary">EPU Admin</div>
               <div className="text-xs text-gray-500 dark:text-gray-400">Hệ thống quản trị</div>
             </div>
           </div>
           
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 mt-2">
             {navItems.map(item => (
               <NavItem 
                 key={item.to}
@@ -126,13 +129,13 @@ const AdminLayout = () => {
           </div>
 
           <div className="mt-4">
-            <Separator className="bg-gray-200 dark:bg-admin-border/30" />
+            <Separator className="bg-gray-200 dark:bg-slate-700" />
           </div>
           
           <div className="mt-auto pt-4">
             <Button
               variant="outline"
-              className="w-full justify-start text-admin-primary dark:text-admin-primary/90 border-admin-primary/20 dark:border-admin-primary/30 mb-2 hover:bg-admin-primary/5 dark:hover:bg-admin-primary/10"
+              className="w-full justify-start text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-700 mb-2"
               onClick={() => {
                 navigate("/");
                 closeSidebar();
@@ -143,7 +146,7 @@ const AdminLayout = () => {
             </Button>
             <Button
               variant="destructive"
-              className="w-full justify-start bg-red-500 hover:bg-red-600"
+              className="w-full justify-start"
               onClick={handleLogout}
             >
               <LogOut size={16} className="mr-2" />
@@ -152,9 +155,9 @@ const AdminLayout = () => {
           </div>
 
           {user && (
-            <div className="mt-4 p-3 rounded-md bg-gradient-to-r from-admin-primary/10 to-admin-accent/10 border border-admin-border/20 dark:from-admin-primary/20 dark:to-admin-accent/20 dark:border-admin-border/30">
+            <div className="mt-4 p-3 rounded-md bg-gray-50 dark:bg-slate-700/50 border border-gray-200 dark:border-slate-700">
               <div className="flex items-center gap-2">
-                <User size={20} className="text-admin-primary dark:text-admin-primary/90" />
+                <User size={20} className="text-gray-500 dark:text-gray-400" />
                 <div>
                   <p className="text-sm font-medium">{user.fullName}</p>
                   <p className="text-xs text-muted-foreground">{user.email}</p>
@@ -174,10 +177,10 @@ const AdminLayout = () => {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 min-h-screen bg-gray-50 dark:bg-admin-darker">
+      <main className="flex-1 min-h-screen bg-gray-50 dark:bg-slate-900">
         {/* Admin header for desktop */}
-        <div className="hidden md:block admin-header">
-          <div className="container max-w-7xl mx-auto flex justify-between items-center py-3">
+        <div className="hidden md:block bg-white dark:bg-slate-800 border-b dark:border-slate-700">
+          <div className="container max-w-7xl mx-auto flex justify-between items-center py-3 px-6">
             <h1 className="text-xl font-bold">Hệ thống Quản trị EPU</h1>
             <div className="flex items-center gap-4">
               {user && (
@@ -187,9 +190,9 @@ const AdminLayout = () => {
               )}
               <ThemeToggle />
               <Button 
-                variant="ghost" 
+                variant="outline" 
                 size="sm" 
-                className="text-white hover:bg-white/20"
+                className="text-gray-700 dark:text-gray-300"
                 onClick={handleLogout}
               >
                 <LogOut size={16} className="mr-2" />
