@@ -42,56 +42,54 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <React.StrictMode>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <FloatingParticles />
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AuthProvider>
-                <Routes>
-                  {/* Main Layout Routes */}
-                  <Route path="/" element={<MainLayout />}>
-                    <Route index element={<HomePage />} />
-                    <Route path="courses" element={<CoursesPage />} />
-                    <Route path="courses/:courseId" element={<CourseDetailPage />} />
-                    <Route path="documents" element={<DocumentsPage />} />
-                    <Route path="profile" element={
-                      <AuthGuard requiredRole="user">
-                        <ProfilePage />
-                      </AuthGuard>
-                    } />
-                  </Route>
-                  
-                  {/* Auth Routes */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  
-                  {/* Admin Routes */}
-                  <Route path="/admin" element={
-                    <AuthGuard requiredRole="admin">
-                      <AdminLayout />
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <FloatingParticles />
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AuthProvider>
+              <Routes>
+                {/* Main Layout Routes */}
+                <Route path="/" element={<MainLayout />}>
+                  <Route index element={<HomePage />} />
+                  <Route path="courses" element={<CoursesPage />} />
+                  <Route path="courses/:courseId" element={<CourseDetailPage />} />
+                  <Route path="documents" element={<DocumentsPage />} />
+                  <Route path="profile" element={
+                    <AuthGuard requiredRole="user">
+                      <ProfilePage />
                     </AuthGuard>
-                  }>
-                    <Route index element={<AdminDashboard />} />
-                    <Route path="users" element={<UsersManagement />} />
-                    <Route path="documents" element={<DocumentsManagement />} />
-                    <Route path="publish/courses" element={<PublishCourse />} />
-                    <Route path="finance" element={<FinanceManagement />} />
-                    <Route path="settings" element={<AdminDashboard />} />
-                  </Route>
-                  
-                  {/* Catch-all route */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </AuthProvider>
-            </BrowserRouter>
-          </TooltipProvider>
-        </QueryClientProvider>
-      </ThemeProvider>
-    </React.StrictMode>
+                  } />
+                </Route>
+                
+                {/* Auth Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                
+                {/* Admin Routes */}
+                <Route path="/admin" element={
+                  <AuthGuard requiredRole="admin">
+                    <AdminLayout />
+                  </AuthGuard>
+                }>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="users" element={<UsersManagement />} />
+                  <Route path="documents" element={<DocumentsManagement />} />
+                  <Route path="publish/courses" element={<PublishCourse />} />
+                  <Route path="finance" element={<FinanceManagement />} />
+                  <Route path="settings" element={<AdminDashboard />} />
+                </Route>
+                
+                {/* Catch-all route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
