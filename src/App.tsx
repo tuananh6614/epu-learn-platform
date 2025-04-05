@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -7,8 +8,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "next-themes";
 import { FloatingParticles } from "@/components/ui/FloatingParticles";
-import { HomePage } from "@/pages/HomePage";
-import { CourseDetailPage } from "@/pages/courses/CourseDetailPage";
+import HomePage from "@/pages/HomePage";
+import CourseDetailPage from "@/pages/courses/CourseDetailPage";
 
 // Layouts
 import MainLayout from "@/components/layout/MainLayout";

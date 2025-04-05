@@ -1,32 +1,15 @@
 
 import React, { useState } from "react";
-import { 
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { 
-  Book, 
-  Video, 
-  FileText, 
-  CheckCircle, 
-  Circle, 
-  Clock, 
-  LockClosed,
-  ChevronRight
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { ChevronDown, ChevronUp, CheckCircle, Lock, Play, FileText, HelpCircle, Book } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { motion, AnimatePresence } from "framer-motion";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
 
-// Types for our course structure
 export type ContentItemType = {
   id: number;
   title: string;
-  type: 'video' | 'text' | 'quiz' | 'assignment';
-  duration?: string;
+  type: "video" | "text" | "quiz" | "assignment";
+  duration: string;
   completed?: boolean;
   locked?: boolean;
   videoUrl?: string;
@@ -37,7 +20,7 @@ export type LessonType = {
   id: number;
   title: string;
   description?: string;
-  duration?: string;
+  duration: string;
   completed?: boolean;
   locked?: boolean;
   contentItems: ContentItemType[];
@@ -51,215 +34,171 @@ export type ChapterType = {
   lessons: LessonType[];
 };
 
-export type CourseContentProps = {
+interface CourseContentProps {
   chapters: ChapterType[];
+  currentProgress: number;
   onContentItemClick: (chapterId: number, lessonId: number, contentItem: ContentItemType) => void;
-  currentProgress?: number; // 0-100
-};
+}
 
-const CourseContent: React.FC<CourseContentProps> = ({ 
-  chapters, 
-  onContentItemClick,
-  currentProgress = 0
-}) => {
-  const [expandedLesson, setExpandedLesson] = useState<number | null>(null);
-  const [openedChapter, setOpenedChapter] = useState<string | null>("chapter-0");
-
-  // Calculate total durations and completion stats
-  const totalLessons = chapters.reduce((acc, chapter) => 
-    acc + chapter.lessons.length, 0);
+const CourseContent = ({ chapters, currentProgress, onContentItemClick }: CourseContentProps) => {
+  const [openChapters, setOpenChapters] = useState<number[]>([1]); // First chapter open by default
+  const [openLessons, setOpenLessons] = useState<number[]>([]);
   
-  const completedLessons = chapters.reduce((acc, chapter) => 
-    acc + chapter.lessons.filter(lesson => lesson.completed).length, 0);
-
-  const getContentIcon = (type: string) => {
+  const toggleChapter = (chapterId: number) => {
+    setOpenChapters(prev => 
+      prev.includes(chapterId) 
+        ? prev.filter(id => id !== chapterId) 
+        : [...prev, chapterId]
+    );
+  };
+  
+  const toggleLesson = (lessonId: number) => {
+    setOpenLessons(prev => 
+      prev.includes(lessonId) 
+        ? prev.filter(id => id !== lessonId) 
+        : [...prev, lessonId]
+    );
+  };
+  
+  const getContentTypeIcon = (type: string, completed: boolean = false, locked: boolean = false) => {
+    if (locked) return <Lock size={16} className="text-muted-foreground" />;
+    if (completed) return <CheckCircle size={16} className="text-green-500" />;
+    
     switch (type) {
       case 'video':
-        return <Video size={16} className="text-blue-500" />;
+        return <Play size={16} className="text-epu-primary" />;
       case 'text':
-        return <FileText size={16} className="text-green-500" />;
+        return <FileText size={16} className="text-epu-secondary" />;
       case 'quiz':
-        return <Book size={16} className="text-amber-500" />;
+        return <HelpCircle size={16} className="text-orange-500" />;
       case 'assignment':
-        return <FileText size={16} className="text-purple-500" />;
+        return <Book size={16} className="text-blue-500" />;
       default:
         return <FileText size={16} />;
     }
   };
 
-  const handleLessonClick = (lessonId: number) => {
-    setExpandedLesson(expandedLesson === lessonId ? null : lessonId);
-  };
-
-  const lessonContentAnimation = {
-    initial: { opacity: 0, height: 0 },
-    animate: { opacity: 1, height: "auto" },
-    exit: { opacity: 0, height: 0 }
-  };
-
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-md">
-      <div className="p-4 border-b border-slate-200 dark:border-slate-700">
-        <h3 className="text-xl font-bold mb-2">Nội dung khóa học</h3>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-muted-foreground">
-            {completedLessons}/{totalLessons} bài học đã hoàn thành
-          </span>
-          <span className="text-sm font-medium text-epu-primary dark:text-epu-accent">
-            {currentProgress}% hoàn thành
-          </span>
+    <div className="space-y-8">
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg font-medium">Tiến độ khóa học</h3>
+          <span className="text-sm font-medium">{currentProgress}%</span>
         </div>
         <Progress value={currentProgress} className="h-2" />
       </div>
-
-      <Accordion
-        type="single"
-        collapsible
-        value={openedChapter}
-        onValueChange={setOpenedChapter}
-        className="w-full"
-      >
-        {chapters.map((chapter, chapterIndex) => (
-          <AccordionItem 
-            key={`chapter-${chapter.id}`} 
-            value={`chapter-${chapterIndex}`}
-            className="border-b border-slate-200 dark:border-slate-700"
+      
+      <div className="space-y-4">
+        {chapters.map((chapter) => (
+          <Collapsible 
+            key={chapter.id} 
+            open={openChapters.includes(chapter.id)}
+            className="border rounded-md overflow-hidden"
           >
-            <AccordionTrigger className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-              <div className="flex items-center text-left">
-                <div className="w-6 h-6 rounded-full bg-epu-primary/10 dark:bg-epu-accent/20 flex items-center justify-center mr-3">
-                  {chapter.completed ? (
-                    <CheckCircle size={16} className="text-green-500" />
-                  ) : (
-                    <span className="text-sm font-medium">{chapterIndex + 1}</span>
-                  )}
-                </div>
+            <CollapsibleTrigger 
+              className={`flex items-center justify-between w-full p-4 text-left 
+                ${chapter.completed ? "bg-green-50 dark:bg-green-900/10" : "bg-slate-50 dark:bg-slate-800/50"}`}
+              onClick={() => toggleChapter(chapter.id)}
+            >
+              <div className="flex items-center gap-2">
+                {chapter.completed ? (
+                  <CheckCircle size={18} className="text-green-500" />
+                ) : (
+                  <span className="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs">
+                    {chapter.id}
+                  </span>
+                )}
                 <div>
-                  <h4 className="font-medium text-base">{chapter.title}</h4>
+                  <h3 className="font-medium">{chapter.title}</h3>
                   {chapter.description && (
                     <p className="text-sm text-muted-foreground">{chapter.description}</p>
                   )}
                 </div>
               </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-0">
-              <div className="space-y-1 pl-8 pr-4">
-                {chapter.lessons.map((lesson, lessonIndex) => (
-                  <div key={`lesson-${lesson.id}`} className="border-l-2 border-slate-200 dark:border-slate-700 pl-4 mb-3">
-                    <div 
-                      className={`flex items-start justify-between p-3 rounded-lg cursor-pointer ${
-                        expandedLesson === lesson.id 
-                          ? 'bg-slate-100 dark:bg-slate-800' 
-                          : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                      }`}
-                      onClick={() => handleLessonClick(lesson.id)}
+              {openChapters.includes(chapter.id) ? (
+                <ChevronUp size={18} />
+              ) : (
+                <ChevronDown size={18} />
+              )}
+            </CollapsibleTrigger>
+            <CollapsibleContent className="bg-white dark:bg-slate-900">
+              <div className="divide-y dark:divide-slate-800">
+                {chapter.lessons.map((lesson) => (
+                  <div key={lesson.id} className="px-4">
+                    <Collapsible 
+                      open={openLessons.includes(lesson.id)}
                     >
-                      <div className="flex items-start">
-                        <div className="mt-0.5 mr-3">
+                      <CollapsibleTrigger 
+                        className={`flex items-center justify-between w-full py-3 text-left 
+                          ${lesson.completed ? "text-green-600 dark:text-green-400" : ""}
+                          ${lesson.locked ? "text-muted-foreground" : ""}`}
+                        onClick={() => toggleLesson(lesson.id)}
+                      >
+                        <div className="flex items-center gap-2">
                           {lesson.completed ? (
                             <CheckCircle size={16} className="text-green-500" />
                           ) : lesson.locked ? (
-                            <LockClosed size={16} className="text-amber-500" />
+                            <Lock size={16} className="text-muted-foreground" />
                           ) : (
-                            <Circle size={16} className="text-slate-400" />
+                            <div className="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"></div>
+                          )}
+                          <span className={lesson.locked ? "text-muted-foreground" : ""}>
+                            {lesson.title}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>{lesson.duration}</span>
+                          {openLessons.includes(lesson.id) ? (
+                            <ChevronUp size={16} />
+                          ) : (
+                            <ChevronDown size={16} />
                           )}
                         </div>
-                        <div>
-                          <h5 className="font-medium text-sm">{lessonIndex + 1}. {lesson.title}</h5>
-                          {lesson.description && (
-                            <p className="text-xs text-muted-foreground mt-1">{lesson.description}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {lesson.duration && (
-                          <div className="flex items-center text-xs text-muted-foreground">
-                            <Clock size={12} className="mr-1" />
-                            <span>{lesson.duration}</span>
-                          </div>
-                        )}
-                        <ChevronRight size={16} className={`text-muted-foreground transition-transform ${
-                          expandedLesson === lesson.id ? 'rotate-90' : ''
-                        }`} />
-                      </div>
-                    </div>
-                    
-                    <AnimatePresence>
-                      {expandedLesson === lesson.id && (
-                        <motion.div
-                          initial="initial"
-                          animate="animate"
-                          exit="exit"
-                          variants={lessonContentAnimation}
-                          transition={{ duration: 0.3 }}
-                          className="pl-6 pr-2 pb-2 overflow-hidden"
-                        >
-                          <div className="space-y-2 pt-2">
-                            {lesson.contentItems.map((item) => (
-                              <motion.div
-                                key={`content-${item.id}`}
-                                whileHover={{ x: 5 }}
-                                className={`flex items-center justify-between p-2 rounded-md ${
-                                  item.locked 
-                                    ? 'bg-slate-50 dark:bg-slate-800/30 opacity-70' 
-                                    : 'bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer'
-                                }`}
-                                onClick={() => !item.locked && onContentItemClick(chapter.id, lesson.id, item)}
-                              >
-                                <div className="flex items-center">
-                                  <div className="mr-2">
-                                    {getContentIcon(item.type)}
-                                  </div>
-                                  <span className="text-sm">{item.title}</span>
-                                  
-                                  {item.type === 'video' && item.imageUrl && (
-                                    <div className="w-8 h-8 ml-2 rounded overflow-hidden shadow-sm">
-                                      <img 
-                                        src={item.imageUrl} 
-                                        alt={item.title} 
-                                        className="w-full h-full object-cover"
-                                      />
-                                    </div>
-                                  )}
-                                </div>
-                                
-                                <div className="flex items-center space-x-2">
-                                  <Badge variant={item.completed ? "default" : "outline"} className={
-                                    item.type === 'video' ? 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-blue-500/20' :
-                                    item.type === 'text' ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20' :
-                                    item.type === 'quiz' ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-amber-500/20' :
-                                    'bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 border-purple-500/20'
-                                  }>
-                                    {item.type === 'video' ? 'Video' : 
-                                     item.type === 'text' ? 'Bài đọc' : 
-                                     item.type === 'quiz' ? 'Quiz' : 'Bài tập'}
-                                  </Badge>
-                                  
-                                  {item.duration && (
-                                    <span className="text-xs text-muted-foreground">{item.duration}</span>
-                                  )}
-                                  
-                                  {item.locked && (
-                                    <LockClosed size={14} className="text-amber-500" />
-                                  )}
-                                  
-                                  {item.completed && (
-                                    <CheckCircle size={14} className="text-green-500" />
-                                  )}
-                                </div>
-                              </motion.div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="pl-6 pb-3 space-y-2">
+                        {lesson.contentItems.map((item) => (
+                          <Button 
+                            key={item.id}
+                            variant="ghost" 
+                            className={`w-full justify-start py-2 h-auto text-left ${
+                              item.completed ? "text-green-600 dark:text-green-400" : ""
+                            } ${item.locked ? "text-muted-foreground cursor-not-allowed" : ""}
+                            `}
+                            disabled={item.locked}
+                            onClick={() => onContentItemClick(chapter.id, lesson.id, item)}
+                          >
+                            <div className="flex items-center gap-3 w-full">
+                              <div className="w-6 h-6 flex items-center justify-center">
+                                {getContentTypeIcon(item.type, item.completed, item.locked)}
+                              </div>
+                              <div className="flex-1 flex flex-col">
+                                <span className={item.locked ? "text-muted-foreground" : ""}>
+                                  {item.title}
+                                </span>
+                                <span className="text-xs text-muted-foreground">{item.duration}</span>
+                              </div>
+                              {item.completed && (
+                                <span className="text-xs py-0.5 px-2 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                  Hoàn thành
+                                </span>
+                              )}
+                              {item.locked && (
+                                <span className="text-xs py-0.5 px-2 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400">
+                                  Bị khóa
+                                </span>
+                              )}
+                            </div>
+                          </Button>
+                        ))}
+                      </CollapsibleContent>
+                    </Collapsible>
                   </div>
                 ))}
               </div>
-            </AccordionContent>
-          </AccordionItem>
+            </CollapsibleContent>
+          </Collapsible>
         ))}
-      </Accordion>
+      </div>
     </div>
   );
 };
