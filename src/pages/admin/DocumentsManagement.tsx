@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FileText, Search, Plus, Edit, Trash2 } from "lucide-react";
+import { FileText, Search, Plus, Edit, Trash2, FileIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
@@ -29,6 +29,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Particles } from "../components/ui/Particles";
 
 // Mock documents
 const mockDocuments = [
@@ -188,18 +189,32 @@ const DocumentsManagement = () => {
     }
   };
 
+  // Get file icon based on file type
+  const getFileIcon = (type: string) => {
+    switch (type) {
+      case 'PDF':
+        return <FileText className="h-5 w-5 text-red-500" />;
+      case 'PPTX':
+        return <FileText className="h-5 w-5 text-orange-500" />;
+      case 'ZIP':
+        return <FileText className="h-5 w-5 text-blue-500" />;
+      default:
+        return <FileText className="h-5 w-5 text-gray-500" />;
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Quản lý tài liệu</h1>
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Quản lý tài liệu</h1>
           <p className="text-muted-foreground">
             Quản lý và theo dõi tài liệu học tập
           </p>
         </div>
         <Button 
           onClick={toggleUploadForm} 
-          className="md:w-auto w-full bg-amber-600 hover:bg-amber-700 text-white"
+          className="md:w-auto w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
         >
           <Plus className="mr-2 h-4 w-4" />
           {isUploading ? "Đóng form" : "Thêm tài liệu mới"}
@@ -208,24 +223,26 @@ const DocumentsManagement = () => {
 
       {/* Upload Form */}
       {isUploading && (
-        <Card className="border-amber-200">
-          <CardHeader className="bg-amber-50">
-            <CardTitle>Đăng tải tài liệu mới</CardTitle>
+        <Card className="border border-blue-300/30 dark:border-blue-500/20 shadow-md overflow-hidden backdrop-blur-sm bg-white/5 dark:bg-blue-950/20">
+          <CardHeader className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b border-blue-300/30 dark:border-blue-500/20">
+            <CardTitle className="text-blue-600 dark:text-blue-300">Đăng tải tài liệu mới</CardTitle>
             <CardDescription>Điền thông tin để đăng tải tài liệu cho học viên</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             <form id="uploadForm" ref={uploadFormRef} className="space-y-4" onSubmit={handleNewDocumentSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Tiêu đề</Label>
-                  <Input id="title" name="title" placeholder="Nhập tiêu đề tài liệu" required />
+                  <Label htmlFor="title" className="text-blue-600 dark:text-blue-300">Tiêu đề</Label>
+                  <Input id="title" name="title" placeholder="Nhập tiêu đề tài liệu" 
+                    className="border-blue-300/50 dark:border-blue-500/30 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 bg-white/10 dark:bg-blue-950/30"
+                    required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="specialization">Chuyên ngành</Label>
+                  <Label htmlFor="specialization" className="text-blue-600 dark:text-blue-300">Chuyên ngành</Label>
                   <select 
                     id="specialization"
                     name="specialization"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-10 w-full rounded-md border border-blue-300/50 dark:border-blue-500/30 bg-white/10 dark:bg-blue-950/30 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     required
                   >
                     <option value="">-- Chọn chuyên ngành --</option>
@@ -235,21 +252,26 @@ const DocumentsManagement = () => {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="price">Giá (VND)</Label>
-                  <Input id="price" name="price" type="number" placeholder="Ví dụ: 150000" required />
+                  <Label htmlFor="price" className="text-blue-600 dark:text-blue-300">Giá (VND)</Label>
+                  <Input id="price" name="price" type="number" placeholder="Ví dụ: 150000" 
+                    className="border-blue-300/50 dark:border-blue-500/30 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 bg-white/10 dark:bg-blue-950/30"
+                    required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="file">Tệp tin</Label>
-                  <Input id="file" name="file" type="file" required />
+                  <Label htmlFor="file" className="text-blue-600 dark:text-blue-300">Tệp tin</Label>
+                  <Input id="file" name="file" type="file" 
+                    className="border-blue-300/50 dark:border-blue-500/30 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 bg-white/10 dark:bg-blue-950/30"
+                    required />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Mô tả</Label>
-                <Textarea id="description" name="description" placeholder="Mô tả nội dung tài liệu" rows={4} />
+                <Label htmlFor="description" className="text-blue-600 dark:text-blue-300">Mô tả</Label>
+                <Textarea id="description" name="description" placeholder="Mô tả nội dung tài liệu" rows={4} 
+                  className="border-blue-300/50 dark:border-blue-500/30 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 bg-white/10 dark:bg-blue-950/30" />
               </div>
               <Button 
                 type="submit" 
-                className="w-full md:w-auto bg-amber-600 hover:bg-amber-700 text-white"
+                className="w-full md:w-auto bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
               >
                 Đăng tài liệu
               </Button>
@@ -261,10 +283,10 @@ const DocumentsManagement = () => {
       {/* Search */}
       <div className="flex items-center space-x-2">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-blue-400 dark:text-blue-300" />
           <Input
             placeholder="Tìm kiếm tài liệu..."
-            className="pl-8"
+            className="pl-8 border-blue-300/50 dark:border-blue-500/30 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 bg-white/10 dark:bg-blue-950/30"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -272,72 +294,85 @@ const DocumentsManagement = () => {
       </div>
 
       {/* Documents Table */}
-      <Card className="border-amber-200">
-        <CardHeader className="bg-amber-50">
-          <CardTitle>Danh sách tài liệu</CardTitle>
+      <Card className="border border-blue-300/30 dark:border-blue-500/20 shadow-md overflow-hidden backdrop-blur-sm bg-white/5 dark:bg-blue-950/20">
+        <CardHeader className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b border-blue-300/30 dark:border-blue-500/20">
+          <CardTitle className="flex items-center text-blue-600 dark:text-blue-300">
+            <FileText className="mr-2 h-5 w-5 text-blue-500/80 dark:text-blue-400/90" />
+            Danh sách tài liệu
+          </CardTitle>
           <CardDescription>
             Tổng cộng {filteredDocuments.length} tài liệu
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-amber-50">
-                <TableHead>Tiêu đề</TableHead>
-                <TableHead>Dạng</TableHead>
-                <TableHead>Kích thước</TableHead>
-                <TableHead>Chuyên ngành</TableHead>
-                <TableHead>Giá (VND)</TableHead>
-                <TableHead>Lượt tải</TableHead>
-                <TableHead>Thao tác</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredDocuments.map((doc) => (
-                <TableRow key={doc.id}>
-                  <TableCell className="font-medium flex items-center">
-                    <FileText className="h-4 w-4 mr-2 text-amber-600" />
-                    {doc.title}
-                  </TableCell>
-                  <TableCell>{doc.type}</TableCell>
-                  <TableCell>{doc.size}</TableCell>
-                  <TableCell>{doc.specialization}</TableCell>
-                  <TableCell>{new Intl.NumberFormat('vi-VN').format(doc.price)}</TableCell>
-                  <TableCell>{doc.downloads}</TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="icon" 
-                        title="Chỉnh sửa" 
-                        className="border-amber-200 hover:bg-amber-50"
-                        onClick={() => handleEditClick(doc)}
-                      >
-                        <Edit className="h-4 w-4 text-amber-600" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="icon" 
-                        title="Xóa" 
-                        className="text-red-500 hover:text-red-700 border-red-200 hover:bg-red-50"
-                        onClick={() => handleDeleteClick(doc)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+        <CardContent className="p-0">
+          <div className="overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/15 hover:to-purple-500/15">
+                  <TableHead className="font-semibold text-blue-700 dark:text-blue-300">Tiêu đề</TableHead>
+                  <TableHead className="font-semibold text-blue-700 dark:text-blue-300">Dạng</TableHead>
+                  <TableHead className="font-semibold text-blue-700 dark:text-blue-300">Kích thước</TableHead>
+                  <TableHead className="font-semibold text-blue-700 dark:text-blue-300">Chuyên ngành</TableHead>
+                  <TableHead className="font-semibold text-blue-700 dark:text-blue-300">Giá (VND)</TableHead>
+                  <TableHead className="font-semibold text-blue-700 dark:text-blue-300">Lượt tải</TableHead>
+                  <TableHead className="font-semibold text-blue-700 dark:text-blue-300">Thao tác</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredDocuments.map((doc) => (
+                  <TableRow key={doc.id} className="border-b border-blue-200/30 dark:border-blue-500/20 hover:bg-blue-500/5 dark:hover:bg-blue-700/10 transition-colors duration-150">
+                    <TableCell className="font-medium flex items-center py-3">
+                      {getFileIcon(doc.type)}
+                      <span className="ml-2">{doc.title}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100/80 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
+                        {doc.type}
+                      </span>
+                    </TableCell>
+                    <TableCell>{doc.size}</TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full bg-purple-100/80 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200">
+                        {doc.specialization}
+                      </span>
+                    </TableCell>
+                    <TableCell className="font-medium">{new Intl.NumberFormat('vi-VN').format(doc.price)}</TableCell>
+                    <TableCell className="font-medium">{doc.downloads}</TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          title="Chỉnh sửa" 
+                          className="border-blue-300/50 dark:border-blue-500/30 hover:bg-blue-500/10 dark:hover:bg-blue-700/20 text-blue-600 dark:text-blue-300"
+                          onClick={() => handleEditClick(doc)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          title="Xóa" 
+                          className="border-red-300/50 dark:border-red-500/30 hover:bg-red-500/10 dark:hover:bg-red-700/20 text-red-600 dark:text-red-300"
+                          onClick={() => handleDeleteClick(doc)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
       {/* Edit Document Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Chỉnh sửa tài liệu</DialogTitle>
+        <DialogContent className="sm:max-w-[500px] border border-blue-300/30 dark:border-blue-500/20 shadow-lg bg-white/95 dark:bg-admin-darker/95 backdrop-blur-lg">
+          <DialogHeader className="border-b border-blue-200/30 dark:border-blue-500/20 pb-4">
+            <DialogTitle className="text-blue-600 dark:text-blue-300">Chỉnh sửa tài liệu</DialogTitle>
             <DialogDescription>
               Cập nhật thông tin cho tài liệu. Nhấn lưu khi hoàn tất.
             </DialogDescription>
@@ -345,21 +380,22 @@ const DocumentsManagement = () => {
           <form onSubmit={handleEditSubmit}>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-title">Tiêu đề</Label>
+                <Label htmlFor="edit-title" className="text-blue-600 dark:text-blue-300">Tiêu đề</Label>
                 <Input
                   id="edit-title"
                   value={editForm.title}
                   onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                  className="border-blue-300/50 dark:border-blue-500/30 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 bg-white/10 dark:bg-blue-950/30"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-specialization">Chuyên ngành</Label>
+                <Label htmlFor="edit-specialization" className="text-blue-600 dark:text-blue-300">Chuyên ngành</Label>
                 <select 
                   id="edit-specialization"
                   value={editForm.specialization}
                   onChange={(e) => setEditForm({...editForm, specialization: e.target.value})}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-10 w-full rounded-md border border-blue-300/50 dark:border-blue-500/30 bg-white/10 dark:bg-blue-950/30 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <option value="CNTT">Công nghệ thông tin</option>
                   <option value="ATTT">An toàn thông tin</option>
@@ -367,30 +403,35 @@ const DocumentsManagement = () => {
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-price">Giá (VND)</Label>
+                <Label htmlFor="edit-price" className="text-blue-600 dark:text-blue-300">Giá (VND)</Label>
                 <Input
                   id="edit-price"
                   type="number"
                   value={editForm.price}
                   onChange={(e) => setEditForm({...editForm, price: parseInt(e.target.value)})}
+                  className="border-blue-300/50 dark:border-blue-500/30 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 bg-white/10 dark:bg-blue-950/30"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-description">Mô tả</Label>
+                <Label htmlFor="edit-description" className="text-blue-600 dark:text-blue-300">Mô tả</Label>
                 <Textarea
                   id="edit-description"
                   value={editForm.description}
                   onChange={(e) => setEditForm({...editForm, description: e.target.value})}
                   rows={4}
+                  className="border-blue-300/50 dark:border-blue-500/30 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 bg-white/10 dark:bg-blue-950/30"
                 />
               </div>
             </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+            <DialogFooter className="border-t border-blue-200/30 dark:border-blue-500/20 pt-4">
+              <Button type="button" variant="outline" 
+                className="border-blue-300/50 dark:border-blue-500/30 hover:bg-blue-500/10 dark:hover:bg-blue-700/20 text-blue-600 dark:text-blue-300"
+                onClick={() => setIsEditDialogOpen(false)}>
                 Hủy
               </Button>
-              <Button type="submit" className="bg-amber-600 hover:bg-amber-700">
+              <Button type="submit" 
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-300">
                 Lưu thay đổi
               </Button>
             </DialogFooter>
@@ -400,26 +441,29 @@ const DocumentsManagement = () => {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Xác nhận xóa tài liệu</DialogTitle>
+        <DialogContent className="sm:max-w-[425px] border border-red-300/30 dark:border-red-500/20 shadow-lg bg-white/95 dark:bg-admin-darker/95 backdrop-blur-lg">
+          <DialogHeader className="border-b border-red-200/30 dark:border-red-500/20 pb-4">
+            <DialogTitle className="text-red-600 dark:text-red-300">Xác nhận xóa tài liệu</DialogTitle>
             <DialogDescription>
               Bạn có chắc chắn muốn xóa tài liệu này? Hành động này không thể hoàn tác.
             </DialogDescription>
           </DialogHeader>
           {selectedDocument && (
-            <div className="py-4">
-              <p className="font-medium">{selectedDocument.title}</p>
+            <div className="py-4 border-b border-red-200/30 dark:border-red-500/20">
+              <p className="font-medium mb-1">{selectedDocument.title}</p>
               <p className="text-sm text-muted-foreground">Chuyên ngành: {selectedDocument.specialization}</p>
             </div>
           )}
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+          <DialogFooter className="pt-4">
+            <Button type="button" variant="outline" 
+              className="border-blue-300/50 dark:border-blue-500/30 hover:bg-blue-500/10 dark:hover:bg-blue-700/20 text-blue-600 dark:text-blue-300"
+              onClick={() => setIsDeleteDialogOpen(false)}>
               Hủy
             </Button>
             <Button 
               type="button" 
               variant="destructive"
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
               onClick={confirmDelete}
             >
               Xóa tài liệu
@@ -429,18 +473,26 @@ const DocumentsManagement = () => {
       </Dialog>
 
       {/* Downloads Stats */}
-      <Card className="border-amber-200">
-        <CardHeader className="bg-amber-50">
-          <CardTitle>Thống kê lượt tải</CardTitle>
+      <Card className="border border-blue-300/30 dark:border-blue-500/20 shadow-md overflow-hidden backdrop-blur-sm bg-white/5 dark:bg-blue-950/20">
+        <CardHeader className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b border-blue-300/30 dark:border-blue-500/20">
+          <CardTitle className="flex items-center text-blue-600 dark:text-blue-300">
+            <BarChart2 className="mr-2 h-5 w-5 text-blue-500/80 dark:text-blue-400/90" />
+            Thống kê lượt tải
+          </CardTitle>
           <CardDescription>Phân tích lượt tài tài liệu theo thời gian</CardDescription>
         </CardHeader>
-        <CardContent className="h-80 flex items-center justify-center">
+        <CardContent className="h-80 flex items-center justify-center bg-gradient-to-b from-transparent to-blue-500/5 dark:to-blue-900/10">
           <div className="text-center text-muted-foreground">
-            <FileText className="h-16 w-16 mx-auto mb-4 opacity-20" />
-            <p>Biểu đồ thống kê sẽ được hiển thị ở đây</p>
+            <FileText className="h-16 w-16 mx-auto mb-4 text-blue-500/20 dark:text-blue-400/10" />
+            <p className="text-blue-600/80 dark:text-blue-300/80">Biểu đồ thống kê sẽ được hiển thị ở đây</p>
           </div>
         </CardContent>
       </Card>
+      
+      {/* Background Particles */}
+      <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
+        <Particles />
+      </div>
     </div>
   );
 };
