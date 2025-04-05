@@ -132,8 +132,8 @@ const UsersManagement = () => {
         </Button>
       </div>
 
-      <Card className="border-0 shadow-md dark:bg-admin-dark/40 backdrop-blur-sm">
-        <CardContent className="p-4">
+      <div className="rounded-lg overflow-hidden border-0 dark:bg-[#0f172a]/90 bg-card backdrop-blur-sm">
+        <div className="p-4">
           {/* Search and filters */}
           <div className="flex flex-col sm:flex-row gap-4 mb-4">
             <div className="flex-1 relative">
@@ -145,17 +145,17 @@ const UsersManagement = () => {
                 placeholder="Tìm kiếm người dùng..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 border-blue-200 dark:border-blue-900/30 dark:bg-admin-dark/60 placeholder-muted-foreground/70"
+                className="pl-9 border-blue-200 dark:border-blue-900/30 dark:bg-[#131c31] placeholder-muted-foreground/70"
               />
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full sm:w-auto flex gap-2 border-blue-200 dark:border-blue-900/30 dark:bg-admin-dark/60 hover:bg-blue-100 dark:hover:bg-blue-900/20">
+                <Button variant="outline" className="w-full sm:w-auto flex gap-2 border-blue-200 dark:border-blue-900/30 dark:bg-[#131c31] hover:bg-blue-100 dark:hover:bg-blue-900/20">
                   <ChevronDown size={16} />
                   Lọc theo vai trò
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="dark:bg-admin-dark/90 backdrop-blur-md">
+              <DropdownMenuContent align="end" className="dark:bg-[#131c31] backdrop-blur-md">
                 <DropdownMenuItem>Tất cả người dùng</DropdownMenuItem>
                 <DropdownMenuItem>Quản trị viên</DropdownMenuItem>
                 <DropdownMenuItem>Người dùng thường</DropdownMenuItem>
@@ -164,24 +164,23 @@ const UsersManagement = () => {
           </div>
 
           {/* Users Table */}
-          <div className="border rounded-md border-blue-200 dark:border-blue-900/30 overflow-hidden">
+          <div className="rounded-md overflow-hidden border dark:border-blue-900/20 border-blue-200">
             <Table>
-              <TableCaption className="dark:text-gray-400">Danh sách tất cả người dùng</TableCaption>
               <TableHeader>
-                <TableRow className="bg-blue-50 dark:bg-blue-900/20">
-                  <TableHead className="text-gray-700 dark:text-gray-200">ID</TableHead>
-                  <TableHead className="text-gray-700 dark:text-gray-200">Tên đầy đủ</TableHead>
-                  <TableHead className="hidden md:table-cell text-gray-700 dark:text-gray-200">Email</TableHead>
-                  <TableHead className="text-center text-gray-700 dark:text-gray-200">Vai trò</TableHead>
-                  <TableHead className="hidden md:table-cell text-gray-700 dark:text-gray-200">Ngày tạo</TableHead>
-                  <TableHead className="text-right text-gray-700 dark:text-gray-200">Hành động</TableHead>
+                <TableRow className="dark:bg-[#121c34] bg-blue-50 hover:dark:bg-[#121c34]">
+                  <TableHead className="text-gray-700 dark:text-white font-medium">ID</TableHead>
+                  <TableHead className="text-gray-700 dark:text-white font-medium">Tên đầy đủ</TableHead>
+                  <TableHead className="hidden md:table-cell text-gray-700 dark:text-white font-medium">Email</TableHead>
+                  <TableHead className="text-center text-gray-700 dark:text-white font-medium">Vai trò</TableHead>
+                  <TableHead className="hidden md:table-cell text-gray-700 dark:text-white font-medium">Ngày tạo</TableHead>
+                  <TableHead className="text-right text-gray-700 dark:text-white font-medium">Hành động</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredUsers.length > 0 ? (
                   filteredUsers.map((user) => (
-                    <TableRow key={user.id} className="dark:hover:bg-blue-900/10 hover:bg-blue-50">
-                      <TableCell className="font-medium">{user.id}</TableCell>
+                    <TableRow key={user.id} className="dark:bg-[#0f172a] dark:hover:bg-[#1a2744] hover:bg-blue-50 dark:border-blue-900/10">
+                      <TableCell className="font-medium dark:text-gray-300">{user.id}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center text-white">
@@ -199,7 +198,7 @@ const UsersManagement = () => {
                         <Badge
                           variant={user.role === "admin" ? "default" : "outline"}
                           className={user.role === "admin" 
-                            ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600" 
+                            ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600" 
                             : "border-blue-200 dark:border-blue-400/30 text-blue-700 dark:text-blue-300 dark:bg-blue-900/20"}
                         >
                           {user.role === "admin" ? "Quản trị viên" : "Người dùng"}
@@ -214,23 +213,23 @@ const UsersManagement = () => {
                               <span className="sr-only">Mở menu</span>
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="dark:bg-admin-dark/90 backdrop-blur-md">
-                            <DropdownMenuItem onClick={() => handleEdit(user)} className="dark:hover:bg-blue-800/40">
+                          <DropdownMenuContent align="end" className="dark:bg-[#131c31] backdrop-blur-md">
+                            <DropdownMenuItem onClick={() => handleEdit(user)} className="dark:hover:bg-blue-800/40 cursor-pointer">
                               <Edit size={14} className="mr-2 text-blue-500" />
                               Chỉnh sửa
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="dark:hover:bg-blue-800/40">
+                            <DropdownMenuItem className="dark:hover:bg-blue-800/40 cursor-pointer">
                               <BookOpen size={14} className="mr-2 text-blue-500" />
                               Xem khóa học đã đăng ký
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="dark:hover:bg-blue-800/40">
+                            <DropdownMenuItem className="dark:hover:bg-blue-800/40 cursor-pointer">
                               <FileText size={14} className="mr-2 text-blue-500" />
                               Xem tài liệu đã mua
                             </DropdownMenuItem>
                             <DropdownMenuSeparator className="dark:bg-gray-700" />
                             <DropdownMenuItem
                               onClick={() => handleDelete(user.id)}
-                              className="text-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+                              className="text-red-600 dark:text-red-400 dark:hover:bg-red-900/20 cursor-pointer"
                             >
                               <Trash2 size={14} className="mr-2" />
                               Xóa
@@ -242,7 +241,7 @@ const UsersManagement = () => {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8">
+                    <TableCell colSpan={6} className="text-center py-8 dark:text-gray-400">
                       <p className="text-muted-foreground">
                         Không tìm thấy người dùng nào
                       </p>
@@ -250,14 +249,15 @@ const UsersManagement = () => {
                   </TableRow>
                 )}
               </TableBody>
+              <TableCaption className="dark:text-gray-400">Danh sách tất cả người dùng</TableCaption>
             </Table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Add/Edit User Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] dark:bg-admin-dark backdrop-blur-sm">
+        <DialogContent className="sm:max-w-[500px] dark:bg-[#131c31] backdrop-blur-sm">
           <DialogHeader>
             <DialogTitle className="text-xl bg-gradient-to-r from-blue-400 via-purple-400 to-blue-500 bg-clip-text text-transparent">
               {isEditing ? "Chỉnh sửa thông tin người dùng" : "Thêm người dùng mới"}
@@ -279,7 +279,7 @@ const UsersManagement = () => {
                     setCurrentUser({ ...currentUser, fullName: e.target.value })
                   }
                   required
-                  className="dark:bg-admin-darker/80 dark:border-blue-900/30"
+                  className="dark:bg-[#0f172a]/80 dark:border-blue-900/30"
                 />
               </div>
               <div className="grid gap-2">
@@ -292,7 +292,7 @@ const UsersManagement = () => {
                     setCurrentUser({ ...currentUser, email: e.target.value })
                   }
                   required
-                  className="dark:bg-admin-darker/80 dark:border-blue-900/30"
+                  className="dark:bg-[#0f172a]/80 dark:border-blue-900/30"
                 />
               </div>
               <div className="grid gap-2">
@@ -306,10 +306,10 @@ const UsersManagement = () => {
                     })
                   }
                 >
-                  <SelectTrigger className="dark:bg-admin-darker/80 dark:border-blue-900/30">
+                  <SelectTrigger className="dark:bg-[#0f172a]/80 dark:border-blue-900/30">
                     <SelectValue placeholder="Chọn vai trò" />
                   </SelectTrigger>
-                  <SelectContent className="dark:bg-admin-dark backdrop-blur-md">
+                  <SelectContent className="dark:bg-[#131c31] backdrop-blur-md">
                     <SelectItem value="user">Người dùng</SelectItem>
                     <SelectItem value="admin">Quản trị viên</SelectItem>
                   </SelectContent>
@@ -323,7 +323,7 @@ const UsersManagement = () => {
                     type="password"
                     placeholder="••••••••"
                     required={!isEditing}
-                    className="dark:bg-admin-darker/80 dark:border-blue-900/30"
+                    className="dark:bg-[#0f172a]/80 dark:border-blue-900/30"
                   />
                   <p className="text-xs text-muted-foreground">
                     Mật khẩu phải có ít nhất 8 ký tự.
@@ -336,7 +336,7 @@ const UsersManagement = () => {
                 type="button"
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
-                className="border-blue-200 dark:border-blue-900/30 dark:bg-admin-darker/40 hover:bg-blue-100 dark:hover:bg-blue-900/20"
+                className="border-blue-200 dark:border-blue-900/30 dark:bg-[#0f172a]/40 hover:bg-blue-100 dark:hover:bg-blue-900/20"
               >
                 Hủy
               </Button>

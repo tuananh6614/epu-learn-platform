@@ -67,8 +67,8 @@ export default {
 					primary: '#3B82F6', // Blue
 					secondary: '#10B981', // Emerald
 					accent: '#8B5CF6', // Purple
-					dark: '#111827', // Updated: Darker blue-gray
-					darker: '#0B1120', // Updated: Even darker blue-gray
+					dark: '#0f172a', // Updated: Darker blue background
+					darker: '#080d18', // Updated: Even darker blue background
 					light: '#F1F5F9', // Slate light
 					muted: '#64748B', // Slate gray
 					border: '#334155', // Slate border
