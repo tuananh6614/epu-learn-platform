@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap, Phone, Mail, MapPin } from "lucide-react";
+import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap, Phone, Mail, MapPin, Code, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -345,7 +346,7 @@ const MainLayout = () => {
         </div>
         
         <div className="container px-4 md:px-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="bg-gradient-to-r from-epu-primary to-epu-accent p-2 rounded-md text-white">
@@ -381,6 +382,28 @@ const MainLayout = () => {
                   </Link>
                 </li>
               </ul>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-bold mb-4">Người sáng tạo</h3>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-300 flex items-center gap-2">
+                  <Users size={16} />
+                  <span>Nguyễn Văn A</span>
+                </p>
+                <p className="text-sm text-gray-300 flex items-center gap-2">
+                  <Users size={16} />
+                  <span>Trần Thị B</span>
+                </p>
+                <p className="text-sm text-gray-300 flex items-center gap-2">
+                  <Code size={16} />
+                  <span>Lê Văn C</span>
+                </p>
+                <p className="text-sm text-gray-300 flex items-center gap-2">
+                  <Code size={16} />
+                  <span>Phạm Thị D</span>
+                </p>
+              </div>
             </div>
             
             <div>
