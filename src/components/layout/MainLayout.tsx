@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -24,12 +23,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap, Phone, Mail, MapPin, Code, Users, Info } from "lucide-react";
+import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap, Phone, Mail, MapPin, Code, Users, Info, Heart, Star, Award, Globe, Briefcase } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const MainLayout = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -140,7 +140,7 @@ const MainLayout = () => {
                     Giới thiệu
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px] dark:bg-slate-900 dark:border-slate-800">
+                <DialogContent className="sm:max-w-[650px] max-h-[80vh] overflow-y-auto dark:bg-slate-900 dark:border-slate-800">
                   <DialogHeader>
                     <DialogTitle className="text-2xl flex items-center gap-2">
                       <Sparkles className="text-primary" size={20} />
@@ -204,11 +204,159 @@ const MainLayout = () => {
                       </div>
                     </div>
                     
+                    {/* Đội ngũ phát triển */}
+                    <div className="bg-gradient-to-r from-indigo-500/10 to-pink-500/10 dark:from-indigo-500/20 dark:to-pink-500/20 p-4 rounded-lg">
+                      <h3 className="font-medium text-lg flex items-center gap-2 mb-3">
+                        <Users size={16} className="text-indigo-500" />
+                        Đội ngũ phát triển
+                      </h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center gap-3 p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                          <Avatar className="border-2 border-primary">
+                            <AvatarImage src="/placeholder.svg" />
+                            <AvatarFallback className="bg-primary/10 text-primary">NVA</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">Nguyễn Văn A</p>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Briefcase size={12} /> Trưởng nhóm phát triển
+                            </p>
+                            <p className="text-xs text-primary mt-0.5">MSSV: 2020601001</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                          <Avatar className="border-2 border-primary">
+                            <AvatarImage src="/placeholder.svg" />
+                            <AvatarFallback className="bg-primary/10 text-primary">TTB</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">Trần Thị B</p>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Code size={12} /> Lập trình viên Frontend
+                            </p>
+                            <p className="text-xs text-primary mt-0.5">MSSV: 2020601002</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                          <Avatar className="border-2 border-primary">
+                            <AvatarImage src="/placeholder.svg" />
+                            <AvatarFallback className="bg-primary/10 text-primary">LVC</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">Lê Văn C</p>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Code size={12} /> Lập trình viên Backend
+                            </p>
+                            <p className="text-xs text-primary mt-0.5">MSSV: 2020601003</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                          <Avatar className="border-2 border-primary">
+                            <AvatarImage src="/placeholder.svg" />
+                            <AvatarFallback className="bg-primary/10 text-primary">PTD</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">Phạm Thị D</p>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Heart size={12} /> Thiết kế UI/UX
+                            </p>
+                            <p className="text-xs text-primary mt-0.5">MSSV: 2020601004</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Thông tin giáo viên hướng dẫn */}
+                    <div className="bg-gradient-to-r from-blue-500/10 to-teal-500/10 dark:from-blue-500/20 dark:to-teal-500/20 p-4 rounded-lg">
+                      <h3 className="font-medium text-lg flex items-center gap-2 mb-3">
+                        <Award size={16} className="text-blue-500" />
+                        Giáo viên hướng dẫn
+                      </h3>
+                      
+                      <div className="flex items-center gap-4 p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                        <Avatar className="w-16 h-16 border-2 border-blue-500">
+                          <AvatarImage src="/placeholder.svg" />
+                          <AvatarFallback className="bg-blue-500/10 text-blue-500 text-lg">GV</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium text-lg">TS. Nguyễn Văn Giáo</p>
+                          <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                            <Star size={14} className="text-yellow-500" /> Giảng viên Khoa Công nghệ thông tin
+                          </p>
+                          <div className="flex items-center gap-4 mt-2">
+                            <p className="text-xs flex items-center gap-1">
+                              <Mail size={12} className="text-blue-500" /> nguyenvangiao@epu.edu.vn
+                            </p>
+                            <p className="text-xs flex items-center gap-1">
+                              <Phone size={12} className="text-green-500" /> 0123.456.789
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Thông tin liên hệ */}
                     <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 p-4 rounded-lg">
                       <h3 className="font-medium text-center">Tầm nhìn của chúng tôi</h3>
                       <p className="mt-2 text-center text-muted-foreground dark:text-gray-300">
                         "Trở thành nền tảng học tập trực tuyến hàng đầu tại Việt Nam, góp phần đào tạo nguồn nhân lực chất lượng cao cho xã hội"
                       </p>
+                    </div>
+                    
+                    {/* Thông tin liên hệ */}
+                    <div className="p-4 rounded-lg border border-primary/20">
+                      <h3 className="font-medium text-lg flex items-center gap-2 mb-3">
+                        <Phone size={16} className="text-primary" />
+                        Thông tin liên hệ
+                      </h3>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-3">
+                          <MapPin size={18} className="text-red-500 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">Trường Đại học Điện Lực</p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              235 Hoàng Quốc Việt, Cổ Nhuế, Bắc Từ Liêm, Hà Nội
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                          <Mail size={18} className="text-blue-500 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">Email</p>
+                            <p className="text-sm text-muted-foreground">
+                              info@epu.edu.vn | support@epu.edu.vn
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                          <Phone size={18} className="text-green-500 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">Điện thoại</p>
+                            <p className="text-sm text-muted-foreground">
+                              Văn phòng: 024.38362672 | Hỗ trợ kỹ thuật: 0987.654.321
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                          <Globe size={18} className="text-purple-500 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">Website</p>
+                            <p className="text-sm text-muted-foreground">
+                              <a href="https://epu.edu.vn" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                epu.edu.vn
+                              </a>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     
                     <div className="flex justify-center mt-4">
@@ -349,7 +497,7 @@ const MainLayout = () => {
                           Giới thiệu
                         </button>
                       </DialogTrigger>
-                      <DialogContent className="dark:bg-slate-900 dark:border-slate-800">
+                      <DialogContent className="max-h-[80vh] overflow-y-auto dark:bg-slate-900 dark:border-slate-800">
                         <DialogHeader>
                           <DialogTitle className="text-xl flex items-center gap-2">
                             <Sparkles className="text-primary" size={18} />
@@ -360,20 +508,74 @@ const MainLayout = () => {
                           <p className="text-sm text-muted-foreground dark:text-gray-300">
                             EPU Learn là nền tảng học tập trực tuyến được phát triển bởi Trường Đại học Điện Lực.
                           </p>
-                          <div className="space-y-2 mt-2">
-                            <div className="flex items-start gap-2">
-                              <BookOpen size={16} className="text-primary mt-0.5" />
-                              <p className="text-sm">Hơn 200+ khóa học từ nhiều lĩnh vực</p>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <FileText size={16} className="text-primary mt-0.5" />
-                              <p className="text-sm">Thư viện tài liệu phong phú</p>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <Users size={16} className="text-primary mt-0.5" />
-                              <p className="text-sm">Cộng đồng học tập sôi động</p>
+                          
+                          {/* Đội ngũ phát triển */}
+                          <div className="mt-3 space-y-2">
+                            <h3 className="text-sm font-medium flex items-center gap-1">
+                              <Users size={14} className="text-primary" />
+                              Đội ngũ phát triển
+                            </h3>
+                            <div className="grid grid-cols-1 gap-2">
+                              <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
+                                <Avatar className="h-8 w-8 border border-primary">
+                                  <AvatarFallback className="text-xs">NVA</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="text-xs font-medium">Nguyễn Văn A</p>
+                                  <p className="text-xs text-muted-foreground">Trưởng nhóm</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
+                                <Avatar className="h-8 w-8 border border-primary">
+                                  <AvatarFallback className="text-xs">TTB</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="text-xs font-medium">Trần Thị B</p>
+                                  <p className="text-xs text-muted-foreground">Frontend</p>
+                                </div>
+                              </div>
                             </div>
                           </div>
+                          
+                          {/* Giáo viên hướng dẫn */}
+                          <div className="mt-3 space-y-2">
+                            <h3 className="text-sm font-medium flex items-center gap-1">
+                              <Award size={14} className="text-primary" />
+                              Giáo viên hướng dẫn
+                            </h3>
+                            <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
+                              <Avatar className="h-10 w-10 border border-primary">
+                                <AvatarFallback>GV</AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <p className="text-xs font-medium">TS. Nguyễn Văn Giáo</p>
+                                <p className="text-xs text-muted-foreground">Khoa CNTT</p>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Thông tin liên hệ */}
+                          <div className="mt-3 space-y-2">
+                            <h3 className="text-sm font-medium flex items-center gap-1">
+                              <Phone size={14} className="text-primary" />
+                              Liên hệ
+                            </h3>
+                            <div className="space-y-1">
+                              <div className="flex items-start gap-2">
+                                <MapPin size={14} className="text-red-500 mt-0.5 flex-shrink-0" />
+                                <p className="text-xs">235 Hoàng Quốc Việt, Cổ Nhuế, Bắc Từ Liêm, Hà Nội</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Mail size={14} className="text-blue-500" />
+                                <p className="text-xs">info@epu.edu.vn</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Phone size={14} className="text-green-500" />
+                                <p className="text-xs">024.38362672</p>
+                              </div>
+                            </div>
+                          </div>
+                          
                           <div className="pt-3">
                             <Button 
                               onClick={() => navigate("/courses")}
@@ -484,104 +686,4 @@ const MainLayout = () => {
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 left-10 w-3 h-3 rounded-full bg-blue-500 opacity-30"></div>
           <div className="absolute top-40 left-20 w-2 h-2 rounded-full bg-green-500 opacity-30"></div>
-          <div className="absolute top-20 right-40 w-2 h-2 rounded-full bg-red-500 opacity-30"></div>
-          <div className="absolute bottom-20 right-20 w-3 h-3 rounded-full bg-yellow-500 opacity-30"></div>
-          <div className="absolute bottom-40 left-1/3 w-2 h-2 rounded-full bg-purple-500 opacity-30"></div>
-          <div className="absolute top-1/4 right-1/4 w-3 h-3 rounded-full bg-orange-500 opacity-30"></div>
-        </div>
-        
-        <div className="container px-4 md:px-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="bg-gradient-to-r from-epu-primary to-epu-accent p-2 rounded-md text-white">
-                  <Sparkles size={16} className="inline-block mr-1" />
-                  EPU
-                </div>
-                <span className="font-bold text-lg">Learn</span>
-              </div>
-              <p className="text-sm text-gray-300 max-w-xs">
-                Nền tảng học tập trực tuyến hàng đầu của Trường Đại học Điện Lực
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-bold mb-4">Liên kết nhanh</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link to="/" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-                    <Home size={16} />
-                    Trang chủ
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/courses" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-                    <BookOpen size={16} />
-                    Khóa học
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/documents" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
-                    <FileText size={16} />
-                    Tài liệu
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-bold mb-4">Người sáng tạo</h3>
-              <div className="space-y-3">
-                <p className="text-sm text-gray-300 flex items-center gap-2">
-                  <Users size={16} />
-                  <span>Nguyễn Văn A</span>
-                </p>
-                <p className="text-sm text-gray-300 flex items-center gap-2">
-                  <Users size={16} />
-                  <span>Trần Thị B</span>
-                </p>
-                <p className="text-sm text-gray-300 flex items-center gap-2">
-                  <Code size={16} />
-                  <span>Lê Văn C</span>
-                </p>
-                <p className="text-sm text-gray-300 flex items-center gap-2">
-                  <Code size={16} />
-                  <span>Phạm Thị D</span>
-                </p>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-bold mb-4">Liên hệ</h3>
-              <div className="space-y-3">
-                <p className="text-sm text-gray-300 font-medium">
-                  Trường Đại học Điện Lực
-                </p>
-                <p className="text-sm text-gray-300 flex items-start gap-2">
-                  <MapPin size={16} className="mt-0.5 flex-shrink-0" />
-                  <span>235 Hoàng Quốc Việt, Cổ Nhuế, Bắc Từ Liêm, Hà Nội</span>
-                </p>
-                <p className="text-sm text-gray-300 flex items-center gap-2">
-                  <Mail size={16} />
-                  <span>Email: info@epu.edu.vn</span>
-                </p>
-                <p className="text-sm text-gray-300 flex items-center gap-2">
-                  <Phone size={16} />
-                  <span>Điện thoại: 024.38362672</span>
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <Separator className="my-6 bg-gray-700" />
-          
-          <div className="text-center text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} EPU Learn. Đã đăng ký bản quyền.
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-};
-
-export default MainLayout;
+          <div className="absolute top-2
