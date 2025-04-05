@@ -132,111 +132,83 @@ exports.login = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    console.log('=== BẮT ĐẦU CẬP NHẬT HỒ SƠ ===');
-    console.log('Headers:', req.headers);
-    console.log('Body:', req.body);
-    console.log('User ID:', req.user.userId);
-    
+    const userId = req.user.userId; // Lấy từ middleware auth
     const { fullName, currentPassword, newPassword } = req.body;
-    const userId = req.user.userId;
 
-    // Kiểm tra xem user có tồn tại
+    // Kiểm tra user có tồn tại không
     const [users] = await db.execute(
       'SELECT * FROM Users WHERE user_id = ?',
       [userId]
     );
 
     if (users.length === 0) {
-      console.log('Không tìm thấy user với ID:', userId);
       return res.status(404).json({ message: 'Không tìm thấy người dùng' });
     }
 
     const user = users[0];
-    console.log('Tìm thấy user:', { id: user.user_id, email: user.email });
+    let updates = [];
+    let values = [];
+    let hasUpdates = false;
 
-    // Mảng chứa các trường cần cập nhật và giá trị tương ứng
-    const updateFields = [];
-    const updateValues = [];
-
-    // Nếu có fullName, thêm vào danh sách cập nhật
-    if (fullName && fullName !== user.full_name) {
-      updateFields.push('full_name = ?');
-      updateValues.push(fullName);
-      console.log('Cập nhật họ tên:', fullName);
+    // Cập nhật tên nếu có
+    if (fullName) {
+      updates.push('full_name = ?');
+      values.push(fullName);
+      hasUpdates = true;
     }
 
-    // Nếu có mật khẩu mới và mật khẩu hiện tại
+    // Cập nhật mật khẩu nếu có
     if (newPassword && currentPassword) {
-      // Xác thực mật khẩu hiện tại
+      // Kiểm tra mật khẩu hiện tại
       const isValidPassword = await bcrypt.compare(currentPassword, user.password);
-      
       if (!isValidPassword) {
-        console.log('Mật khẩu hiện tại không chính xác');
-        return res.status(401).json({ message: 'Mật khẩu hiện tại không chính xác' });
+        return res.status(400).json({ message: 'Mật khẩu hiện tại không đúng' });
       }
-      
+
       // Mã hóa mật khẩu mới
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      updateFields.push('password = ?');
-      updateValues.push(hashedPassword);
-      console.log('Cập nhật mật khẩu mới');
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      updates.push('password = ?');
+      values.push(hashedNewPassword);
+      hasUpdates = true;
     }
 
-    // Nếu không có trường nào cần cập nhật
-    if (updateFields.length === 0) {
-      console.log('Không có trường nào cần cập nhật');
+    if (!hasUpdates) {
       return res.status(400).json({ message: 'Không có thông tin nào được cập nhật' });
     }
 
-    // Thực hiện cập nhật trong database
-    const updateQuery = `UPDATE Users SET ${updateFields.join(', ')} WHERE user_id = ?`;
-    updateValues.push(userId);
-    
-    console.log('Query cập nhật:', updateQuery);
-    console.log('Giá trị cập nh��t:', updateValues.map((v, i) => 
-      i < updateValues.length - 1 && updateFields[i].includes('password') ? '[hidden]' : v
-    ));
-    
-    const [result] = await db.execute(updateQuery, updateValues);
-    
-    if (result.affectedRows > 0) {
-      // Lấy thông tin user đã cập nhật
-      const [updatedUser] = await db.execute(
-        'SELECT user_id, full_name, email, role FROM Users WHERE user_id = ?',
-        [userId]
-      );
-      
-      console.log('Cập nhật thành công. User mới:', updatedUser[0]);
-      
-      res.json({
-        message: 'Cập nhật thông tin thành công',
-        user: {
-          id: updatedUser[0].user_id,
-          fullName: updatedUser[0].full_name,
-          email: updatedUser[0].email,
-          role: updatedUser[0].role
-        }
-      });
-    } else {
-      console.log('Không có thay đổi nào được áp dụng');
-      res.status(400).json({ message: 'Không có thay đổi nào được áp dụng' });
+    // Thực hiện cập nhật
+    const updateQuery = `UPDATE Users SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?`;
+    values.push(userId);
+
+    console.log('Executing update query:', updateQuery);
+    console.log('With values:', values);
+
+    const [result] = await db.execute(updateQuery, values);
+
+    if (result.affectedRows === 0) {
+      throw new Error('Không thể cập nhật thông tin người dùng');
     }
-    
-    console.log('=== KẾT THÚC CẬP NHẬT HỒ SƠ ===');
-  } catch (error) {
-    console.error('=== LỖI CẬP NHẬT HỒ SƠ ===');
-    console.error('Chi tiết lỗi:', {
-      message: error.message,
-      sqlMessage: error.sqlMessage,
-      sqlState: error.sqlState,
-      code: error.code,
-      stack: error.stack
+
+    // Lấy thông tin user sau khi cập nhật
+    const [updatedUser] = await db.execute(
+      'SELECT user_id, full_name, email, role FROM Users WHERE user_id = ?',
+      [userId]
+    );
+
+    res.json({
+      message: 'Cập nhật thông tin thành công',
+      user: {
+        id: updatedUser[0].user_id,
+        fullName: updatedUser[0].full_name,
+        email: updatedUser[0].email,
+        role: updatedUser[0].role
+      }
     });
-    
+  } catch (error) {
+    console.error('Update profile error:', error);
     res.status(500).json({ 
       message: 'Lỗi server', 
-      error: error.message,
-      sqlMessage: error.sqlMessage 
+      error: error.message 
     });
   }
 };
