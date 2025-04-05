@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -109,14 +108,17 @@ const HomePage = () => {
             
             <motion.h1 
               variants={itemVariants}
-              className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 max-w-4xl text-white leading-tight tracking-tight"
+              className="hero-title font-poppins"
             >
-              EPU Learn - Nền tảng học tập trực tuyến của Đại học Điện Lực
+              EPU Learn
+              <span className="block text-2xl sm:text-3xl md:text-4xl mt-2 font-light opacity-95">
+                Nền tảng học tập trực tuyến của Đại học Điện Lực
+              </span>
             </motion.h1>
             
             <motion.p 
               variants={itemVariants}
-              className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed"
+              className="hero-subtitle"
             >
               Khám phá kho tàng kiến thức với các khóa học chất lượng cao và tài liệu học tập phong phú
             </motion.p>
@@ -131,13 +133,14 @@ const HomePage = () => {
                 whileTap="tap"
               >
                 <Button 
-                  size="lg" 
-                  className="bg-white text-epu-primary hover:bg-white/90 shadow-lg text-base rounded-xl px-8 py-6 h-auto"
+                  variant="hero-primary" 
+                  size="hero" 
+                  className="group btn-glow"
                   onClick={() => navigate("/courses")}
                 >
                   <BookOpenCheck className="mr-2 h-5 w-5" />
                   Khám phá khóa học
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </motion.div>
               
@@ -147,13 +150,14 @@ const HomePage = () => {
                 whileTap="tap"
               >
                 <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-2 border-white text-white hover:bg-white/20 shadow-md text-base rounded-xl px-8 py-6 h-auto"
+                  variant="hero-secondary" 
+                  size="hero" 
+                  className="group"
                   onClick={() => navigate("/documents")}
                 >
                   <Search className="mr-2 h-5 w-5" />
                   Tìm tài liệu học tập
+                  <span className="w-0 overflow-hidden group-hover:w-4 transition-all duration-300"></span>
                 </Button>
               </motion.div>
             </motion.div>

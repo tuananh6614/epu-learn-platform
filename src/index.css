@@ -249,6 +249,17 @@
     @apply left-[100%];
   }
   
+  /* Hero section styles */
+  .hero-title {
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight 
+      text-white drop-shadow-md mb-4 max-w-4xl mx-auto;
+  }
+  
+  .hero-subtitle {
+    @apply text-base sm:text-lg md:text-xl text-white/90 drop-shadow-sm mb-8 max-w-2xl 
+      mx-auto leading-relaxed;
+  }
+  
   /* Typography improvements */
   .elegant-title {
     @apply font-light tracking-tight leading-tight;
