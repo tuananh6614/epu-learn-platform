@@ -1,6 +1,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
 
 interface Particle {
   id: number;
@@ -15,19 +16,24 @@ interface Particle {
 
 export const FloatingParticles = () => {
   const [particles, setParticles] = useState<Particle[]>([]);
+  const { theme } = useTheme();
 
   const generateParticles = useCallback(() => {
-    const particlesCount = window.innerWidth < 768 ? 15 : 25;
+    const particlesCount = window.innerWidth < 768 ? 25 : 40;
     const newParticles: Particle[] = [];
     
-    const colors = ["#4299E1", "#ED8936", "#805AD5", "#38B2AC"];
+    // Enhanced color palette
+    const lightModeColors = ["#4299E1", "#ED8936", "#805AD5", "#38B2AC", "#E53E3E", "#DD6B20"];
+    const darkModeColors = ["#4299E1", "#F6AD55", "#9F7AEA", "#4FD1C5", "#FC8181", "#F6E05E"];
+    
+    const colors = theme === "dark" ? darkModeColors : lightModeColors;
 
     for (let i = 0; i < particlesCount; i++) {
       newParticles.push({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
-        size: Math.random() * 5 + 2,
+        size: Math.random() * 6 + 2,
         opacity: Math.random() * 0.5 + 0.1,
         duration: Math.random() * 20 + 10,
         delay: Math.random() * 5,
@@ -36,7 +42,7 @@ export const FloatingParticles = () => {
     }
 
     setParticles(newParticles);
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
     generateParticles();
