@@ -15,8 +15,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap, Phone, Mail, MapPin, Code, Users } from "lucide-react";
+import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap, Phone, Mail, MapPin, Code, Users, Info } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -123,6 +131,99 @@ const MainLayout = () => {
                 </Link>
               </motion.div>
             ))}
+
+            <motion.div variants={itemVariants}>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2 hover:bg-primary/10 dark:hover:bg-primary/20">
+                    <Info size={18} className="text-primary" />
+                    Giới thiệu
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px] dark:bg-slate-900 dark:border-slate-800">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl flex items-center gap-2">
+                      <Sparkles className="text-primary" size={20} />
+                      <span className="text-gradient-to-r from-epu-primary to-epu-accent">Giới thiệu EPU Learn</span>
+                    </DialogTitle>
+                    <DialogDescription className="text-base">
+                      Nền tảng học tập trực tuyến của Trường Đại học Điện Lực
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 mt-4">
+                    <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-lg">
+                      <h3 className="font-medium text-lg flex items-center gap-2">
+                        <BookOpen size={16} className="text-primary" />
+                        Giới thiệu chung
+                      </h3>
+                      <p className="mt-2 text-muted-foreground dark:text-gray-300">
+                        EPU Learn là nền tảng học tập trực tuyến được xây dựng và phát triển bởi Trường Đại học Điện Lực, 
+                        nhằm cung cấp cho sinh viên và học viên một môi trường học tập hiệu quả, linh hoạt và thuận tiện.
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                        <h3 className="font-medium flex items-center gap-2">
+                          <GraduationCap size={16} className="text-blue-500" />
+                          Khóa học đa dạng
+                        </h3>
+                        <p className="mt-2 text-sm text-muted-foreground dark:text-gray-300">
+                          Hơn 200+ khóa học từ nhiều lĩnh vực khác nhau, đáp ứng nhu cầu học tập của mọi đối tượng.
+                        </p>
+                      </div>
+                      
+                      <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                        <h3 className="font-medium flex items-center gap-2">
+                          <FileText size={16} className="text-green-500" />
+                          Tài liệu chất lượng
+                        </h3>
+                        <p className="mt-2 text-sm text-muted-foreground dark:text-gray-300">
+                          Thư viện tài liệu phong phú, được biên soạn bởi các giảng viên có nhiều năm kinh nghiệm.
+                        </p>
+                      </div>
+                      
+                      <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                        <h3 className="font-medium flex items-center gap-2">
+                          <Users size={16} className="text-purple-500" />
+                          Cộng đồng hỗ trợ
+                        </h3>
+                        <p className="mt-2 text-sm text-muted-foreground dark:text-gray-300">
+                          Tham gia cộng đồng học tập sôi động, kết nối với giảng viên và bạn học từ khắp mọi nơi.
+                        </p>
+                      </div>
+                      
+                      <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+                        <h3 className="font-medium flex items-center gap-2">
+                          <Code size={16} className="text-orange-500" />
+                          Công nghệ hiện đại
+                        </h3>
+                        <p className="mt-2 text-sm text-muted-foreground dark:text-gray-300">
+                          Ứng dụng công nghệ tiên tiến vào quá trình giảng dạy và học tập, tạo ra trải nghiệm học tập tốt nhất.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 p-4 rounded-lg">
+                      <h3 className="font-medium text-center">Tầm nhìn của chúng tôi</h3>
+                      <p className="mt-2 text-center text-muted-foreground dark:text-gray-300">
+                        "Trở thành nền tảng học tập trực tuyến hàng đầu tại Việt Nam, góp phần đào tạo nguồn nhân lực chất lượng cao cho xã hội"
+                      </p>
+                    </div>
+                    
+                    <div className="flex justify-center mt-4">
+                      <Button 
+                        onClick={() => navigate("/courses")}
+                        className="bg-gradient-to-r from-epu-primary to-epu-accent hover:opacity-90 transition-opacity"
+                      >
+                        <BookOpen size={16} />
+                        Khám phá khóa học
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </motion.div>
 
             {user?.role === "admin" && (
               <motion.div variants={itemVariants}>
@@ -240,6 +341,50 @@ const MainLayout = () => {
                         {item.name}
                       </Link>
                     ))}
+
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <button className="flex items-center gap-2 p-3 rounded-md hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors duration-200 text-start w-full">
+                          <Info size={18} className="text-primary" />
+                          Giới thiệu
+                        </button>
+                      </DialogTrigger>
+                      <DialogContent className="dark:bg-slate-900 dark:border-slate-800">
+                        <DialogHeader>
+                          <DialogTitle className="text-xl flex items-center gap-2">
+                            <Sparkles className="text-primary" size={18} />
+                            <span>Giới thiệu EPU Learn</span>
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-3 mt-3">
+                          <p className="text-sm text-muted-foreground dark:text-gray-300">
+                            EPU Learn là nền tảng học tập trực tuyến được phát triển bởi Trường Đại học Điện Lực.
+                          </p>
+                          <div className="space-y-2 mt-2">
+                            <div className="flex items-start gap-2">
+                              <BookOpen size={16} className="text-primary mt-0.5" />
+                              <p className="text-sm">Hơn 200+ khóa học từ nhiều lĩnh vực</p>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <FileText size={16} className="text-primary mt-0.5" />
+                              <p className="text-sm">Thư viện tài liệu phong phú</p>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <Users size={16} className="text-primary mt-0.5" />
+                              <p className="text-sm">Cộng đồng học tập sôi động</p>
+                            </div>
+                          </div>
+                          <div className="pt-3">
+                            <Button 
+                              onClick={() => navigate("/courses")}
+                              className="w-full bg-gradient-to-r from-epu-primary to-epu-accent hover:opacity-90 transition-opacity"
+                            >
+                              Khám phá khóa học
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
 
                     {user?.role === "admin" && (
                       <>
