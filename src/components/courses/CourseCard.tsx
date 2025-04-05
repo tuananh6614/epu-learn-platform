@@ -74,8 +74,9 @@ const CourseCard = ({ course }: { course: CourseType }) => {
   return (
     <motion.div
       whileHover={{ 
-        y: -5, 
-        transition: { duration: 0.2, ease: "easeOut" } 
+        y: -8, 
+        scale: 1.02,
+        transition: { duration: 0.3, ease: "easeOut" } 
       }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -85,38 +86,42 @@ const CourseCard = ({ course }: { course: CourseType }) => {
       className="h-full"
     >
       <Link to={`/courses/${course.id}`} className="h-full block">
-        <Card className="h-full overflow-hidden border border-slate-200 dark:border-slate-700 group bg-white dark:bg-slate-900 transition-all duration-200 shadow-sm hover:shadow-xl hover:border-epu-primary/50 dark:hover:border-epu-accent/50">
-          <div className="aspect-video relative overflow-hidden">
+        <Card className="h-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 group bg-white dark:bg-slate-900/80 backdrop-blur-sm transition-all duration-300 shadow-md hover:shadow-2xl hover:border-epu-primary/50 dark:hover:border-epu-accent/50">
+          <div className="aspect-video relative overflow-hidden rounded-t-2xl">
             <motion.div 
               className="w-full h-full"
-              animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              animate={isHovered ? { scale: 1.08 } : { scale: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             >
               <img
                 src={course.thumbnail || "/placeholder.svg"}
                 alt={course.title}
-                className="w-full h-full object-cover transition-all duration-300 group-hover:brightness-110"
+                className="w-full h-full object-cover transition-all duration-300 group-hover:brightness-110 group-hover:contrast-110"
               />
             </motion.div>
             
-            {/* Gradient overlay with better visibility */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-90"></div>
+            {/* Enhanced gradient overlay for better title visibility */}
+            <motion.div 
+              className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent"
+              animate={isHovered ? { opacity: 0.9 } : { opacity: 0.7 }}
+              transition={{ duration: 0.3 }}
+            ></motion.div>
             
             {course.enrolled && (
-              <Badge className="absolute top-2 right-2 bg-epu-primary text-white shadow-md z-10 transition-all duration-300 group-hover:scale-105 animate-none">
+              <Badge className="absolute top-3 right-3 bg-epu-primary text-white shadow-lg z-10 transition-all duration-300 group-hover:scale-110 animate-pulse">
                 Đã đăng ký
               </Badge>
             )}
             
-            {/* Fixed position for specialization badge to avoid overlay with view details */}
+            {/* Better positioned specialization badge */}
             {course.specialization && (
-              <div className="absolute top-2 left-2 z-20">
+              <div className="absolute top-3 left-3 z-20">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Badge 
                         variant="outline" 
-                        className="bg-white/90 backdrop-blur-sm shadow-sm border-0 font-medium transition-all duration-300 group-hover:bg-white/95 animate-none hover:cursor-help"
+                        className="bg-white/90 backdrop-blur-md shadow-md border-0 font-semibold px-3 py-1.5 transition-all duration-300 group-hover:bg-white/95 group-hover:scale-105 animate-none hover:cursor-help"
                         onClick={(e) => {
                           e.preventDefault();
                           setShowHoverCard(true);
@@ -126,7 +131,7 @@ const CourseCard = ({ course }: { course: CourseType }) => {
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="text-xs">{getSpecializationName(course.specialization)}</p>
+                      <p className="text-xs font-medium">{getSpecializationName(course.specialization)}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -135,51 +140,64 @@ const CourseCard = ({ course }: { course: CourseType }) => {
                 <AnimatePresence>
                   {showHoverCard && (
                     <motion.div 
-                      className="absolute top-8 left-0 z-30 bg-white dark:bg-slate-800 rounded-md p-2 shadow-lg border border-slate-200 dark:border-slate-700 text-sm min-w-44"
+                      className="absolute top-10 left-0 z-30 bg-white dark:bg-slate-800 rounded-xl p-3 shadow-xl border border-slate-200 dark:border-slate-700 text-sm min-w-44 backdrop-blur-md"
                       initial={{ opacity: 0, scale: 0.9, y: -5 }}
                       animate="visible"
                       exit="exit"
                       variants={burstVariants}
                     >
-                      <p>Chuyên ngành: {getSpecializationName(course.specialization)}</p>
+                      <p className="font-medium">Chuyên ngành: {getSpecializationName(course.specialization)}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             )}
             
-            {/* Course title overlay for better visibility */}
-            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90 to-transparent">
-              <h3 className="font-bold text-base line-clamp-2 text-white group-hover:text-epu-accent dark:group-hover:text-epu-accent transition-colors duration-300">
+            {/* Enhanced course title with better styling and effects */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/95 via-black/80 to-transparent">
+              <motion.h3 
+                className="font-bold text-xl md:text-2xl line-clamp-2 text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.3)] tracking-wide group-hover:text-epu-accent dark:group-hover:text-epu-accent transition-colors duration-300"
+                animate={isHovered ? { y: -3, textShadow: "0 0 8px rgba(255,255,255,0.5)" } : { y: 0, textShadow: "0 0 0px rgba(255,255,255,0)" }}
+                transition={{ duration: 0.3 }}
+              >
                 {course.title}
-              </h3>
+              </motion.h3>
             </div>
           </div>
           
-          <CardContent className="pt-3 pb-0">
-            <p className="text-muted-foreground text-sm line-clamp-2">{course.description}</p>
+          <CardContent className="pt-4 pb-2">
+            <motion.p 
+              className="text-muted-foreground text-sm line-clamp-2 backdrop-blur-sm"
+              animate={isHovered ? { opacity: 1 } : { opacity: 0.9 }}
+            >
+              {course.description}
+            </motion.p>
           </CardContent>
           
-          <CardFooter className="flex justify-between text-sm text-muted-foreground pt-2 pb-3">
-            <div className="flex items-center gap-1">
-              <BookOpen size={14} className="text-epu-primary dark:text-epu-accent" />
-              <span>{course.chapterCount || 0} chương</span>
+          <CardFooter className="flex justify-between text-sm text-muted-foreground pt-2 pb-4 px-6 bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm">
+            <div className="flex items-center gap-1.5">
+              <BookOpen size={16} className="text-epu-primary dark:text-epu-accent" />
+              <span className="font-medium">{course.chapterCount || 0} chương</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Users size={14} className="text-epu-primary dark:text-epu-accent" />
-              <span>{course.enrollmentCount || 0} học viên</span>
+            <div className="flex items-center gap-1.5">
+              <Users size={16} className="text-epu-primary dark:text-epu-accent" />
+              <span className="font-medium">{course.enrollmentCount || 0} học viên</span>
             </div>
           </CardFooter>
           
-          {/* "View details" button with improved positioning to avoid overlap */}
+          {/* Enhanced "View details" button with animated gradient */}
           <motion.div 
-            className="absolute bottom-0 left-0 right-0 h-0 bg-gradient-to-r from-epu-primary to-epu-accent overflow-hidden flex items-center justify-center text-white font-medium shadow-md"
-            animate={isHovered ? { height: 36, opacity: 1 } : { height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="absolute bottom-0 left-0 right-0 h-0 bg-gradient-to-r from-epu-primary via-blue-600 to-epu-accent overflow-hidden flex items-center justify-center text-white font-medium shadow-lg"
+            animate={isHovered ? { height: 40, opacity: 1 } : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <span className="flex items-center">
-              Xem chi tiết <ChevronRight size={16} className="ml-1" />
-            </span>
+            <motion.span 
+              className="flex items-center"
+              animate={isHovered ? { x: 0, opacity: 1 } : { x: -10, opacity: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              Xem chi tiết <ChevronRight size={18} className="ml-1" />
+            </motion.span>
           </motion.div>
         </Card>
       </Link>

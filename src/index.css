@@ -194,16 +194,49 @@
   
   /* Improved card styles */
   .enhanced-card {
-    @apply rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 
+    @apply rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 
       transition-all duration-300 hover:shadow-xl hover:border-slate-300 dark:hover:border-slate-700
-      bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm;
+      bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm scale-100 hover:scale-[1.02];
   }
   
-  /* Glass morphism effect */
+  /* Glass morphism effect with improved styling */
   .glass-card {
-    @apply bg-white/10 dark:bg-slate-900/10 backdrop-blur-md 
-      border border-white/20 dark:border-slate-700/20 
-      shadow-lg rounded-xl;
+    @apply bg-white/10 dark:bg-slate-900/20 backdrop-blur-lg 
+      border border-white/30 dark:border-slate-700/30 
+      shadow-lg rounded-2xl hover:shadow-xl transition-all duration-300;
+  }
+  
+  /* New course card styling */
+  .course-card {
+    @apply rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 
+      transition-all duration-500 hover:shadow-2xl hover:scale-[1.02]
+      bg-white dark:bg-slate-900/90 backdrop-blur-sm;
+  }
+  
+  .course-card-title {
+    @apply font-bold text-xl tracking-wide drop-shadow-md text-white transition-all duration-300
+      hover:text-epu-accent/90 dark:hover:text-epu-accent;
+  }
+  
+  .course-card-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent
+      opacity-70 transition-opacity duration-300 hover:opacity-80;
+  }
+  
+  .course-card-footer {
+    @apply flex justify-between text-sm text-muted-foreground py-3 px-5
+      bg-slate-50/50 dark:bg-slate-800/30 backdrop-blur-sm;
+  }
+  
+  .course-card-badge {
+    @apply bg-white/90 backdrop-blur-md shadow-sm border-0 font-medium 
+      transition-all duration-300 hover:bg-white/95 hover:scale-105;
+  }
+  
+  .course-card-cta {
+    @apply absolute bottom-0 left-0 right-0 h-0 bg-gradient-to-r from-epu-primary to-epu-accent
+      overflow-hidden flex items-center justify-center text-white font-medium shadow-md
+      transition-all duration-300;
   }
   
   /* Hero badge */
