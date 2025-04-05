@@ -80,7 +80,7 @@ const HomePage = () => {
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-2 border-white text-white hover:bg-white/20 shadow-md hover:shadow-lg transition-all duration-300"
+              className="border-2 border-white text-black hover:bg-white/20 shadow-md hover:shadow-lg transition-all duration-300"
               onClick={() => navigate("/documents")}
             >
               Tìm tài liệu học tập
