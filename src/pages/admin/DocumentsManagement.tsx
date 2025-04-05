@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import {
   Card,
@@ -19,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FileText, Search, Plus, Edit, Trash2, FileIcon } from "lucide-react";
+import { FileText, Search, Plus, Edit, Trash2, BarChart2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
@@ -29,7 +28,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Particles } from "../components/ui/Particles";
+import { Particles } from "@/components/ui/Particles";
 
 // Mock documents
 const mockDocuments = [
