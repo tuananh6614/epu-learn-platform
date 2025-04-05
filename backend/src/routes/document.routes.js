@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 const { verifyToken, isAdmin } = require('../middleware/auth.middleware');
@@ -17,5 +16,10 @@ router.post('/documents/:document_id/purchase', verifyToken, documentController.
 router.post('/documents', verifyToken, isAdmin, documentController.addDocument);
 router.put('/documents/:document_id', verifyToken, isAdmin, documentController.updateDocument);
 router.delete('/documents/:document_id', verifyToken, isAdmin, documentController.deleteDocument);
+
+// Category management routes (admin only)
+router.post('/categories', verifyToken, isAdmin, documentController.addCategory);
+router.put('/categories/:category_id', verifyToken, isAdmin, documentController.updateCategory);
+router.delete('/categories/:category_id', verifyToken, isAdmin, documentController.deleteCategory);
 
 module.exports = router;

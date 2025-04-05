@@ -1,4 +1,3 @@
-
 const db = require('../config/db');
 const path = require('path');
 const fs = require('fs').promises;
@@ -262,5 +261,61 @@ exports.purchaseDocument = async (req, res) => {
   } catch (error) {
     console.error('Purchase document error:', error);
     res.status(500).json({ message: 'Lỗi khi mua tài liệu' });
+  }
+};
+
+// Add new category
+exports.addCategory = async (req, res) => {
+  try {
+    const { category_name, description } = req.body;
+
+    const [result] = await db.execute(
+      'INSERT INTO Document_Categories (category_name, description) VALUES (?, ?)',
+      [category_name, description]
+    );
+
+    res.status(201).json({
+      message: 'Thêm danh mục thành công',
+      category: {
+        category_id: result.insertId,
+        category_name,
+        description
+      }
+    });
+  } catch (error) {
+    console.error('Add category error:', error);
+    res.status(500).json({ message: 'Lỗi khi thêm danh mục' });
+  }
+};
+
+// Update category
+exports.updateCategory = async (req, res) => {
+  try {
+    const { category_id } = req.params;
+    const { category_name, description } = req.body;
+
+    await db.execute(
+      'UPDATE Document_Categories SET category_name = ?, description = ? WHERE category_id = ?',
+      [category_name, description, category_id]
+    );
+
+    res.json({ message: 'Cập nhật danh mục thành công' });
+  } catch (error) {
+    console.error('Update category error:', error);
+    res.status(500).json({ message: 'Lỗi khi cập nhật danh mục' });
+  }
+};
+
+// Delete category
+exports.deleteCategory = async (req, res) => {
+  try {
+    const { category_id } = req.params;
+
+    await db.execute('DELETE FROM Document_Categories WHERE category_id = ?', [category_id]);
+
+    res.json({ message: 'Xóa danh mục thành công' });
+  } catch (error) {
+    console.error('Delete category error:', error);
+    res.status(500).json({ message: 'Lỗi khi xóa danh mục' });
   }
 };
