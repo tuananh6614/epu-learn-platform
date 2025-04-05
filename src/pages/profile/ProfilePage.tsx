@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: user?.fullName || "",
     email: user?.email || "",
@@ -29,28 +30,76 @@ const ProfilePage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // In a real app, this would validate the current password before updating
-    updateUserInfo({
-      fullName: formData.fullName,
-      newPassword: formData.newPassword.length > 0 ? formData.newPassword : undefined
-    });
+    // Basic validation
+    if (isEditing && !formData.fullName.trim()) {
+      toast({
+        title: "Lỗi",
+        description: "Họ và tên không được để trống",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // If password is being changed, require current password
+    if (formData.newPassword && !formData.currentPassword) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng nhập mật khẩu hiện tại",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
     
-    toast({
-      title: "Thông tin đã được cập nhật",
-      description: "Thông tin cá nhân của bạn đã được cập nhật thành công",
-    });
-    
-    // Reset password fields
-    setFormData(prev => ({
-      ...prev,
-      currentPassword: "",
-      newPassword: ""
-    }));
-    
-    setIsEditing(false);
+    try {
+      // Only send updates if there are actual changes
+      const updates: {fullName?: string; newPassword?: string} = {};
+      
+      if (formData.fullName !== user?.fullName) {
+        updates.fullName = formData.fullName;
+      }
+      
+      if (formData.newPassword) {
+        updates.newPassword = formData.newPassword;
+      }
+      
+      // Only call API if there are changes
+      if (Object.keys(updates).length > 0) {
+        await updateUserInfo(updates);
+        
+        // Reset password fields
+        setFormData(prev => ({
+          ...prev,
+          currentPassword: "",
+          newPassword: ""
+        }));
+        
+        toast({
+          title: "Thành công",
+          description: "Thông tin cá nhân đã được cập nhật",
+        });
+      } else {
+        toast({
+          title: "Thông báo",
+          description: "Không có thông tin nào được thay đổi",
+        });
+      }
+      
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Profile update error:", error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể cập nhật thông tin",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const togglePasswordVisibility = (field: 'current' | 'new') => {
@@ -208,11 +257,24 @@ const ProfilePage = () => {
                           newPassword: "",
                         });
                       }}
+                      disabled={isSubmitting}
                     >
                       Huỷ
                     </Button>
-                    <Button type="submit" className="bg-epu-primary hover:bg-epu-primary/90">
-                      Lưu thay đổi
+                    <Button 
+                      type="submit" 
+                      className="bg-epu-primary hover:bg-epu-primary/90"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <div className="flex items-center gap-2">
+                          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Đang lưu...
+                        </div>
+                      ) : "Lưu thay đổi"}
                     </Button>
                   </>
                 ) : (

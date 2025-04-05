@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +15,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   register: (fullName: string, email: string, password: string) => Promise<boolean>;
-  updateUserInfo: (updates: { fullName?: string; newPassword?: string }) => void;
+  updateUserInfo: (updates: { fullName?: string; newPassword?: string }) => Promise<boolean>;
   loading: boolean;
 };
 
@@ -149,10 +150,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const updateUserInfo = async (updates: { fullName?: string; newPassword?: string }) => {
-    if (!user) return;
+    if (!user) return false;
 
     try {
       const token = localStorage.getItem("epu_token");
+      
+      if (!token) {
+        toast({
+          title: "Lỗi",
+          description: "Phiên đăng nhập không hợp lệ, vui lòng đăng nhập lại",
+          variant: "destructive",
+        });
+        logout();
+        return false;
+      }
+      
+      console.log("Sending profile update:", updates);
+      
       const response = await fetch('http://localhost:5000/api/auth/update-profile', {
         method: 'PUT',
         headers: {
@@ -163,12 +177,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       const data = await response.json();
+      console.log("Profile update response:", data);
 
       if (!response.ok) {
-        throw new Error(data.message);
+        throw new Error(data.message || "Cập nhật thất bại");
       }
 
-      if (updates.fullName) {
+      // Cập nhật thông tin user trong state và localStorage
+      if (data.user) {
+        setUser(data.user);
+        localStorage.setItem("epu_user", JSON.stringify(data.user));
+      } else if (updates.fullName) {
+        // Fallback nếu API không trả về thông tin user
         const updatedUser = {
           ...user,
           fullName: updates.fullName,
@@ -181,13 +201,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Cập nhật thành công",
         description: "Thông tin của bạn đã được cập nhật",
       });
+      
+      return true;
     } catch (error) {
       console.error("Update profile error:", error);
       toast({
         title: "Lỗi",
-        description: "Không thể cập nhật thông tin",
+        description: error instanceof Error ? error.message : "Không thể cập nhật thông tin",
         variant: "destructive",
       });
+      return false;
     }
   };
 
