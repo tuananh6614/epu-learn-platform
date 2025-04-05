@@ -16,26 +16,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap, Phone, Mail, MapPin, Code, Users, LightbulbIcon, BrainCircuit, Rocket, Zap, Star } from "lucide-react";
+import { Menu, X, User, LogOut, BookOpen, FileText, Home, ChevronDown, Sparkles, GraduationCap, Phone, Mail, MapPin, Code, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import { FloatingParticles } from "@/components/ui/FloatingParticles";
 
 const MainLayout = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -57,15 +46,6 @@ const MainLayout = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Auto-hide intro after certain time has passed
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowIntro(false);
-    }, 10000); // 10 seconds
-
-    return () => clearTimeout(timer);
   }, []);
 
   const handleLogout = () => {
@@ -98,97 +78,8 @@ const MainLayout = () => {
     show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   };
 
-  const introFeatures = [
-    { 
-      icon: BrainCircuit, 
-      title: "AI Học tập cá nhân hóa", 
-      color: "from-pink-500 to-purple-500"
-    },
-    { 
-      icon: Rocket, 
-      title: "Bộ công cụ học tập hiện đại", 
-      color: "from-blue-500 to-cyan-400"
-    },
-    { 
-      icon: Zap, 
-      title: "Bài giảng tương tác", 
-      color: "from-amber-500 to-orange-500"
-    }
-  ];
-
-  const handleCloseIntro = () => {
-    setShowIntro(false);
-  };
-
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Creative Introduction Section */}
-      <AnimatePresence>
-        {showIntro && (
-          <motion.div 
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="relative overflow-hidden bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 text-white"
-          >
-            <div className="absolute inset-0 overflow-hidden">
-              <FloatingParticles />
-            </div>
-            
-            <div className="container mx-auto py-3 px-4 relative z-10">
-              <div className="flex justify-between items-center">
-                <div className="hidden md:flex items-center gap-8 w-full">
-                  {introFeatures.map((feature, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 + index * 0.1 }}
-                      className="flex items-center gap-2 flex-1"
-                    >
-                      <div className={`p-2 rounded-full bg-gradient-to-br ${feature.color}`}>
-                        <feature.icon size={16} className="text-white" />
-                      </div>
-                      <span className="text-sm font-medium">{feature.title}</span>
-                    </motion.div>
-                  ))}
-
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.6 }}
-                    className="ml-auto flex items-center"
-                  >
-                    <Star className="text-yellow-300 mr-1" size={16} />
-                    <span className="text-sm font-medium mr-4">Đăng ký ngay hôm nay!</span>
-                    <Button 
-                      size="sm" 
-                      variant="secondary"
-                      className="text-xs h-8 bg-white text-purple-900 hover:bg-gray-100"
-                      onClick={() => navigate("/register")}
-                    >
-                      Bắt đầu miễn phí
-                    </Button>
-                  </motion.div>
-                </div>
-
-                <div className="md:hidden flex-1 text-center">
-                  <span className="text-sm font-medium">EPU Learn - Nền tảng học tập hiện đại</span>
-                </div>
-
-                <button 
-                  onClick={handleCloseIntro} 
-                  className="text-white hover:text-gray-200 transition-colors"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-700 ${
           isScrolled 
