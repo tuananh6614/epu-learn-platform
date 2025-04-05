@@ -21,21 +21,33 @@ const DocumentsPage = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [documents, setDocuments] = useState<DocumentType[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // This would be replaced with an actual API call in a real app
     const fetchDocuments = async () => {
       try {
         setIsLoading(true);
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
         
         // In a real app, this would be an API call to fetch documents
-        setDocuments([]);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/documents/documents`);
+        
+        if (!response.ok) {
+          throw new Error('Không thể tải dữ liệu tài liệu');
+        }
+        
+        const data = await response.json();
+        setDocuments(data);
+        
+        // Extract unique categories from documents
+        const uniqueCategories = Array.from(
+          new Set(data.map((doc: DocumentType) => doc.category_name))
+        );
+        setCategories(uniqueCategories);
+        
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching documents:", error);
@@ -51,15 +63,10 @@ const DocumentsPage = () => {
     fetchDocuments();
   }, [toast]);
 
-  // Extract unique categories
-  const categories = Array.from(
-    new Set(documents.map((doc) => doc.category_name))
-  );
-
   // Apply sorting
   const sortedDocuments = [...documents].sort((a, b) => {
     if (sortBy === "newest") {
-      return b.id - a.id;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     }
     if (sortBy === "price-low") {
       return a.price - b.price;
@@ -82,7 +89,7 @@ const DocumentsPage = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handlePurchaseDocument = (document: DocumentType) => {
+  const handlePurchaseDocument = async (document: DocumentType) => {
     if (!user) {
       toast({
         title: "Yêu cầu đăng nhập",
@@ -93,19 +100,38 @@ const DocumentsPage = () => {
       return;
     }
     
-    toast({
-      title: "Đang chuyển đến trang thanh toán",
-      description: `Chuẩn bị thanh toán cho "${document.title}"`,
-    });
-    
-    // In real app, would redirect to payment gateway
-    // For now, we'll just show a toast
-    setTimeout(() => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/documents/documents/${document.id}/purchase`, 
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Lỗi khi mua tài liệu');
+      }
+      
       toast({
-        title: "Chức năng đang phát triển",
-        description: "Tính năng thanh toán sẽ sớm được cập nhật",
+        title: "Mua tài liệu thành công",
+        description: `Bạn đã mua thành công "${document.title}"`,
       });
-    }, 2000);
+      
+      // Redirect to profile documents page
+      navigate("/profile/documents");
+    } catch (error) {
+      console.error("Purchase error:", error);
+      toast({
+        title: "Lỗi khi mua tài liệu",
+        description: error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

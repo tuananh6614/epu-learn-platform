@@ -1,23 +1,21 @@
+
 const express = require('express');
 const router = express.Router();
 const { verifyToken, isAdmin } = require('../middleware/auth.middleware');
-const {
-  getDocuments,
-  getCategories,
-  addDocument,
-  downloadDocument,
-  purchaseDocument
-} = require('../controllers/document.controller');
+const documentController = require('../controllers/document.controller');
 
-// Routes công khai
-router.get('/documents', getDocuments);
-router.get('/categories', getCategories);
+// Public routes
+router.get('/documents', documentController.getDocuments);
+router.get('/categories', documentController.getCategories);
 
-// Routes yêu cầu đăng nhập
-router.get('/documents/:document_id/download', verifyToken, downloadDocument);
-router.post('/documents/:document_id/purchase', verifyToken, purchaseDocument);
+// User routes (protected)
+router.get('/user/documents', verifyToken, documentController.getUserDocuments);
+router.get('/documents/:document_id/download', verifyToken, documentController.downloadDocument);
+router.post('/documents/:document_id/purchase', verifyToken, documentController.purchaseDocument);
 
-// Routes cho admin
-router.post('/documents', verifyToken, isAdmin, addDocument);
+// Admin routes
+router.post('/documents', verifyToken, isAdmin, documentController.addDocument);
+router.put('/documents/:document_id', verifyToken, isAdmin, documentController.updateDocument);
+router.delete('/documents/:document_id', verifyToken, isAdmin, documentController.deleteDocument);
 
-module.exports = router; 
+module.exports = router;

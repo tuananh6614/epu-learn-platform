@@ -4,22 +4,38 @@ import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Info, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const ProfileDocuments = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [purchasedDocuments, setPurchasedDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // This would be replaced with an actual API call in a real app
     const fetchPurchasedDocuments = async () => {
+      if (!user) return;
+      
       try {
         setIsLoading(true);
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // In a real app, this would be an API call to fetch the user's purchased documents
-        setPurchasedDocuments([]);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Không tìm thấy token đăng nhập');
+        }
+        
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/documents/user/documents`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Không thể tải danh sách tài liệu đã mua');
+        }
+        
+        const data = await response.json();
+        setPurchasedDocuments(data);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching purchased documents:", error);
@@ -33,14 +49,33 @@ const ProfileDocuments = () => {
     };
 
     fetchPurchasedDocuments();
-  }, [toast]);
+  }, [toast, user]);
 
-  const handleDownload = (documentId: number) => {
-    toast({
-      title: "Đang tải xuống",
-      description: `Tài liệu #${documentId} đang được tải xuống`,
-    });
-    // In a real app, this would trigger a download
+  const handleDownload = async (documentId) => {
+    try {
+      toast({
+        title: "Đang tải xuống",
+        description: `Tài liệu đang được tải xuống`,
+      });
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Không tìm thấy token đăng nhập');
+      }
+      
+      // Using fetch with download 
+      window.open(
+        `${import.meta.env.VITE_API_URL}/api/documents/documents/${documentId}/download?token=${token}`, 
+        '_blank'
+      );
+    } catch (error) {
+      console.error("Download error:", error);
+      toast({
+        title: "Lỗi khi tải xuống",
+        description: error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isLoading) {
@@ -72,7 +107,7 @@ const ProfileDocuments = () => {
                     <div>
                       <h3 className="font-medium">{document.title}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {document.category_name} • {document.price / 1000}k VND
+                        {document.category_name} • {(document.price / 1000).toFixed(1)}k VND
                       </p>
                     </div>
                   </div>
