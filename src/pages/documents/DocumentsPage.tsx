@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -10,9 +10,8 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, FileText } from "lucide-react";
 import DocumentCard, { DocumentType } from "@/components/documents/DocumentCard";
-import { mockDocuments } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -21,17 +20,44 @@ const DocumentsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [documents, setDocuments] = useState<DocumentType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // This would be replaced with an actual API call in a real app
+    const fetchDocuments = async () => {
+      try {
+        setIsLoading(true);
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // In a real app, this would be an API call to fetch documents
+        setDocuments([]);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching documents:", error);
+        toast({
+          title: "Lỗi",
+          description: "Không thể tải dữ liệu tài liệu",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+      }
+    };
+
+    fetchDocuments();
+  }, [toast]);
+
   // Extract unique categories
   const categories = Array.from(
-    new Set(mockDocuments.map((doc) => doc.category_name))
+    new Set(documents.map((doc) => doc.category_name))
   );
 
   // Apply sorting
-  const sortedDocuments = [...mockDocuments].sort((a, b) => {
+  const sortedDocuments = [...documents].sort((a, b) => {
     if (sortBy === "newest") {
       return b.id - a.id;
     }
@@ -73,6 +99,7 @@ const DocumentsPage = () => {
     });
     
     // In real app, would redirect to payment gateway
+    // For now, we'll just show a toast
     setTimeout(() => {
       toast({
         title: "Chức năng đang phát triển",
@@ -140,7 +167,13 @@ const DocumentsPage = () => {
       </div>
       
       {/* Documents Grid */}
-      {filteredDocuments.length > 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((index) => (
+            <div key={index} className="h-64 animate-pulse bg-muted rounded-2xl" />
+          ))}
+        </div>
+      ) : filteredDocuments.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredDocuments.map((document) => (
             <DocumentCard 
@@ -152,24 +185,31 @@ const DocumentsPage = () => {
         </div>
       ) : (
         <div className="text-center py-12">
-          <h3 className="text-lg font-medium mb-2">Không tìm thấy tài liệu</h3>
+          <FileText size={64} className="mx-auto text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium mb-2">Không có tài liệu nào</h3>
           <p className="text-muted-foreground">
-            Không có tài liệu nào phù hợp với tìm kiếm của bạn
+            Hiện chưa có tài liệu nào trong hệ thống hoặc không tìm thấy tài liệu phù hợp
           </p>
-          <div className="flex flex-wrap justify-center gap-2 mt-4">
-            <Button 
-              variant="outline" 
-              onClick={() => setSearchTerm("")}
-            >
-              Xóa tìm kiếm
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => setSelectedCategory("")}
-            >
-              Xóa bộ lọc
-            </Button>
-          </div>
+          {searchTerm || selectedCategory ? (
+            <div className="flex flex-wrap justify-center gap-2 mt-4">
+              {searchTerm && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSearchTerm("")}
+                >
+                  Xóa tìm kiếm
+                </Button>
+              )}
+              {selectedCategory && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSelectedCategory("")}
+                >
+                  Xóa bộ lọc
+                </Button>
+              )}
+            </div>
+          ) : null}
         </div>
       )}
     </div>
