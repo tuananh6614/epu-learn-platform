@@ -77,7 +77,7 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Thống kê hệ thống</h1>
+        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-admin-primary to-admin-accent bg-clip-text text-transparent dark:from-admin-primary dark:to-admin-accent">Thống kê hệ thống</h1>
         <p className="text-muted-foreground">
           Xem nhanh các số liệu quan trọng và hoạt động gần đây
         </p>
@@ -85,10 +85,10 @@ const AdminDashboard = () => {
 
       {/* Stats Overview */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-amber-200">
+        <Card className="admin-stat-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Tổng người dùng</CardTitle>
-            <Users className="h-4 w-4 text-amber-600" />
+            <Users className="h-4 w-4 text-admin-primary dark:text-admin-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{statistics.totalUsers}</div>
@@ -98,10 +98,10 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
         
-        <Card className="border-amber-200">
+        <Card className="admin-stat-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Khóa học đã đăng</CardTitle>
-            <BookOpen className="h-4 w-4 text-amber-600" />
+            <BookOpen className="h-4 w-4 text-admin-secondary dark:text-admin-secondary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{statistics.coursesPublished}</div>
@@ -111,10 +111,10 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
         
-        <Card className="border-amber-200">
+        <Card className="admin-stat-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Tài liệu đã đăng</CardTitle>
-            <FileText className="h-4 w-4 text-amber-600" />
+            <FileText className="h-4 w-4 text-admin-accent dark:text-admin-accent" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{statistics.documentsPublished}</div>
@@ -124,10 +124,10 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
         
-        <Card className="border-amber-200">
+        <Card className="admin-stat-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Doanh thu (VND)</CardTitle>
-            <DollarSign className="h-4 w-4 text-amber-600" />
+            <DollarSign className="h-4 w-4 text-green-500 dark:text-green-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -142,8 +142,8 @@ const AdminDashboard = () => {
       </div>
 
       {/* Recent Transactions */}
-      <Card className="col-span-1 border-amber-200">
-        <CardHeader className="bg-amber-50">
+      <Card className="admin-card">
+        <CardHeader className="bg-gradient-to-r from-admin-primary/10 to-admin-accent/10 dark:from-admin-primary/20 dark:to-admin-accent/20 rounded-t-lg">
           <CardTitle>Giao dịch gần đây</CardTitle>
           <CardDescription>
             Các giao dịch được thực hiện trong 48 giờ qua
@@ -152,7 +152,7 @@ const AdminDashboard = () => {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow className="bg-amber-50">
+              <TableRow className="bg-admin-primary/5 dark:bg-admin-primary/10">
                 <TableHead>Người dùng</TableHead>
                 <TableHead>Nội dung</TableHead>
                 <TableHead>Ngày</TableHead>
@@ -162,7 +162,7 @@ const AdminDashboard = () => {
             </TableHeader>
             <TableBody>
               {recentTransactions.map((transaction) => (
-                <TableRow key={transaction.id}>
+                <TableRow key={transaction.id} className="border-b border-admin-border/10 dark:border-admin-border/20">
                   <TableCell className="font-medium">{transaction.user}</TableCell>
                   <TableCell>{transaction.item}</TableCell>
                   <TableCell>{transaction.date}</TableCell>
@@ -171,11 +171,11 @@ const AdminDashboard = () => {
                   </TableCell>
                   <TableCell>
                     {transaction.status === "completed" ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                         <CheckCircle className="w-3 h-3 mr-1" /> Hoàn tất
                       </span>
                     ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
                         <Clock className="w-3 h-3 mr-1" /> Đang xử lý
                       </span>
                     )}
@@ -188,8 +188,8 @@ const AdminDashboard = () => {
       </Card>
 
       {/* System Alerts */}
-      <Card className="col-span-1 border-amber-200">
-        <CardHeader className="bg-amber-50">
+      <Card className="admin-card">
+        <CardHeader className="bg-gradient-to-r from-admin-primary/10 to-admin-accent/10 dark:from-admin-primary/20 dark:to-admin-accent/20 rounded-t-lg">
           <CardTitle>Thông báo hệ thống</CardTitle>
           <CardDescription>
             Các vấn đề cần xử lý
@@ -197,20 +197,20 @@ const AdminDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="p-3 border rounded-md border-amber-200 bg-amber-50">
-              <h4 className="text-sm font-medium text-amber-800 mb-1 flex items-center">
+            <div className="p-3 rounded-md bg-amber-50 border border-amber-200 dark:bg-amber-900/20 dark:border-amber-800/30">
+              <h4 className="text-sm font-medium text-amber-800 dark:text-amber-400 mb-1 flex items-center">
                 <AlertTriangle size={14} className="mr-1" />
                 Cần duyệt tài liệu mới
               </h4>
-              <p className="text-xs text-amber-700">
+              <p className="text-xs text-amber-700 dark:text-amber-300/80">
                 Có 3 tài liệu mới đang chờ duyệt từ giảng viên
               </p>
             </div>
-            <div className="p-3 border rounded-md border-blue-200 bg-blue-50">
-              <h4 className="text-sm font-medium text-blue-800 mb-1">
+            <div className="p-3 rounded-md bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800/30">
+              <h4 className="text-sm font-medium text-blue-800 dark:text-blue-400 mb-1">
                 Báo cáo tài chính tháng
               </h4>
-              <p className="text-xs text-blue-700">
+              <p className="text-xs text-blue-700 dark:text-blue-300/80">
                 Báo cáo tài chính tháng 4/2025 sẽ được tạo vào 30/04/2025
               </p>
             </div>

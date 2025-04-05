@@ -126,7 +126,7 @@ const FinanceManagement = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Quản lý tài chính</h1>
+        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-admin-primary to-admin-accent bg-clip-text text-transparent dark:from-admin-primary dark:to-admin-accent">Quản lý tài chính</h1>
         <p className="text-muted-foreground">
           Theo dõi doanh thu và giao dịch
         </p>
@@ -134,10 +134,10 @@ const FinanceManagement = () => {
       
       {/* Stats Overview */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="admin-stat-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Tổng doanh thu</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="h-4 w-4 text-admin-primary dark:text-admin-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -149,10 +149,10 @@ const FinanceManagement = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="admin-stat-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Tháng này</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Calendar className="h-4 w-4 text-admin-secondary dark:text-admin-secondary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -174,10 +174,10 @@ const FinanceManagement = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="admin-stat-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Khóa học</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="h-4 w-4 text-admin-accent dark:text-admin-accent" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -193,10 +193,10 @@ const FinanceManagement = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="admin-stat-card">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Tài liệu</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="h-4 w-4 text-green-500 dark:text-green-400" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -214,8 +214,8 @@ const FinanceManagement = () => {
       </div>
       
       {/* Chart */}
-      <Card>
-        <CardHeader>
+      <Card className="admin-card">
+        <CardHeader className="bg-gradient-to-r from-admin-primary/10 to-admin-accent/10 dark:from-admin-primary/20 dark:to-admin-accent/20 rounded-t-lg">
           <CardTitle>Phân tích doanh thu</CardTitle>
           <CardDescription>Doanh thu theo tháng (VND)</CardDescription>
         </CardHeader>
@@ -228,8 +228,8 @@ const FinanceManagement = () => {
       </Card>
       
       {/* Transaction Table */}
-      <Card>
-        <CardHeader>
+      <Card className="admin-card">
+        <CardHeader className="bg-gradient-to-r from-admin-primary/10 to-admin-accent/10 dark:from-admin-primary/20 dark:to-admin-accent/20 rounded-t-lg">
           <CardTitle>Lịch sử giao dịch</CardTitle>
           <CardDescription>
             Quản lý và tìm kiếm các giao dịch
@@ -241,7 +241,7 @@ const FinanceManagement = () => {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Tìm kiếm theo tên, email, mã giao dịch..."
-                className="pl-8"
+                className="pl-8 border-admin-border/30 dark:border-admin-border/50 focus:border-admin-primary"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -252,7 +252,7 @@ const FinanceManagement = () => {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full"
+                  className="w-full border-admin-border/30 dark:border-admin-border/50 focus:border-admin-primary"
                 />
               </div>
               <div className="flex-1 md:w-auto">
@@ -260,14 +260,14 @@ const FinanceManagement = () => {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full"
+                  className="w-full border-admin-border/30 dark:border-admin-border/50 focus:border-admin-primary"
                 />
               </div>
-              <Button variant="outline" className="flex-none">
+              <Button variant="outline" className="flex-none border-admin-border/30 dark:border-admin-border/50 text-admin-primary hover:bg-admin-primary/10 hover:text-admin-primary">
                 <FilterIcon className="h-4 w-4 mr-2" />
                 Lọc
               </Button>
-              <Button variant="outline" className="flex-none">
+              <Button variant="outline" className="flex-none border-admin-border/30 dark:border-admin-border/50 text-admin-primary hover:bg-admin-primary/10 hover:text-admin-primary">
                 <Download className="h-4 w-4 mr-2" />
                 Xuất Excel
               </Button>
@@ -276,7 +276,7 @@ const FinanceManagement = () => {
           
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-admin-primary/5 dark:bg-admin-primary/10">
                 <TableHead>Mã</TableHead>
                 <TableHead>Ngày</TableHead>
                 <TableHead>Khách hàng</TableHead>
@@ -287,7 +287,7 @@ const FinanceManagement = () => {
             </TableHeader>
             <TableBody>
               {filteredTransactions.map((transaction) => (
-                <TableRow key={transaction.id}>
+                <TableRow key={transaction.id} className="border-b border-admin-border/10 dark:border-admin-border/20">
                   <TableCell className="font-medium">{transaction.id}</TableCell>
                   <TableCell>{new Date(transaction.date).toLocaleDateString("vi-VN")}</TableCell>
                   <TableCell>
@@ -305,15 +305,15 @@ const FinanceManagement = () => {
                   <TableCell>{new Intl.NumberFormat('vi-VN').format(transaction.amount)}</TableCell>
                   <TableCell>
                     {transaction.status === "completed" ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                         Hoàn tất
                       </span>
                     ) : transaction.status === "refunded" ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
                         Hoàn tiền
                       </span>
                     ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
                         Đang xử lý
                       </span>
                     )}

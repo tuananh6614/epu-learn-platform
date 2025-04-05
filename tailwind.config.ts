@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,16 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				admin: {
+					primary: '#3B82F6', // Bright blue
+					secondary: '#10B981', // Emerald green
+					accent: '#8B5CF6', // Purple
+					dark: '#1E293B', // Dark slate
+					darker: '#0F172A', // Darker slate
+					light: '#F1F5F9', // Slate light
+					muted: '#64748B', // Slate gray
+					border: '#334155', // Slate border
 				},
 				epu: {
 					primary: '#1A365D',
