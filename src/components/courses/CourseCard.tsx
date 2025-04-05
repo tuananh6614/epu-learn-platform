@@ -3,9 +3,15 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Users, ChevronRight } from "lucide-react";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export type CourseType = {
   id: number;
@@ -21,6 +27,20 @@ export type CourseType = {
 
 const CourseCard = ({ course }: { course: CourseType }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [showHoverCard, setShowHoverCard] = useState(false);
+  
+  // Auto-dismiss hover card after 3 seconds with burst animation
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showHoverCard) {
+      timer = setTimeout(() => {
+        setShowHoverCard(false);
+      }, 3000);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [showHoverCard]);
 
   // Map specialization codes to full names
   const getSpecializationName = (code: string) => {
@@ -32,6 +52,23 @@ const CourseCard = ({ course }: { course: CourseType }) => {
       "ATTT": "An toàn thông tin"
     };
     return map[code] || code;
+  };
+
+  // Animation variants for hover card burst effect
+  const burstVariants = {
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: { duration: 0.2 }
+    },
+    exit: {
+      scale: 1.2,
+      opacity: 0,
+      transition: { 
+        duration: 0.3,
+        scale: { duration: 0.3, ease: [0.1, 1.3, 0.9, 1] } // elastic bounce effect
+      }
+    }
   };
 
   return (
@@ -71,20 +108,44 @@ const CourseCard = ({ course }: { course: CourseType }) => {
               </Badge>
             )}
             
+            {/* Fixed position for specialization badge to avoid overlay with view details */}
             {course.specialization && (
-              <HoverCard>
-                <HoverCardTrigger asChild>
-                  <Badge 
-                    variant="outline" 
-                    className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm shadow-sm border-0 font-medium z-10 transition-all duration-300 group-hover:bg-white/95 animate-none hover:cursor-help"
-                  >
-                    {getSpecializationName(course.specialization)}
-                  </Badge>
-                </HoverCardTrigger>
-                <HoverCardContent className="w-auto p-2 dark:bg-slate-800">
-                  <p className="text-sm">Chuyên ngành: {getSpecializationName(course.specialization)}</p>
-                </HoverCardContent>
-              </HoverCard>
+              <div className="absolute top-2 left-2 z-20">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge 
+                        variant="outline" 
+                        className="bg-white/90 backdrop-blur-sm shadow-sm border-0 font-medium transition-all duration-300 group-hover:bg-white/95 animate-none hover:cursor-help"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowHoverCard(true);
+                        }}
+                      >
+                        {course.specialization}
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">{getSpecializationName(course.specialization)}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                {/* Animated hover card with burst effect */}
+                <AnimatePresence>
+                  {showHoverCard && (
+                    <motion.div 
+                      className="absolute top-8 left-0 z-30 bg-white dark:bg-slate-800 rounded-md p-2 shadow-lg border border-slate-200 dark:border-slate-700 text-sm min-w-44"
+                      initial={{ opacity: 0, scale: 0.9, y: -5 }}
+                      animate="visible"
+                      exit="exit"
+                      variants={burstVariants}
+                    >
+                      <p>Chuyên ngành: {getSpecializationName(course.specialization)}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             )}
             
             {/* Course title overlay for better visibility */}
@@ -110,7 +171,7 @@ const CourseCard = ({ course }: { course: CourseType }) => {
             </div>
           </CardFooter>
           
-          {/* Improved "View details" button that appears on hover */}
+          {/* "View details" button with improved positioning to avoid overlap */}
           <motion.div 
             className="absolute bottom-0 left-0 right-0 h-0 bg-gradient-to-r from-epu-primary to-epu-accent overflow-hidden flex items-center justify-center text-white font-medium shadow-md"
             animate={isHovered ? { height: 36, opacity: 1 } : { height: 0, opacity: 0 }}
