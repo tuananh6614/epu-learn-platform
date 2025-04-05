@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -113,6 +113,7 @@
 }
 
 @layer components {
+  
   .card-hover {
     @apply transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer;
   }
@@ -128,39 +129,7 @@
   .btn-outline {
     @apply border-2 border-epu-primary text-epu-primary hover:bg-epu-primary/10 shadow-sm hover:shadow-md transition-all duration-300;
   }
-  
-  .card-glossy {
-    @apply border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-black/80 backdrop-blur-sm 
-      hover:border-slate-300 dark:hover:border-slate-700 
-      shadow-sm hover:shadow-xl transition-all duration-300
-      dark:shadow-slate-900/50;
-  }
-  
-  .glass {
-    @apply backdrop-blur-md bg-white/70 dark:bg-black/60 border border-white/20 dark:border-white/10 shadow-lg;
-  }
-  
-  .course-card {
-    @apply relative overflow-hidden rounded-xl card-glossy;
-  }
-  
-  .course-card-image {
-    @apply h-40 w-full object-cover transition-transform duration-300;
-  }
-  
-  .course-card:hover .course-card-image {
-    @apply scale-105;
-  }
-  
-  .course-card-overlay {
-    @apply absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-60 
-      transition-opacity duration-300;
-  }
-  
-  .course-card:hover .course-card-overlay {
-    @apply opacity-80;
-  }
-  
+
   .modern-btn {
     @apply relative overflow-hidden rounded-full text-white font-medium
       transition-all duration-300 shadow-md active:scale-95;
@@ -175,70 +144,72 @@
   }
   
   .modern-btn-primary {
-    @apply bg-gradient-to-r from-epu-primary to-epu-accent hover:shadow-lg;
+    @apply bg-gradient-to-r from-epu-primary to-epu-accent hover:shadow-lg rounded-xl;
   }
   
   .modern-btn-primary::before {
-    @apply bg-gradient-to-r from-epu-accent to-epu-primary;
+    @apply bg-gradient-to-r from-epu-accent to-epu-primary rounded-xl;
   }
   
   .modern-btn-secondary {
-    @apply bg-gradient-to-r from-epu-secondary to-amber-500 hover:shadow-lg;
+    @apply bg-gradient-to-r from-epu-secondary to-amber-500 hover:shadow-lg rounded-xl;
   }
   
   .modern-btn-secondary::before {
-    @apply bg-gradient-to-r from-amber-500 to-epu-secondary;
+    @apply bg-gradient-to-r from-amber-500 to-epu-secondary rounded-xl;
   }
   
-  .admin-card {
-    @apply border border-admin-border bg-card shadow-md transition-all duration-300 hover:shadow-lg;
+  /* Glow effect for buttons */
+  .btn-glow {
+    @apply relative;
   }
   
-  .admin-header {
-    @apply bg-gradient-to-r from-admin-primary to-admin-accent text-white shadow-md dark:from-admin-primary/90 dark:to-admin-accent/90;
+  .btn-glow::after {
+    @apply content-[''] absolute inset-0 rounded-xl bg-white opacity-0 transition-opacity duration-300 blur-xl;
   }
   
-  .admin-sidebar {
-    @apply bg-white dark:bg-[#0f172a] border-r transition-all duration-300;
+  .btn-glow:hover::after {
+    @apply opacity-30;
   }
   
-  .admin-nav-item {
-    @apply flex items-center gap-3 px-3 py-2 rounded-md transition-colors;
+  /* Wave animation */
+  .wave-animation {
+    animation: wave 3s infinite ease-in-out;
   }
   
-  .admin-nav-item.active {
-    @apply bg-admin-primary text-white dark:bg-admin-accent;
+  /* Gradient background animation */
+  .gradient-animation {
+    background-size: 200% 200%;
+    animation: gradient 15s ease infinite;
   }
   
-  .admin-nav-item:not(.active) {
-    @apply hover:bg-admin-primary/10 text-foreground dark:hover:bg-admin-accent/20;
+  /* Float animation for cards */
+  .float-on-hover {
+    transition: transform 0.3s ease;
   }
   
-  .admin-stat-card {
-    @apply border border-admin-border/50 dark:border-admin-border/30 rounded-lg p-4 bg-gradient-to-br from-white to-gray-50 dark:from-[#131c31] dark:to-[#0f172a] transition-all duration-300 hover:shadow-md;
+  .float-on-hover:hover {
+    transform: translateY(-10px);
   }
   
-  .theme-transition, 
-  button, 
-  div, 
-  section, 
-  span, 
-  p, 
-  h1, h2, h3, h4, h5, h6 {
-    @apply transition-colors duration-500 ease-in-out;
+  /* Improved card styles */
+  .enhanced-card {
+    @apply rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 
+      transition-all duration-300 hover:shadow-xl hover:border-slate-300 dark:hover:border-slate-700
+      bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm;
   }
   
-  .stats-section {
-    @apply bg-black text-white;
+  /* Glass morphism effect */
+  .glass-card {
+    @apply bg-white/10 dark:bg-slate-900/10 backdrop-blur-md 
+      border border-white/20 dark:border-slate-700/20 
+      shadow-lg rounded-xl;
   }
   
-  .bg-white {
-    @apply bg-black;
-  }
-  
-  .from-slate-50,
-  .to-slate-100 {
-    @apply from-slate-950 to-black;
+  /* Hero badge */
+  .hero-badge {
+    @apply inline-block px-4 py-1.5 bg-white/10 backdrop-blur-sm 
+      rounded-full text-sm font-medium text-white tracking-wide;
   }
 }
 
@@ -269,8 +240,37 @@
   }
 }
 
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+.animate-wave {
+  animation: wave 5s ease-in-out infinite;
+}
+
+.animate-gradient {
+  animation: gradient 15s ease infinite;
 }
 
 .mobile-only {
