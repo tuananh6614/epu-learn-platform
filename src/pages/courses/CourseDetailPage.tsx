@@ -49,7 +49,7 @@ const CourseDetailPage = () => {
               duration: "5:30",
               completed: true,
               videoUrl: "https://example.com/video1",
-              imageUrl: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
+              imageUrl: "/lovable-uploads/7e7b9c28-3bdf-4ddb-a68a-179dac93a112.png"
             },
             {
               id: 1002,
@@ -81,7 +81,7 @@ const CourseDetailPage = () => {
               duration: "15:45",
               completed: true,
               videoUrl: "https://example.com/video2",
-              imageUrl: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
+              imageUrl: "/lovable-uploads/7e7b9c28-3bdf-4ddb-a68a-179dac93a112.png"
             },
             {
               id: 2002,
@@ -112,7 +112,7 @@ const CourseDetailPage = () => {
               duration: "20:30",
               completed: false,
               videoUrl: "https://example.com/video3",
-              imageUrl: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
+              imageUrl: "/lovable-uploads/7e7b9c28-3bdf-4ddb-a68a-179dac93a112.png"
             },
             {
               id: 2005,
@@ -144,13 +144,20 @@ const CourseDetailPage = () => {
               duration: "30:00",
               locked: true,
               videoUrl: "https://example.com/video4",
-              imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
+              imageUrl: "/lovable-uploads/7e7b9c28-3bdf-4ddb-a68a-179dac93a112.png"
             },
             {
               id: 3002,
               title: "Tài liệu bổ sung",
               type: "text",
               duration: "15 phút",
+              locked: true
+            },
+            {
+              id: 3003,
+              title: "Bài kiểm tra cuối chương",
+              type: "quiz",
+              duration: "20 phút",
               locked: true
             }
           ]
@@ -189,48 +196,12 @@ const CourseDetailPage = () => {
       return;
     }
     
-    toast({
-      title: "Đang mở nội dung",
-      description: `Đang mở ${contentItem.title}`,
-    });
-    
-    // Here you would navigate to the specific content viewer
-    // For now, let's just mark it as completed
-    const updatedChapters = courseChapters.map(chapter => {
-      if (chapter.id === chapterId) {
-        return {
-          ...chapter,
-          lessons: chapter.lessons.map(lesson => {
-            if (lesson.id === lessonId) {
-              return {
-                ...lesson,
-                contentItems: lesson.contentItems.map(item => {
-                  if (item.id === contentItem.id) {
-                    return { ...item, completed: true };
-                  }
-                  return item;
-                })
-              };
-            }
-            return lesson;
-          })
-        };
-      }
-      return chapter;
-    });
-    
-    setCourseChapters(updatedChapters);
-    
-    // Update progress
-    const totalItems = courseChapters.reduce((total, chapter) => 
-      total + chapter.lessons.reduce((lessonTotal, lesson) => 
-        lessonTotal + lesson.contentItems.length, 0), 0);
-        
-    const completedItems = updatedChapters.reduce((total, chapter) => 
-      total + chapter.lessons.reduce((lessonTotal, lesson) => 
-        lessonTotal + lesson.contentItems.filter(item => item.completed).length, 0), 0);
-    
-    setCurrentProgress(Math.round((completedItems / totalItems) * 100));
+    // Navigate to content view instead of showing toast
+    if (contentItem.type === "quiz") {
+      navigate(`/courses/${numericCourseId}/quiz/${contentItem.id}`);
+    } else {
+      navigate(`/courses/${numericCourseId}/learn/${contentItem.id}`);
+    }
   };
 
   const handleEnroll = () => {
@@ -255,13 +226,8 @@ const CourseDetailPage = () => {
   
   const startLearning = () => {
     if (firstContentId) {
-      // In a real app, we would navigate to a lesson viewer page
-      toast({
-        title: "Bắt đầu học",
-        description: "Đang chuyển hướng đến bài học đầu tiên"
-      });
-      // For now just switch to content tab
-      setActiveTab("content");
+      // Navigate directly to the first lesson
+      navigate(`/courses/${numericCourseId}/learn/${firstContentId}`);
     } else {
       toast({
         title: "Không tìm thấy bài học",
@@ -382,6 +348,7 @@ const CourseDetailPage = () => {
                   chapters={courseChapters}
                   onContentItemClick={handleContentItemClick}
                   currentProgress={currentProgress}
+                  courseId={numericCourseId}
                 />
               </TabsContent>
             </Tabs>
@@ -433,13 +400,23 @@ const CourseDetailPage = () => {
                   </div>
                   
                   {isEnrolled ? (
-                    <Button 
-                      onClick={startLearning} 
-                      className="w-full mb-4 bg-epu-primary hover:bg-epu-primary/90"
-                    >
-                      <Play size={16} className="mr-2" />
-                      Bắt đầu học
-                    </Button>
+                    <div className="space-y-3">
+                      <Button 
+                        onClick={startLearning} 
+                        className="w-full bg-epu-primary hover:bg-epu-primary/90"
+                      >
+                        <Play size={16} className="mr-2" />
+                        Bắt đầu học
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        onClick={() => navigate(`/courses/${numericCourseId}/exam`)}
+                        className="w-full"
+                      >
+                        Bài kiểm tra tổng quát
+                      </Button>
+                    </div>
                   ) : (
                     <Button 
                       onClick={handleEnroll} 
@@ -450,7 +427,7 @@ const CourseDetailPage = () => {
                     </Button>
                   )}
                   
-                  <p className="text-xs text-center text-muted-foreground">
+                  <p className="text-xs text-center text-muted-foreground mt-4">
                     Được phát triển bởi Trường Đại học Điện lực
                   </p>
                 </div>

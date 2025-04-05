@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronDown, ChevronUp, CheckCircle, Lock, Play, FileText, HelpCircle, Book } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -38,11 +39,13 @@ interface CourseContentProps {
   chapters: ChapterType[];
   currentProgress: number;
   onContentItemClick: (chapterId: number, lessonId: number, contentItem: ContentItemType) => void;
+  courseId: number;
 }
 
-const CourseContent = ({ chapters, currentProgress, onContentItemClick }: CourseContentProps) => {
+const CourseContent = ({ chapters, currentProgress, onContentItemClick, courseId }: CourseContentProps) => {
   const [openChapters, setOpenChapters] = useState<number[]>([1]); // First chapter open by default
   const [openLessons, setOpenLessons] = useState<number[]>([]);
+  const navigate = useNavigate();
   
   const toggleChapter = (chapterId: number) => {
     setOpenChapters(prev => 
@@ -78,6 +81,20 @@ const CourseContent = ({ chapters, currentProgress, onContentItemClick }: Course
     }
   };
 
+  const handleContentClick = (chapterId: number, lessonId: number, contentItem: ContentItemType) => {
+    if (contentItem.locked) {
+      onContentItemClick(chapterId, lessonId, contentItem);
+      return;
+    }
+    
+    // Redirect to the appropriate page based on content type
+    if (contentItem.type === "quiz") {
+      navigate(`/courses/${courseId}/quiz/${contentItem.id}`);
+    } else {
+      navigate(`/courses/${courseId}/learn/${contentItem.id}`);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="mb-6">
@@ -86,6 +103,16 @@ const CourseContent = ({ chapters, currentProgress, onContentItemClick }: Course
           <span className="text-sm font-medium">{currentProgress}%</span>
         </div>
         <Progress value={currentProgress} className="h-2" />
+      </div>
+      
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold">Nội dung khóa học</h3>
+        <Button 
+          onClick={() => navigate(`/courses/${courseId}/exam`)}
+          variant="outline"
+        >
+          Bài kiểm tra tổng quát
+        </Button>
       </div>
       
       <div className="space-y-4">
@@ -147,7 +174,6 @@ const CourseContent = ({ chapters, currentProgress, onContentItemClick }: Course
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span>{lesson.duration}</span>
                           {openLessons.includes(lesson.id) ? (
                             <ChevronUp size={16} />
                           ) : (
@@ -165,7 +191,7 @@ const CourseContent = ({ chapters, currentProgress, onContentItemClick }: Course
                             } ${item.locked ? "text-muted-foreground cursor-not-allowed" : ""}
                             `}
                             disabled={item.locked}
-                            onClick={() => onContentItemClick(chapter.id, lesson.id, item)}
+                            onClick={() => handleContentClick(chapter.id, lesson.id, item)}
                           >
                             <div className="flex items-center gap-3 w-full">
                               <div className="w-6 h-6 flex items-center justify-center">
@@ -175,7 +201,6 @@ const CourseContent = ({ chapters, currentProgress, onContentItemClick }: Course
                                 <span className={item.locked ? "text-muted-foreground" : ""}>
                                   {item.title}
                                 </span>
-                                <span className="text-xs text-muted-foreground">{item.duration}</span>
                               </div>
                               {item.completed && (
                                 <span className="text-xs py-0.5 px-2 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">

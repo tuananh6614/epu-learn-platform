@@ -10,6 +10,9 @@ import { ThemeProvider } from "next-themes";
 import { FloatingParticles } from "@/components/ui/FloatingParticles";
 import HomePage from "@/pages/HomePage";
 import CourseDetailPage from "@/pages/courses/CourseDetailPage";
+import LessonPage from "@/pages/courses/LessonPage";
+import QuizPage from "@/pages/courses/QuizPage";
+import CourseExamPage from "@/pages/courses/CourseExamPage";
 
 // Layouts
 import MainLayout from "@/components/layout/MainLayout";
@@ -56,6 +59,9 @@ function App() {
                   <Route index element={<HomePage />} />
                   <Route path="courses" element={<CoursesPage />} />
                   <Route path="courses/:courseId" element={<CourseDetailPage />} />
+                  <Route path="courses/:courseId/learn/:contentId" element={<LessonPage />} />
+                  <Route path="courses/:courseId/quiz/:quizId" element={<QuizPage />} />
+                  <Route path="courses/:courseId/exam" element={<CourseExamPage />} />
                   <Route path="documents" element={<DocumentsPage />} />
                   <Route path="profile" element={
                     <AuthGuard requiredRole="user">
