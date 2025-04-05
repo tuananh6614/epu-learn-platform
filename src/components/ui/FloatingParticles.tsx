@@ -19,12 +19,19 @@ export const FloatingParticles = () => {
   const { theme } = useTheme();
 
   const generateParticles = useCallback(() => {
-    const particlesCount = window.innerWidth < 768 ? 25 : 40;
+    const particlesCount = window.innerWidth < 768 ? 50 : 80;
     const newParticles: Particle[] = [];
     
-    // Enhanced color palette
-    const lightModeColors = ["#4299E1", "#ED8936", "#805AD5", "#38B2AC", "#E53E3E", "#DD6B20"];
-    const darkModeColors = ["#4299E1", "#F6AD55", "#9F7AEA", "#4FD1C5", "#FC8181", "#F6E05E"];
+    // Enhanced vibrant color palette
+    const lightModeColors = [
+      "#4299E1", "#38B2AC", "#ED8936", "#805AD5", "#E53E3E", 
+      "#DD6B20", "#3182CE", "#2C7A7B", "#D69E2E", "#6B46C1"
+    ];
+    
+    const darkModeColors = [
+      "#63B3ED", "#4FD1C5", "#F6AD55", "#9F7AEA", "#FC8181", 
+      "#FBD38D", "#90CDF4", "#81E6D9", "#FEB2B2", "#D6BCFA"
+    ];
     
     const colors = theme === "dark" ? darkModeColors : lightModeColors;
 
@@ -33,9 +40,9 @@ export const FloatingParticles = () => {
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
-        size: Math.random() * 6 + 2,
-        opacity: Math.random() * 0.5 + 0.1,
-        duration: Math.random() * 20 + 10,
+        size: Math.random() * 8 + 2, // Slightly larger particles
+        opacity: Math.random() * 0.6 + 0.2, // More visible particles
+        duration: Math.random() * 25 + 15, // Slower, more gentle movement
         delay: Math.random() * 5,
         color: colors[Math.floor(Math.random() * colors.length)],
       });
@@ -71,20 +78,21 @@ export const FloatingParticles = () => {
             height: `${particle.size}px`,
             opacity: particle.opacity,
             background: particle.color,
+            filter: "blur(0.5px)", // Slight blur for a glow effect
           }}
           animate={{
             x: [
               0,
-              Math.random() * 100 - 50,
-              Math.random() * 60 - 30,
+              Math.random() * 120 - 60,
               Math.random() * 80 - 40,
+              Math.random() * 100 - 50,
               0,
             ],
             y: [
               0, 
-              Math.random() * 80 - 40,
-              Math.random() * 60 - 30,
               Math.random() * 100 - 50,
+              Math.random() * 80 - 40,
+              Math.random() * 120 - 60,
               0,
             ],
             scale: [1, 1.2, 1.1, 1.3, 1],
