@@ -211,6 +211,52 @@
     @apply inline-block px-4 py-1.5 bg-white/10 backdrop-blur-sm 
       rounded-full text-sm font-medium text-white tracking-wide;
   }
+  
+  /* New premium button styles for light and dark modes */
+  .premium-btn {
+    @apply relative overflow-hidden rounded-xl text-sm md:text-base font-medium px-6 py-3
+      transition-all duration-300 shadow-md hover:shadow-xl active:scale-95 
+      flex items-center justify-center gap-2;
+  }
+  
+  .premium-btn-primary {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 
+      text-white border border-blue-400/30 dark:border-indigo-400/30;
+  }
+  
+  .premium-btn-primary:hover {
+    @apply bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-400 dark:to-indigo-400
+      transform translate-y-[-2px];
+  }
+  
+  .premium-btn-secondary {
+    @apply bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-400 dark:to-orange-400
+      text-white border border-amber-400/30 dark:border-orange-400/30;
+  }
+  
+  .premium-btn-secondary:hover {
+    @apply bg-gradient-to-r from-amber-400 to-orange-400 dark:from-amber-300 dark:to-orange-300
+      transform translate-y-[-2px];
+  }
+  
+  .premium-btn::before {
+    @apply content-[''] absolute top-0 left-[-100%] w-full h-full 
+      bg-gradient-to-r from-white/0 via-white/30 to-white/0 
+      transform skew-x-[-15deg] transition-all duration-700 z-10;
+  }
+  
+  .premium-btn:hover::before {
+    @apply left-[100%];
+  }
+  
+  /* Typography improvements */
+  .elegant-title {
+    @apply font-light tracking-tight leading-tight;
+  }
+  
+  .elegant-subtitle {
+    @apply font-normal tracking-wide text-sm md:text-base opacity-90;
+  }
 }
 
 @keyframes shimmer {
