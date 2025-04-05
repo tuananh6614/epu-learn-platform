@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -8,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "next-themes";
 import { FloatingParticles } from "@/components/ui/FloatingParticles";
+import { HomePage } from "@/pages/HomePage";
+import { CourseDetailPage } from "@/pages/courses/CourseDetailPage";
 
 // Layouts
 import MainLayout from "@/components/layout/MainLayout";
@@ -38,56 +39,59 @@ import { AuthGuard } from "@/components/auth/AuthGuard";
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
 
-const App = () => (
-  <React.StrictMode>
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <FloatingParticles />
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AuthProvider>
-              <Routes>
-                {/* Main Layout Routes */}
-                <Route path="/" element={<MainLayout />}>
-                  <Route index element={<Index />} />
-                  <Route path="courses" element={<CoursesPage />} />
-                  <Route path="documents" element={<DocumentsPage />} />
-                  <Route path="profile" element={
-                    <AuthGuard requiredRole="user">
-                      <ProfilePage />
+function App() {
+  return (
+    <React.StrictMode>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <FloatingParticles />
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <AuthProvider>
+                <Routes>
+                  {/* Main Layout Routes */}
+                  <Route path="/" element={<MainLayout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="courses" element={<CoursesPage />} />
+                    <Route path="courses/:courseId" element={<CourseDetailPage />} />
+                    <Route path="documents" element={<DocumentsPage />} />
+                    <Route path="profile" element={
+                      <AuthGuard requiredRole="user">
+                        <ProfilePage />
+                      </AuthGuard>
+                    } />
+                  </Route>
+                  
+                  {/* Auth Routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={
+                    <AuthGuard requiredRole="admin">
+                      <AdminLayout />
                     </AuthGuard>
-                  } />
-                </Route>
-                
-                {/* Auth Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                
-                {/* Admin Routes */}
-                <Route path="/admin" element={
-                  <AuthGuard requiredRole="admin">
-                    <AdminLayout />
-                  </AuthGuard>
-                }>
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="users" element={<UsersManagement />} />
-                  <Route path="documents" element={<DocumentsManagement />} />
-                  <Route path="publish/courses" element={<PublishCourse />} />
-                  <Route path="finance" element={<FinanceManagement />} />
-                  <Route path="settings" element={<AdminDashboard />} />
-                </Route>
-                
-                {/* Catch-all route */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </AuthProvider>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
-  </React.StrictMode>
-);
+                  }>
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="users" element={<UsersManagement />} />
+                    <Route path="documents" element={<DocumentsManagement />} />
+                    <Route path="publish/courses" element={<PublishCourse />} />
+                    <Route path="finance" element={<FinanceManagement />} />
+                    <Route path="settings" element={<AdminDashboard />} />
+                  </Route>
+                  
+                  {/* Catch-all route */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AuthProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </React.StrictMode>
+  );
+}
 
 export default App;
