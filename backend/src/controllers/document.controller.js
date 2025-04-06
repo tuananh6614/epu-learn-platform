@@ -52,8 +52,16 @@ const upload = multer({
 exports.getDocuments = async (req, res) => {
   try {
     const [documents] = await db.execute(`
-      SELECT d.document_id as id, d.title, d.description, d.price, d.file_path, 
-             d.created_at, dc.category_name 
+      SELECT 
+        d.document_id as id, 
+        d.title, 
+        d.description, 
+        d.price, 
+        d.file_path,
+        d.created_at, 
+        d.category_id,
+        dc.category_name,
+        dc.description as category_description
       FROM Documents d 
       LEFT JOIN Document_Categories dc ON d.category_id = dc.category_id
       ORDER BY d.created_at DESC
@@ -69,7 +77,11 @@ exports.getDocuments = async (req, res) => {
 // Get document categories
 exports.getCategories = async (req, res) => {
   try {
-    const [categories] = await db.execute('SELECT * FROM Document_Categories');
+    console.log('Fetching categories...');
+    const [categories] = await db.execute(
+      'SELECT category_id, category_name, description FROM Document_Categories ORDER BY category_name ASC'
+    );
+    console.log('Categories fetched:', categories);
     res.json(categories);
   } catch (error) {
     console.error('Get categories error:', error);
@@ -310,9 +322,7 @@ exports.updateCategory = async (req, res) => {
 exports.deleteCategory = async (req, res) => {
   try {
     const { category_id } = req.params;
-
     await db.execute('DELETE FROM Document_Categories WHERE category_id = ?', [category_id]);
-
     res.json({ message: 'Xóa danh mục thành công' });
   } catch (error) {
     console.error('Delete category error:', error);
