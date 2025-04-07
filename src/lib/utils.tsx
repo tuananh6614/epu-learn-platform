@@ -122,7 +122,10 @@ export const mockDocuments = [
     format: "PDF",
     pages: 324,
     author: "TS. Nguyễn Văn A",
-    category: "Mạng",
+    category_name: "Mạng",
+    file_path: "/documents/networking-guide.pdf",
+    preview_url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&w=500",
+    created_at: "2025-03-01",
     publishedAt: "01/03/2025",
     downloadCount: 189
   },
@@ -135,7 +138,10 @@ export const mockDocuments = [
     format: "PDF + Code",
     pages: 250,
     author: "ThS. Lê Văn B",
-    category: "AI/ML",
+    category_name: "AI/ML",
+    file_path: "/documents/ml-beginners.pdf",
+    preview_url: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&w=500",
+    created_at: "2025-03-15",
     publishedAt: "15/03/2025",
     downloadCount: 272
   },
@@ -148,7 +154,10 @@ export const mockDocuments = [
     format: "PDF + Examples",
     pages: 180,
     author: "PGS.TS. Phạm Thị C",
-    category: "Lập trình",
+    category_name: "Lập trình",
+    file_path: "/documents/python-summary.pdf",
+    preview_url: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&w=500",
+    created_at: "2025-04-05",
     publishedAt: "05/04/2025",
     downloadCount: 345
   }

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -21,11 +20,7 @@ const HomePage = () => {
   const { toast } = useToast();
   
   const featuredCourses = mockCourses.slice(0, 3);
-  // Thêm thuộc tính created_at cho mỗi document nếu chưa có
-  const featuredDocuments = mockDocuments.slice(0, 4).map(doc => ({
-    ...doc,
-    created_at: doc.created_at || new Date().toISOString()
-  }));
+  const featuredDocuments = mockDocuments.slice(0, 4);
   
   const handlePurchaseDocument = (documentId: number) => {
     if (!user) {
