@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -21,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DocumentCategory } from "@/types/documentCategory";
 
 type MediaItem = {
   type: "image" | "video";
@@ -69,6 +71,29 @@ const PublishCourse = () => {
     type: "image" | "video";
   } | null>(null);
   
+  const [categories, setCategories] = useState<DocumentCategory[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/api/documents/categories');
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast({
+          variant: "destructive",
+          title: "Lỗi",
+          description: "Không thể tải danh mục tài liệu"
+        });
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
+
   const addChapter = () => {
     setChapters([...chapters, { 
       title: "", 
@@ -281,10 +306,18 @@ const PublishCourse = () => {
                 <Label htmlFor="specialization">Danh mục tài liệu</Label>
                 <Select>
                   <SelectTrigger id="specialization">
-                    <SelectValue placeholder="-- Chọn danh mục tài liệu --" />
+                    <SelectValue placeholder={loadingCategories ? "Đang tải..." : "-- Chọn danh mục tài liệu --"} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="empty">-- Chọn danh mục tài liệu --</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem 
+                        key={category.category_id} 
+                        value={String(category.category_id)}
+                      >
+                        {category.category_name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
