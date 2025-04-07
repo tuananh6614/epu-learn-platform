@@ -36,7 +36,7 @@ const DocumentCategories = () => {
     setLoading(true);
     try {
       const response = await axios.get("/api/documents/categories");
-      setCategories(response.data);
+      setCategories(response.data || []);
     } catch (error) {
       console.error("Error fetching categories:", error);
       toast({
@@ -44,6 +44,7 @@ const DocumentCategories = () => {
         title: "Lỗi",
         description: "Không thể tải danh sách danh mục tài liệu"
       });
+      setCategories([]);
     } finally {
       setLoading(false);
     }

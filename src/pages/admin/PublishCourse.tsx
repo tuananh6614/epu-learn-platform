@@ -78,7 +78,7 @@ const PublishCourse = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get('/api/documents/categories');
-        setCategories(response.data);
+        setCategories(response.data || []);
       } catch (error) {
         console.error("Error fetching categories:", error);
         toast({
@@ -86,6 +86,7 @@ const PublishCourse = () => {
           title: "Lỗi",
           description: "Không thể tải danh mục tài liệu"
         });
+        setCategories([]);
       } finally {
         setLoadingCategories(false);
       }
@@ -310,7 +311,7 @@ const PublishCourse = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="empty">-- Chọn danh mục tài liệu --</SelectItem>
-                    {categories.map((category) => (
+                    {Array.isArray(categories) && categories.map((category) => (
                       <SelectItem 
                         key={category.category_id} 
                         value={String(category.category_id)}

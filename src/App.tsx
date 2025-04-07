@@ -35,6 +35,7 @@ import ProfilePage from "@/pages/profile/ProfilePage";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import UsersManagement from "@/pages/admin/UsersManagement";
 import DocumentsManagement from "@/pages/admin/DocumentsManagement";
+import DocumentCategories from "@/pages/admin/DocumentCategories";
 import PublishCourse from "@/pages/admin/PublishCourse";
 import FinanceManagement from "@/pages/admin/FinanceManagement";
 
@@ -45,8 +46,8 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <TooltipProvider>
           <FloatingParticles />
           <Toaster />
@@ -83,6 +84,7 @@ function App() {
                   <Route index element={<AdminDashboard />} />
                   <Route path="users" element={<UsersManagement />} />
                   <Route path="documents" element={<DocumentsManagement />} />
+                  <Route path="documents/categories" element={<DocumentCategories />} />
                   <Route path="publish/courses" element={<PublishCourse />} />
                   <Route path="finance" element={<FinanceManagement />} />
                   <Route path="settings" element={<AdminDashboard />} />
@@ -94,8 +96,8 @@ function App() {
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
