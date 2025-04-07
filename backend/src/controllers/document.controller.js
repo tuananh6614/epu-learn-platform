@@ -77,11 +77,9 @@ exports.getDocuments = async (req, res) => {
 // Get document categories
 exports.getCategories = async (req, res) => {
   try {
-    console.log('Fetching categories...');
     const [categories] = await db.execute(
       'SELECT category_id, category_name, description FROM Document_Categories ORDER BY category_name ASC'
     );
-    console.log('Categories fetched:', categories);
     res.json(categories);
   } catch (error) {
     console.error('Get categories error:', error);

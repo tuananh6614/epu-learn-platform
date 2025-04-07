@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Category } from '../../../types/document';
 
 const UploadDocument = () => {
   const [title, setTitle] = useState('');
@@ -9,7 +8,7 @@ const UploadDocument = () => {
   const [price, setPrice] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [categoryId, setCategoryId] = useState('');
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -18,23 +17,11 @@ const UploadDocument = () => {
 
   const fetchCategories = async () => {
     try {
-      console.log('Fetching categories...');
-      const response = await axios.get<Category[]>('/api/documents/categories');
-      console.log('Categories response:', response.data);
-      if (Array.isArray(response.data)) {
-        setCategories(response.data);
-      } else {
-        console.error('Invalid categories data:', response.data);
-        toast.error('Dữ liệu danh mục không hợp lệ');
-      }
+      const response = await axios.get('/api/documents/categories');
+      setCategories(response.data);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error fetching categories:', error.response?.data);
-        toast.error(error.response?.data?.message || 'Lỗi khi lấy danh sách danh mục');
-      } else {
-        console.error('Error fetching categories:', error);
-        toast.error('Lỗi không xác định khi lấy danh sách danh mục');
-      }
+      console.error('Error fetching categories:', error);
+      toast.error('Lỗi khi lấy danh sách danh mục');
     }
   };
 
