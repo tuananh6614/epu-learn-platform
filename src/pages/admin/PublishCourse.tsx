@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Card,
@@ -15,6 +14,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { BookOpen, PlusCircle, ImagePlus, X, Video, Image } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type MediaItem = {
   type: "image" | "video";
@@ -63,7 +69,6 @@ const PublishCourse = () => {
     type: "image" | "video";
   } | null>(null);
   
-  // Add new chapter
   const addChapter = () => {
     setChapters([...chapters, { 
       title: "", 
@@ -79,12 +84,10 @@ const PublishCourse = () => {
     }]);
   };
   
-  // Remove chapter
   const removeChapter = (chapterIndex: number) => {
     setChapters(chapters.filter((_, index) => index !== chapterIndex));
   };
   
-  // Add lesson to chapter
   const addLesson = (chapterIndex: number) => {
     const updatedChapters = [...chapters];
     updatedChapters[chapterIndex].lessons.push({ 
@@ -99,7 +102,6 @@ const PublishCourse = () => {
     setChapters(updatedChapters);
   };
   
-  // Remove lesson
   const removeLesson = (chapterIndex: number, lessonIndex: number) => {
     const updatedChapters = [...chapters];
     updatedChapters[chapterIndex].lessons = updatedChapters[chapterIndex].lessons.filter(
@@ -108,21 +110,18 @@ const PublishCourse = () => {
     setChapters(updatedChapters);
   };
   
-  // Update chapter title
   const updateChapterTitle = (chapterIndex: number, title: string) => {
     const updatedChapters = [...chapters];
     updatedChapters[chapterIndex].title = title;
     setChapters(updatedChapters);
   };
   
-  // Update lesson basic info
   const updateLesson = (chapterIndex: number, lessonIndex: number, field: 'title' | 'description', value: string) => {
     const updatedChapters = [...chapters];
     updatedChapters[chapterIndex].lessons[lessonIndex][field] = value;
     setChapters(updatedChapters);
   };
 
-  // Add page to lesson
   const addPage = (chapterIndex: number, lessonIndex: number) => {
     const updatedChapters = [...chapters];
     const pageNumber = updatedChapters[chapterIndex].lessons[lessonIndex].pages.length + 1;
@@ -134,10 +133,8 @@ const PublishCourse = () => {
     setChapters(updatedChapters);
   };
 
-  // Remove page
   const removePage = (chapterIndex: number, lessonIndex: number, pageIndex: number) => {
     const updatedChapters = [...chapters];
-    // Prevent removing the last page
     if (updatedChapters[chapterIndex].lessons[lessonIndex].pages.length > 1) {
       updatedChapters[chapterIndex].lessons[lessonIndex].pages = 
         updatedChapters[chapterIndex].lessons[lessonIndex].pages.filter(
@@ -153,14 +150,12 @@ const PublishCourse = () => {
     }
   };
 
-  // Update page content
   const updatePageContent = (chapterIndex: number, lessonIndex: number, pageIndex: number, field: 'title' | 'content', value: string) => {
     const updatedChapters = [...chapters];
     updatedChapters[chapterIndex].lessons[lessonIndex].pages[pageIndex][field] = value;
     setChapters(updatedChapters);
   };
 
-  // Add media to page
   const addMedia = (chapterIndex: number, lessonIndex: number, pageIndex: number, media: MediaItem) => {
     const updatedChapters = [...chapters];
     updatedChapters[chapterIndex].lessons[lessonIndex].pages[pageIndex].media.push(media);
@@ -173,7 +168,6 @@ const PublishCourse = () => {
     });
   };
 
-  // Remove media from page
   const removeMedia = (chapterIndex: number, lessonIndex: number, pageIndex: number, mediaIndex: number) => {
     const updatedChapters = [...chapters];
     updatedChapters[chapterIndex].lessons[lessonIndex].pages[pageIndex].media = 
@@ -183,7 +177,6 @@ const PublishCourse = () => {
     setChapters(updatedChapters);
   };
 
-  // Handle media upload
   const handleMediaSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -211,19 +204,15 @@ const PublishCourse = () => {
     });
   };
 
-  // Handle form submission
   const handleSubmitCourse = () => {
-    // Validation
     let isValid = true;
     let errorMessage = "";
     
-    // Check if course has at least one chapter
     if (chapters.length === 0) {
       isValid = false;
       errorMessage = "Khóa học phải có ít nhất một chương";
     }
     
-    // Check if each chapter has a title and at least one lesson
     chapters.forEach((chapter, idx) => {
       if (!chapter.title.trim()) {
         isValid = false;
@@ -235,14 +224,12 @@ const PublishCourse = () => {
         errorMessage = `Chương ${idx + 1} phải có ít nhất một bài học`;
       }
       
-      // Check if each lesson has a title
       chapter.lessons.forEach((lesson, lessonIdx) => {
         if (!lesson.title.trim()) {
           isValid = false;
           errorMessage = `Bài học ${lessonIdx + 1} trong chương ${idx + 1} chưa có tiêu đề`;
         }
         
-        // Check if each page has content
         lesson.pages.forEach((page, pageIdx) => {
           if (!page.content.trim()) {
             isValid = false;
@@ -261,13 +248,11 @@ const PublishCourse = () => {
       return;
     }
     
-    // Submit the course data
     toast({
       title: "Đã đăng khóa học",
       description: "Khóa học của bạn đã được đăng thành công",
     });
     
-    // Reset or redirect would go here
     console.log("Course data:", chapters);
   };
   
@@ -280,7 +265,6 @@ const PublishCourse = () => {
         </p>
       </div>
       
-      {/* Basic Course Information */}
       <Card>
         <CardHeader>
           <CardTitle>Thông tin cơ bản</CardTitle>
@@ -295,15 +279,14 @@ const PublishCourse = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="specialization">Danh mục tài liệu</Label>
-                <select 
-                  id="specialization"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <option value="">-- Chọn danh mục tài liệu --</option>
-                  <option value="CNTT">Công nghệ thông tin</option>
-                  <option value="ATTT">An toàn thông tin</option>
-                  <option value="DTVT">Điện tử viễn thông</option>
-                </select>
+                <Select>
+                  <SelectTrigger id="specialization">
+                    <SelectValue placeholder="-- Chọn danh mục tài liệu --" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="empty">-- Chọn danh mục tài liệu --</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             
@@ -333,7 +316,6 @@ const PublishCourse = () => {
         </CardContent>
       </Card>
       
-      {/* Course Structure */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
@@ -375,7 +357,6 @@ const PublishCourse = () => {
                   </Button>
                 </div>
                 
-                {/* Lessons */}
                 <div className="space-y-3 pl-6 border-l-2 border-l-muted">
                   {chapter.lessons.map((lesson, lessonIndex) => (
                     <div
@@ -418,7 +399,6 @@ const PublishCourse = () => {
                         className="text-sm"
                       />
                       
-                      {/* Pages Tabs */}
                       <Tabs defaultValue={`page-0`} className="w-full">
                         <div className="flex items-center justify-between mb-2">
                           <Label className="text-xs font-medium text-muted-foreground">Trang bài học</Label>
@@ -486,7 +466,6 @@ const PublishCourse = () => {
                               className="text-sm"
                             />
                             
-                            {/* Media section */}
                             <div className="space-y-2">
                               <div className="flex items-center justify-between">
                                 <Label className="text-xs font-medium text-muted-foreground">
@@ -569,7 +548,6 @@ const PublishCourse = () => {
                                 </div>
                               </div>
 
-                              {/* Media list */}
                               {page.media.length > 0 && (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                                   {page.media.map((media, mediaIndex) => (
@@ -619,7 +597,6 @@ const PublishCourse = () => {
         </CardContent>
       </Card>
       
-      {/* Submission Buttons */}
       <div className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
         <Button variant="outline">Lưu nháp</Button>
         <Button onClick={handleSubmitCourse}>Đăng khóa học</Button>
