@@ -13,7 +13,6 @@ export function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-// Mock data for demonstration purposes
 export const mockCourses = [
   {
     id: 1,
@@ -85,7 +84,8 @@ export const mockDocuments = [
     preview_url: "preview_url_1",
     price: 150000,
     category_name: "Lập trình",
-    file_path: "path/to/file1.pdf"
+    file_path: "path/to/file1.pdf",
+    created_at: "2025-01-15"
   },
   {
     id: 2,
@@ -94,7 +94,8 @@ export const mockDocuments = [
     preview_url: "preview_url_2",
     price: 120000,
     category_name: "Mạng máy tính",
-    file_path: "path/to/file2.pdf"
+    file_path: "path/to/file2.pdf",
+    created_at: "2025-01-20"
   },
   {
     id: 3,
@@ -103,7 +104,8 @@ export const mockDocuments = [
     preview_url: "preview_url_3",
     price: 100000,
     category_name: "Thuật toán",
-    file_path: "path/to/file3.pdf"
+    file_path: "path/to/file3.pdf",
+    created_at: "2025-02-01"
   },
   {
     id: 4,
@@ -112,7 +114,8 @@ export const mockDocuments = [
     preview_url: "preview_url_4",
     price: 180000,
     category_name: "Cơ sở dữ liệu",
-    file_path: "path/to/file4.pdf"
+    file_path: "path/to/file4.pdf",
+    created_at: "2025-02-10"
   },
   {
     id: 5,
@@ -121,7 +124,8 @@ export const mockDocuments = [
     preview_url: "preview_url_5",
     price: 50000,
     category_name: "Học liệu",
-    file_path: "path/to/file5.pdf"
+    file_path: "path/to/file5.pdf",
+    created_at: "2025-02-15"
   },
   {
     id: 6,
@@ -130,7 +134,8 @@ export const mockDocuments = [
     preview_url: "preview_url_6",
     price: 80000,
     category_name: "Toán học",
-    file_path: "path/to/file6.pdf"
+    file_path: "path/to/file6.pdf",
+    created_at: "2025-02-20"
   },
   {
     id: 7,
@@ -139,7 +144,8 @@ export const mockDocuments = [
     preview_url: "preview_url_7",
     price: 200000,
     category_name: "AI & ML",
-    file_path: "path/to/file7.pdf"
+    file_path: "path/to/file7.pdf",
+    created_at: "2025-03-01"
   },
   {
     id: 8,
@@ -148,7 +154,8 @@ export const mockDocuments = [
     preview_url: "preview_url_8",
     price: 150000,
     category_name: "Phát triển phần mềm",
-    file_path: "path/to/file8.pdf"
+    file_path: "path/to/file8.pdf",
+    created_at: "2025-03-05"
   }
 ];
 
