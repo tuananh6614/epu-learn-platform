@@ -19,20 +19,19 @@ export const FloatingParticles = () => {
   const { theme } = useTheme();
 
   const generateParticles = useCallback(() => {
-    const particlesCount = window.innerWidth < 768 ? 100 : 150; // Increased particle count
+    // Giảm số lượng hạt xuống đáng kể
+    const particlesCount = window.innerWidth < 768 ? 30 : 50; // Đã giảm từ 100/150 xuống 30/50
     const newParticles: Particle[] = [];
     
-    // Enhanced vibrant color palette with better visibility in dark mode
+    // Giữ nguyên bảng màu nhưng giảm số lượng hạt
     const lightModeColors = [
       "#4299E1", "#38B2AC", "#ED8936", "#805AD5", "#E53E3E", 
-      "#DD6B20", "#3182CE", "#2C7A7B", "#D69E2E", "#6B46C1",
-      "#F56565", "#48BB78", "#ECC94B", "#9F7AEA", "#F687B3"
+      "#DD6B20", "#3182CE"
     ];
     
     const darkModeColors = [
       "#63B3ED", "#4FD1C5", "#F6AD55", "#9F7AEA", "#FC8181", 
-      "#FBD38D", "#90CDF4", "#81E6D9", "#FEB2B2", "#D6BCFA",
-      "#B794F4", "#68D391", "#F6E05E", "#76E4F7", "#FBB6CE"
+      "#FBD38D", "#90CDF4"
     ];
     
     const colors = theme === "dark" ? darkModeColors : lightModeColors;
@@ -42,9 +41,9 @@ export const FloatingParticles = () => {
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
-        size: Math.random() * 10 + 2, // Larger size range
-        opacity: Math.random() * 0.7 + 0.2, // More visible particles
-        duration: Math.random() * 25 + 15, // Smooth movement
+        size: Math.random() * 6 + 2, // Giảm kích thước hạt (từ 10+2 xuống 6+2)
+        opacity: Math.random() * 0.5 + 0.1, // Giảm độ mờ để giảm bớt sự chú ý
+        duration: Math.random() * 30 + 20, // Tăng thời gian di chuyển để giảm bớt CPU
         delay: Math.random() * 5,
         color: colors[Math.floor(Math.random() * colors.length)],
       });
@@ -56,8 +55,9 @@ export const FloatingParticles = () => {
   useEffect(() => {
     generateParticles();
     
+    // Giảm tần suất tạo lại các hạt khi thay đổi kích thước
     const handleResize = () => {
-      generateParticles();
+      setTimeout(generateParticles, 100); // Thêm thời gian chờ để tránh gọi quá nhiều lần
     };
     
     window.addEventListener('resize', handleResize);
@@ -80,24 +80,23 @@ export const FloatingParticles = () => {
             height: `${particle.size}px`,
             opacity: particle.opacity,
             background: particle.color,
-            filter: "blur(0.5px)", // Slight blur for a glow effect
           }}
           animate={{
             x: [
               0,
-              Math.random() * 120 - 60,
-              Math.random() * 80 - 40,
-              Math.random() * 100 - 50,
+              Math.random() * 80 - 40, // Giảm phạm vi di chuyển
+              Math.random() * 60 - 30,
+              Math.random() * 70 - 35,
               0,
             ],
             y: [
               0, 
-              Math.random() * 100 - 50,
+              Math.random() * 60 - 30, // Giảm phạm vi di chuyển
+              Math.random() * 40 - 20,
               Math.random() * 80 - 40,
-              Math.random() * 120 - 60,
               0,
             ],
-            scale: [1, 1.2, 1.1, 1.3, 1],
+            scale: [1, 1.2, 1],
           }}
           transition={{
             duration: particle.duration,
