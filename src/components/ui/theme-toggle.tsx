@@ -4,34 +4,73 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 
-import { Button } from "@/components/ui/button";
-
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
 
   const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+    setTheme(isDark ? "light" : "dark");
+  };
+
+  // Spring animation configuration for a more natural feeling
+  const spring = {
+    type: "spring",
+    stiffness: 300,
+    damping: 30
   };
 
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      transition={spring}
     >
-      <Button 
-        variant="outline" 
-        size="icon" 
+      <motion.button 
         onClick={toggleTheme}
-        className="rounded-full backdrop-blur-sm transition-all duration-500 ease-in-out 
-                   border border-blue-200/50 dark:border-blue-500/30
-                   bg-white/20 dark:bg-blue-900/20 
-                   hover:bg-white/30 dark:hover:bg-blue-800/30 
-                   shadow-md hover:shadow-lg"
+        className={`relative rounded-full p-2 transition-all duration-500 ease-in-out
+                   border ${isDark ? 'border-blue-500/30' : 'border-blue-200/50'}
+                   ${isDark ? 'bg-blue-900/20' : 'bg-white/20'} 
+                   ${isDark ? 'hover:bg-blue-800/30' : 'hover:bg-white/30'} 
+                   backdrop-blur-sm shadow-md hover:shadow-lg`}
+        aria-label="Toggle theme"
       >
-        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all duration-500 ease-in-out dark:-rotate-90 dark:scale-0 text-amber-500" />
-        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all duration-500 ease-in-out dark:rotate-0 dark:scale-100 text-blue-400" />
-        <span className="sr-only">Toggle theme</span>
-      </Button>
+        <motion.div
+          animate={{
+            rotate: isDark ? 360 : 0,
+          }}
+          transition={{
+            duration: 0.7,
+            ease: "easeInOut"
+          }}
+          className="relative w-6 h-6 flex items-center justify-center"
+        >
+          {/* Sun (visible in light mode) */}
+          <motion.div
+            animate={{
+              scale: isDark ? 0 : 1,
+              opacity: isDark ? 0 : 1,
+              rotate: isDark ? -90 : 0
+            }}
+            transition={spring}
+            className="absolute"
+          >
+            <Sun className="h-6 w-6 text-amber-500" />
+          </motion.div>
+
+          {/* Moon (visible in dark mode) */}
+          <motion.div
+            animate={{
+              scale: isDark ? 1 : 0,
+              opacity: isDark ? 1 : 0,
+              rotate: isDark ? 0 : 90
+            }}
+            transition={spring}
+            className="absolute"
+          >
+            <Moon className="h-6 w-6 text-blue-400" />
+          </motion.div>
+        </motion.div>
+      </motion.button>
     </motion.div>
   );
 }
