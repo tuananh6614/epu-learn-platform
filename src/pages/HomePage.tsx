@@ -33,6 +33,7 @@ export const HomePage: React.FC = () => {
                     height: Math.random() * 6 + 2 + 'px',
                     left: Math.random() * 100 + '%',
                     top: Math.random() * 100 + '%',
+                    zIndex: 1
                   }}
                   animate={{
                     opacity: [0.2, 0.5, 0.2],
@@ -65,6 +66,7 @@ export const HomePage: React.FC = () => {
                     height: Math.random() * 3 + 1 + 'px',
                     left: Math.random() * 100 + '%',
                     top: Math.random() * 100 + '%',
+                    zIndex: 1
                   }}
                   animate={{
                     opacity: [0.1, 0.5, 0.1],

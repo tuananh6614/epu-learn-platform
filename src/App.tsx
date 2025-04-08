@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -58,7 +57,7 @@ const ThemeElements = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="absolute top-6 right-10 md:right-36"
+            className="absolute top-6 right-16 md:right-20 lg:right-36"
           >
             <div className="relative">
               <motion.div
@@ -108,7 +107,7 @@ const ThemeElements = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="absolute top-6 right-10 md:right-36"
+            className="absolute top-6 right-16 md:right-20 lg:right-36"
           >
             <div className="relative">
               <Moon 

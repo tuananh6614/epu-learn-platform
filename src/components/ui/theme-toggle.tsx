@@ -18,6 +18,7 @@ export function ThemeToggle() {
     <motion.div
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      className="relative z-20"
     >
       <Button 
         variant="outline" 
