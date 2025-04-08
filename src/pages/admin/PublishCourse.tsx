@@ -1,5 +1,7 @@
+
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -22,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DocumentCategory } from "@/types/documentCategory";
 
 type MediaItem = {
   type: "image" | "video";
@@ -47,8 +48,21 @@ type Chapter = {
   lessons: Lesson[];
 };
 
+interface Course {
+  course_id: number;
+  title: string;
+  description: string | null;
+  thumbnail: string | null;
+  major_id: number | null;
+  major_name: string | null;
+}
+
 const PublishCourse = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const courseId = searchParams.get("courseId");
+  
+  const [course, setCourse] = useState<Course | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([
     { 
       title: "", 
@@ -71,29 +85,91 @@ const PublishCourse = () => {
     type: "image" | "video";
   } | null>(null);
   
-  const [categories, setCategories] = useState<DocumentCategory[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [majors, setMajors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/api/documents/categories');
-        setCategories(response.data || []);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
+    if (courseId) {
+      fetchCourseDetails(parseInt(courseId));
+    } else {
+      setLoading(false);
+    }
+    
+    fetchMajors();
+  }, [courseId]);
+
+  const fetchCourseDetails = async (id: number) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("epu_token");
+      
+      if (!token) {
         toast({
           variant: "destructive",
-          title: "Lỗi",
-          description: "Không thể tải danh mục tài liệu"
+          title: "Lỗi xác thực",
+          description: "Vui lòng đăng nhập lại"
         });
-        setCategories([]);
-      } finally {
-        setLoadingCategories(false);
+        return;
       }
-    };
-    
-    fetchCategories();
-  }, []);
+      
+      const response = await axios.get(`http://localhost:5000/api/courses/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      setCourse(response.data);
+      
+      // Convert chapters data format if course has chapters
+      if (response.data.chapters && response.data.chapters.length > 0) {
+        const formattedChapters = response.data.chapters.map((chapter: any) => {
+          return {
+            title: chapter.title,
+            lessons: chapter.lessons.map((lesson: any) => {
+              return {
+                title: lesson.title,
+                description: lesson.description || "",
+                pages: lesson.pages && lesson.pages.length > 0 
+                  ? lesson.pages.map((page: any) => ({
+                      title: `Trang ${page.page_number}`,
+                      content: page.content || "",
+                      media: [] // Assuming media is stored somewhere else or needs to be loaded separately
+                    }))
+                  : [{ title: "Trang 1", content: "", media: [] }]
+              };
+            })
+          };
+        });
+        
+        setChapters(formattedChapters);
+      }
+      
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching course details:", error);
+      toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: "Không thể tải thông tin khóa học"
+      });
+      setLoading(false);
+    }
+  };
+  
+  const fetchMajors = async () => {
+    try {
+      const response = await axios.get('/api/majors');
+      setMajors(response.data || []);
+    } catch (error) {
+      console.error("Error fetching majors:", error);
+      toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: "Không thể tải danh sách chuyên ngành"
+      });
+      setMajors([]);
+    }
+  };
 
   const addChapter = () => {
     setChapters([...chapters, { 
@@ -230,7 +306,130 @@ const PublishCourse = () => {
     });
   };
 
-  const handleSubmitCourse = () => {
+  const submitChapter = async (chapterIndex: number) => {
+    if (!courseId) {
+      toast({
+        variant: "destructive",
+        title: "Thiếu thông tin",
+        description: "Không tìm thấy ID khóa học",
+      });
+      return;
+    }
+    
+    const chapter = chapters[chapterIndex];
+    
+    if (!chapter.title.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Thiếu thông tin",
+        description: `Chương ${chapterIndex + 1} chưa có tiêu đề`,
+      });
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem("epu_token");
+      
+      if (!token) {
+        toast({
+          variant: "destructive",
+          title: "Lỗi xác thực",
+          description: "Vui lòng đăng nhập lại",
+        });
+        return;
+      }
+      
+      // Add chapter
+      const chapterResponse = await axios.post(
+        "http://localhost:5000/api/courses/chapter",
+        {
+          course_id: parseInt(courseId),
+          title: chapter.title,
+          description: chapter.title // Using title as description for now
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      
+      const chapterId = chapterResponse.data.chapter_id;
+      
+      // Add lessons for the chapter
+      for (let lessonIndex = 0; lessonIndex < chapter.lessons.length; lessonIndex++) {
+        const lesson = chapter.lessons[lessonIndex];
+        
+        if (!lesson.title.trim()) {
+          toast({
+            variant: "destructive",
+            title: "Thiếu thông tin",
+            description: `Bài học ${lessonIndex + 1} trong chương ${chapterIndex + 1} chưa có tiêu đề`,
+          });
+          continue;
+        }
+        
+        const lessonResponse = await axios.post(
+          "http://localhost:5000/api/courses/lesson",
+          {
+            chapter_id: chapterId,
+            title: lesson.title,
+            content: lesson.description
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        
+        const lessonId = lessonResponse.data.lesson_id;
+        
+        // Add pages for the lesson
+        for (let pageIndex = 0; pageIndex < lesson.pages.length; pageIndex++) {
+          const page = lesson.pages[pageIndex];
+          
+          await axios.post(
+            "http://localhost:5000/api/courses/page",
+            {
+              lesson_id: lessonId,
+              page_number: pageIndex + 1,
+              content: page.content
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+          );
+        }
+      }
+      
+      toast({
+        title: "Thành công",
+        description: `Đã lưu chương "${chapter.title}" thành công`,
+      });
+      
+    } catch (error) {
+      console.error("Error submitting chapter:", error);
+      toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: "Không thể lưu chương học",
+      });
+    }
+  };
+
+  const handleSubmitCourse = async () => {
+    if (!courseId) {
+      toast({
+        variant: "destructive",
+        title: "Thiếu thông tin",
+        description: "Không tìm thấy ID khóa học",
+      });
+      return;
+    }
+    
     let isValid = true;
     let errorMessage = "";
     
@@ -274,81 +473,103 @@ const PublishCourse = () => {
       return;
     }
     
-    toast({
-      title: "Đã đăng khóa học",
-      description: "Khóa học của bạn đã được đăng thành công",
-    });
-    
-    console.log("Course data:", chapters);
+    try {
+      const token = localStorage.getItem("epu_token");
+      
+      if (!token) {
+        toast({
+          variant: "destructive",
+          title: "Lỗi xác thực",
+          description: "Vui lòng đăng nhập lại",
+        });
+        return;
+      }
+      
+      // Submit all chapters sequentially
+      for (let i = 0; i < chapters.length; i++) {
+        await submitChapter(i);
+      }
+      
+      toast({
+        title: "Đã đăng khóa học",
+        description: "Khóa học của bạn đã được đăng thành công",
+      });
+      
+    } catch (error) {
+      console.error("Error submitting course:", error);
+      toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: "Không thể đăng khóa học",
+      });
+    }
   };
+  
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Đang tải...</h1>
+          <p className="text-muted-foreground">
+            Vui lòng đợi trong giây lát
+          </p>
+        </div>
+        
+        <div className="space-y-6">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader>
+                <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Đăng khóa học mới</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {course ? `Chỉnh sửa khóa học: ${course.title}` : "Đăng khóa học mới"}
+        </h1>
         <p className="text-muted-foreground">
           Tạo và quản lý nội dung khóa học
         </p>
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Thông tin cơ bản</CardTitle>
-          <CardDescription>Nhập thông tin chung về khóa học</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4">
+      {course && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Thông tin cơ bản</CardTitle>
+            <CardDescription>Thông tin chung về khóa học</CardDescription>
+          </CardHeader>
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Tiêu đề khóa học</Label>
-                <Input id="title" placeholder="Ví dụ: Lập trình Web cơ bản" />
+                <Label>Tiêu đề khóa học</Label>
+                <div className="font-medium p-2 bg-muted rounded-md">{course.title}</div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="specialization">Danh mục tài liệu</Label>
-                <Select>
-                  <SelectTrigger id="specialization">
-                    <SelectValue placeholder={loadingCategories ? "Đang tải..." : "-- Chọn danh mục tài liệu --"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="empty">-- Chọn danh mục tài liệu --</SelectItem>
-                    {Array.isArray(categories) && categories.map((category) => (
-                      <SelectItem 
-                        key={category.category_id} 
-                        value={String(category.category_id)}
-                      >
-                        {category.category_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Chuyên ngành</Label>
+                <div className="font-medium p-2 bg-muted rounded-md">{course.major_name || "Chưa phân loại"}</div>
               </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="thumbnail">Ảnh bìa</Label>
-              <div className="border-2 border-dashed rounded-lg p-4 text-center hover:bg-muted/30 transition-colors cursor-pointer">
-                <ImagePlus className="mx-auto h-10 w-10 text-muted-foreground" />
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Kéo thả tệp hoặc nhấn để chọn
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  PNG, JPG hoặc GIF (Tối đa 2MB)
-                </p>
-                <Input id="thumbnail" type="file" className="hidden" />
+            <div className="space-y-2 mt-4">
+              <Label>Mô tả</Label>
+              <div className="font-medium p-2 bg-muted rounded-md min-h-20">
+                {course.description || "Không có mô tả"}
               </div>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="description">Mô tả khóa học</Label>
-              <Textarea 
-                id="description" 
-                placeholder="Mô tả chi tiết về khóa học" 
-                rows={4}
-              />
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
       
       <Card>
         <CardHeader>

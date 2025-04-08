@@ -36,6 +36,7 @@ import AdminDashboard from "@/pages/admin/AdminDashboard";
 import UsersManagement from "@/pages/admin/UsersManagement";
 import DocumentsManagement from "@/pages/admin/DocumentsManagement";
 import DocumentCategories from "@/pages/admin/DocumentCategories";
+import CoursesManagement from "@/pages/admin/CoursesManagement";
 import PublishCourse from "@/pages/admin/PublishCourse";
 import FinanceManagement from "@/pages/admin/FinanceManagement";
 
@@ -83,6 +84,7 @@ function App() {
                 }>
                   <Route index element={<AdminDashboard />} />
                   <Route path="users" element={<UsersManagement />} />
+                  <Route path="courses" element={<CoursesManagement />} />
                   <Route path="documents" element={<DocumentsManagement />} />
                   <Route path="documents/categories" element={<DocumentCategories />} />
                   <Route path="publish/courses" element={<PublishCourse />} />

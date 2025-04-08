@@ -1,260 +1,230 @@
 
 import { useState, useEffect } from "react";
+import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Search, X, Sparkles } from "lucide-react";
+import { Search, BookOpen, Filter } from "lucide-react";
 import CourseCard from "@/components/courses/CourseCard";
-import { CourseType } from "@/components/courses/CourseCard";
-import { mockCourses } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
-// List of specializations/programs
-const specializations = [
-  { id: "all", name: "Tất cả chuyên ngành" },
-  { id: "CNTT", name: "Công nghệ thông tin" },
-  { id: "DTVT", name: "Điện tử viễn thông" },
-  { id: "KTDL", name: "Kỹ thuật điện lạnh" },
-  { id: "KTDK", name: "Kỹ thuật điều khiển" },
-  { id: "ATTT", name: "An toàn thông tin" },
-];
+interface Course {
+  course_id: number;
+  title: string;
+  description: string | null;
+  thumbnail: string | null;
+  major_id: number | null;
+  major_name: string | null;
+  created_at: string;
+}
 
-const CoursesPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
-  const [selectedSpecialization, setSelectedSpecialization] = useState("all");
+interface Major {
+  major_id: number;
+  major_name: string;
+}
+
+export default function CoursesPage() {
+  const { toast } = useToast();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [majors, setMajors] = useState<Major[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMajor, setSelectedMajor] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  
-  const courses = [...mockCourses] as CourseType[]; // Cast to CourseType to ensure compatibility
-  
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   useEffect(() => {
-    // Simulate loading data
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
-    
-    return () => clearTimeout(timer);
+    fetchCourses();
+    fetchMajors();
   }, []);
-  
-  // Apply sorting
-  const sortedCourses = courses.sort((a, b) => {
-    if (sortBy === "newest") {
-      return b.id - a.id;
-    }
-    if (sortBy === "popular") {
-      return (b.enrollmentCount || 0) - (a.enrollmentCount || 0);
-    }
-    if (sortBy === "title-asc") {
-      return a.title.localeCompare(b.title);
-    }
-    if (sortBy === "title-desc") {
-      return b.title.localeCompare(a.title);
-    }
-    return 0;
-  });
-  
-  // Apply filtering (search term + specialization)
-  const filteredCourses = sortedCourses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          course.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesSpecialization = selectedSpecialization === "all" || 
-                                 course.specialization === selectedSpecialization;
-    
-    return matchesSearch && matchesSpecialization;
-  });
 
-  // Reset all filters
-  const resetFilters = () => {
-    setSearchTerm("");
-    setSortBy("newest");
-    setSelectedSpecialization("all");
+  const fetchCourses = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get("http://localhost:5000/api/courses");
+      setCourses(response.data);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: "Không thể tải danh sách khóa học"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Check if any filter is active
-  const isFilterActive = searchTerm !== "" || sortBy !== "newest" || selectedSpecialization !== "all";
+  const fetchMajors = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/majors");
+      setMajors(response.data);
+    } catch (error) {
+      console.error("Error fetching majors:", error);
+    }
+  };
 
-  // Animation variants for staggered list
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.1
+  const handleEnrollCourse = async (courseId: number) => {
+    if (!user) {
+      toast({
+        title: "Chưa đăng nhập",
+        description: "Vui lòng đăng nhập để đăng ký khóa học",
+        variant: "destructive"
+      });
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("epu_token");
+      
+      if (!token) {
+        toast({
+          title: "Lỗi xác thực",
+          description: "Vui lòng đăng nhập lại để tiếp tục",
+          variant: "destructive"
+        });
+        return;
       }
+      
+      await axios.post(
+        "http://localhost:5000/api/courses/enroll",
+        {
+          user_id: user.id,
+          course_id: courseId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      
+      toast({
+        title: "Đăng ký thành công",
+        description: "Bạn đã đăng ký khóa học thành công"
+      });
+      
+      // Navigate to course detail
+      navigate(`/courses/${courseId}`);
+    } catch (error: any) {
+      console.error("Error enrolling course:", error);
+      const errorMessage = error.response?.data?.message || "Không thể đăng ký khóa học";
+      
+      toast({
+        title: "Lỗi",
+        description: errorMessage,
+        variant: "destructive"
+      });
     }
   };
-  
-  const item = {
-    hidden: { opacity: 0, y: 15 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+
+  const handleCourseClick = (courseId: number) => {
+    navigate(`/courses/${courseId}`);
   };
+
+  const filteredCourses = courses.filter(course => {
+    const matchesSearch = !searchQuery || 
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (course.description && course.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+    const matchesMajor = !selectedMajor || 
+      (course.major_id && course.major_id.toString() === selectedMajor);
+      
+    return matchesSearch && matchesMajor;
+  });
 
   return (
-    <div className="container px-4 md:px-6 py-10">
-      <motion.div 
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="flex flex-col mb-8"
-      >
-        <div className="flex items-center gap-2">
-          <Sparkles className="text-epu-secondary h-8 w-8" />
-          <h1 className="text-3xl md:text-4xl font-bold mb-1">Khóa học</h1>
+    <div className="container mx-auto py-8 px-4 md:px-6">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+            Khám phá các khóa học
+          </h1>
+          <p className="mt-4 text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+            Trau dồi kiến thức với các khóa học chất lượng từ các chuyên gia hàng đầu.
+          </p>
         </div>
-        <p className="text-muted-foreground">
-          Khám phá các khóa học chất lượng để nâng cao kiến thức và kỹ năng của bạn
-        </p>
-      </motion.div>
-      
-      {/* Filter section - improved animations */}
-      <motion.div 
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-        className="flex flex-col gap-4 mb-8 bg-white dark:bg-slate-900/60 p-5 rounded-xl shadow-md dark:shadow-slate-900/10 backdrop-blur-sm border border-slate-100 dark:border-slate-800"
-      >
-        {/* Search and Sort controls */}
+        
         <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
             <Input
+              type="search"
               placeholder="Tìm kiếm khóa học..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 w-full shadow-sm focus:shadow-md focus:border-epu-primary/50 dark:focus:border-epu-accent/50 transition-all"
+              className="pl-8"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-            {searchTerm && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-5 w-5 hover:bg-slate-100 dark:hover:bg-slate-800"
-                onClick={() => setSearchTerm("")}
-              >
-                <X size={14} />
-              </Button>
-            )}
           </div>
-          <div className="w-full sm:w-48">
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="shadow-sm focus:ring-epu-primary/30 dark:focus:ring-epu-accent/30">
-                <SelectValue placeholder="Sắp xếp theo" />
+          <div className="w-full sm:w-[200px]">
+            <Select value={selectedMajor} onValueChange={setSelectedMajor}>
+              <SelectTrigger>
+                <Filter className="mr-2 h-4 w-4" />
+                <SelectValue placeholder="Chuyên ngành" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">Mới nhất</SelectItem>
-                <SelectItem value="popular">Phổ biến nhất</SelectItem>
-                <SelectItem value="title-asc">Tên A-Z</SelectItem>
-                <SelectItem value="title-desc">Tên Z-A</SelectItem>
+                <SelectItem value="">Tất cả</SelectItem>
+                {majors.map((major) => (
+                  <SelectItem key={major.major_id} value={major.major_id.toString()}>
+                    {major.major_name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </div>
         
-        {/* Specialization filter - improved animation and visual feedback */}
-        <motion.div 
-          className="flex flex-wrap gap-2"
-          variants={container}
-          initial="hidden"
-          animate="show"
-        >
-          {specializations.map((spec) => (
-            <motion.div key={spec.id} variants={item}>
-              <Badge
-                variant={selectedSpecialization === spec.id ? "default" : "outline"}
-                className={`cursor-pointer transition-all duration-300 px-3 py-1 shadow-sm ${
-                  selectedSpecialization === spec.id 
-                    ? "bg-epu-primary hover:bg-epu-primary/90 dark:bg-epu-accent dark:hover:bg-epu-accent/90" 
-                    : "hover:bg-epu-primary/10 hover:border-epu-primary/50 dark:hover:bg-epu-accent/10 dark:hover:border-epu-accent/50"
-                }`}
-                onClick={() => setSelectedSpecialization(spec.id)}
-              >
-                {spec.name}
-              </Badge>
-            </motion.div>
-          ))}
-          
-          {isFilterActive && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-xs h-7 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
-                onClick={resetFilters}
-              >
-                <X size={14} className="mr-1" /> Xóa bộ lọc
-              </Button>
-            </motion.div>
-          )}
-        </motion.div>
-      </motion.div>
-      
-      {/* Course Grid with smoother transitions */}
-      <AnimatePresence mode="wait">
+        <Separator />
+        
         {isLoading ? (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {Array(6).fill(0).map((_, index) => (
-              <div 
-                key={`skeleton-${index}`} 
-                className="bg-slate-100 dark:bg-slate-800/60 rounded-xl h-64 animate-pulse"
-              ></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array(6).fill(null).map((_, index) => (
+              <div key={index} className="border rounded-xl overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <div className="p-4 space-y-3">
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
+                  <div className="pt-2">
+                    <Skeleton className="h-9 w-full rounded-md" />
+                  </div>
+                </div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         ) : filteredCourses.length > 0 ? (
-          <motion.div 
-            key="results"
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map((course) => (
-              <motion.div key={course.id} variants={item} layout>
-                <CourseCard course={course} />
-              </motion.div>
+              <CourseCard
+                key={course.course_id}
+                id={course.course_id}
+                title={course.title}
+                description={course.description || ""}
+                imageUrl={course.thumbnail || "/placeholder.svg"}
+                category={course.major_name || "Chưa phân loại"}
+                onClick={() => handleCourseClick(course.course_id)}
+                onEnroll={() => handleEnrollCourse(course.course_id)}
+              />
             ))}
-          </motion.div>
+          </div>
         ) : (
-          <motion.div 
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-center py-12 bg-white dark:bg-slate-900/60 rounded-xl shadow-md backdrop-blur-sm border border-slate-100 dark:border-slate-800"
-          >
-            <h3 className="text-lg font-medium mb-2">Không tìm thấy khóa học</h3>
-            <p className="text-muted-foreground">
-              Không có khóa học nào phù hợp với tìm kiếm của bạn
+          <div className="text-center py-12">
+            <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
+            <h2 className="mt-4 text-lg font-semibold">Không tìm thấy khóa học</h2>
+            <p className="mt-2 text-gray-500">
+              Không có khóa học nào phù hợp với tiêu chí tìm kiếm của bạn.
             </p>
-            <Button 
-              variant="outline" 
-              className="mt-4 shadow-sm hover:shadow-md transition-shadow border-epu-primary/50 text-epu-primary hover:bg-epu-primary/10 dark:border-epu-accent/50 dark:text-epu-accent dark:hover:bg-epu-accent/10"
-              onClick={resetFilters}
-            >
-              Xóa tìm kiếm
+            <Button onClick={() => { setSearchQuery(""); setSelectedMajor(""); }} className="mt-4">
+              Xóa bộ lọc
             </Button>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
-};
-
-export default CoursesPage;
+}
