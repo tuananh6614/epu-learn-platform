@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
@@ -44,7 +45,9 @@ export default function CoursesPage() {
   const fetchCourses = async () => {
     try {
       setIsLoading(true);
+      console.log("Fetching courses data...");
       const response = await axios.get("http://localhost:5000/api/courses");
+      console.log("Courses data received:", response.data);
       setCourses(response.data);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -60,7 +63,9 @@ export default function CoursesPage() {
 
   const fetchMajors = async () => {
     try {
+      console.log("Fetching majors data...");
       const response = await axios.get("http://localhost:5000/api/majors");
+      console.log("Majors data received:", response.data);
       setMajors(response.data);
     } catch (error) {
       console.error("Error fetching majors:", error);
@@ -180,7 +185,7 @@ export default function CoursesPage() {
                 <SelectValue placeholder="Chuyên ngành" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tất cả</SelectItem>
+                <SelectItem value="">Tất cả</SelectItem>
                 {majors.map((major) => (
                   <SelectItem key={major.major_id} value={major.major_id.toString()}>
                     {major.major_name}

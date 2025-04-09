@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Plus, Pencil, Trash, ChevronRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,16 +59,19 @@ const CoursesManagement = () => {
   const fetchCourses = async () => {
     try {
       setLoading(true);
+      console.log("Fetching courses...");
       const response = await axios.get("http://localhost:5000/api/courses");
+      console.log("Courses response:", response.data);
       setCourses(response.data);
       setError(null);
     } catch (err) {
       console.error("Error fetching courses:", err);
       setError("Không thể tải danh sách khóa học");
+      setCourses([]); // Set empty array to show empty state
       toast({
         variant: "destructive",
         title: "Lỗi",
-        description: "Không thể tải danh sách khóa học"
+        description: "Không thể tải danh sách khóa học. Hãy kiểm tra kết nối đến server."
       });
     } finally {
       setLoading(false);
@@ -76,14 +80,17 @@ const CoursesManagement = () => {
 
   const fetchMajors = async () => {
     try {
+      console.log("Fetching majors...");
       const response = await axios.get("http://localhost:5000/api/majors");
+      console.log("Majors response:", response.data);
       setMajors(response.data);
     } catch (err) {
       console.error("Error fetching majors:", err);
+      setMajors([]); // Set empty array as fallback
       toast({
         variant: "destructive",
         title: "Lỗi",
-        description: "Không thể tải danh sách chuyên ngành"
+        description: "Không thể tải danh sách chuyên ngành. Hãy kiểm tra kết nối đến server."
       });
     }
   };
@@ -133,6 +140,7 @@ const CoursesManagement = () => {
         return;
       }
 
+      console.log("Adding course with data:", formData);
       const response = await axios.post(
         "http://localhost:5000/api/courses",
         {
@@ -148,6 +156,7 @@ const CoursesManagement = () => {
         }
       );
 
+      console.log("Add course response:", response.data);
       toast({
         title: "Thành công",
         description: "Thêm khóa học mới thành công"
@@ -171,7 +180,7 @@ const CoursesManagement = () => {
       toast({
         variant: "destructive",
         title: "Lỗi",
-        description: "Không thể thêm khóa học mới"
+        description: "Không thể thêm khóa học mới. Hãy kiểm tra kết nối đến server."
       });
     }
   };
@@ -208,6 +217,7 @@ const CoursesManagement = () => {
         return;
       }
 
+      console.log("Updating course with data:", formData);
       await axios.put(
         `http://localhost:5000/api/courses/${selectedCourse.course_id}`,
         {
@@ -237,7 +247,7 @@ const CoursesManagement = () => {
       toast({
         variant: "destructive",
         title: "Lỗi",
-        description: "Không thể cập nhật khóa học"
+        description: "Không thể cập nhật khóa học. Hãy kiểm tra kết nối đến server."
       });
     }
   };
@@ -258,6 +268,7 @@ const CoursesManagement = () => {
         return;
       }
 
+      console.log("Deleting course with ID:", courseId);
       await axios.delete(`http://localhost:5000/api/courses/${courseId}`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -275,7 +286,7 @@ const CoursesManagement = () => {
       toast({
         variant: "destructive",
         title: "Lỗi",
-        description: "Không thể xóa khóa học"
+        description: "Không thể xóa khóa học. Hãy kiểm tra kết nối đến server."
       });
     }
   };
@@ -289,6 +300,7 @@ const CoursesManagement = () => {
       });
       return;
     }
+    console.log("Navigating to publish course with ID:", courseId);
     navigate(`/admin/courses/publish?courseId=${courseId}`);
   };
 
@@ -338,12 +350,15 @@ const CoursesManagement = () => {
                     <SelectValue placeholder="Chọn chuyên ngành" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">-- Không chọn --</SelectItem>
-                    {majors.map((major) => (
-                      <SelectItem key={major.major_id} value={major.major_id.toString()}>
-                        {major.major_name}
-                      </SelectItem>
-                    ))}
+                    {majors.length === 0 ? (
+                      <SelectItem value="no-data">Không có dữ liệu</SelectItem>
+                    ) : (
+                      majors.map((major) => (
+                        <SelectItem key={major.major_id} value={major.major_id.toString()}>
+                          {major.major_name}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -404,12 +419,15 @@ const CoursesManagement = () => {
                     <SelectValue placeholder="Chọn chuyên ngành" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">-- Không chọn --</SelectItem>
-                    {majors.map((major) => (
-                      <SelectItem key={major.major_id} value={major.major_id.toString()}>
-                        {major.major_name}
-                      </SelectItem>
-                    ))}
+                    {majors.length === 0 ? (
+                      <SelectItem value="no-data">Không có dữ liệu</SelectItem>
+                    ) : (
+                      majors.map((major) => (
+                        <SelectItem key={major.major_id} value={major.major_id.toString()}>
+                          {major.major_name}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -455,6 +473,9 @@ const CoursesManagement = () => {
       ) : error ? (
         <div className="text-center py-10">
           <p className="text-red-500">{error}</p>
+          <p className="text-gray-500 mt-2 mb-4">
+            Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối internet và thử lại sau.
+          </p>
           <Button onClick={fetchCourses} className="mt-2">
             Thử lại
           </Button>
