@@ -1,12 +1,10 @@
 
-import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Users, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import {
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { 
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -33,22 +31,8 @@ interface CourseCardProps {
 
 const CourseCard = ({ course, onClick, onEnroll }: CourseCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [showHoverCard, setShowHoverCard] = useState(false);
-  
-  // Auto-dismiss hover card after 3 seconds with burst animation
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (showHoverCard) {
-      timer = setTimeout(() => {
-        setShowHoverCard(false);
-      }, 3000);
-    }
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [showHoverCard]);
 
-  // Map specialization codes to full names
+  // Get specialization name (if available)
   const getSpecializationName = (code: string) => {
     const map: Record<string, string> = {
       "CNTT": "Công nghệ thông tin",
@@ -60,25 +44,8 @@ const CourseCard = ({ course, onClick, onEnroll }: CourseCardProps) => {
     return map[code] || code;
   };
 
-  // Animation variants for hover card burst effect
-  const burstVariants = {
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: { duration: 0.2 }
-    },
-    exit: {
-      scale: 1.2,
-      opacity: 0,
-      transition: { 
-        duration: 0.3,
-        scale: { duration: 0.3, ease: [0.1, 1.3, 0.9, 1] } // elastic bounce effect
-      }
-    }
-  };
-
   // Handle the course click
-  const handleCardClick = (e: React.MouseEvent) => {
+  const handleCardClick = () => {
     if (onClick) {
       onClick();
     }
@@ -108,7 +75,7 @@ const CourseCard = ({ course, onClick, onEnroll }: CourseCardProps) => {
       className="h-full"
       onClick={handleCardClick}
     >
-      <Card className="h-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 group bg-white dark:bg-slate-900/80 backdrop-blur-sm transition-all duration-300 shadow-md hover:shadow-2xl hover:border-epu-primary/50 dark:hover:border-epu-accent/50">
+      <Card className="h-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 group bg-white dark:bg-slate-900/80 backdrop-blur-sm transition-all duration-300 shadow-md hover:shadow-2xl hover:border-blue-500/50 dark:hover:border-blue-400/50">
         <div className="aspect-video relative overflow-hidden rounded-t-2xl">
           <motion.div 
             className="w-full h-full"
@@ -130,7 +97,7 @@ const CourseCard = ({ course, onClick, onEnroll }: CourseCardProps) => {
           ></motion.div>
           
           {course.enrolled && (
-            <Badge className="absolute top-3 right-3 bg-epu-primary text-white shadow-lg z-10 transition-all duration-300 group-hover:scale-110 animate-pulse">
+            <Badge className="absolute top-3 right-3 bg-blue-500 text-white shadow-lg z-10 transition-all duration-300 group-hover:scale-110 animate-pulse">
               Đã đăng ký
             </Badge>
           )}
@@ -144,11 +111,6 @@ const CourseCard = ({ course, onClick, onEnroll }: CourseCardProps) => {
                     <Badge 
                       variant="outline" 
                       className="bg-white/90 backdrop-blur-md shadow-md border-0 font-semibold px-3 py-1.5 transition-all duration-300 group-hover:bg-white/95 group-hover:scale-105 animate-none hover:cursor-help"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setShowHoverCard(true);
-                      }}
                     >
                       {course.specialization}
                     </Badge>
@@ -158,28 +120,13 @@ const CourseCard = ({ course, onClick, onEnroll }: CourseCardProps) => {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-
-              {/* Animated hover card with burst effect */}
-              <AnimatePresence>
-                {showHoverCard && (
-                  <motion.div 
-                    className="absolute top-10 left-0 z-30 bg-white dark:bg-slate-800 rounded-xl p-3 shadow-xl border border-slate-200 dark:border-slate-700 text-sm min-w-44 backdrop-blur-md"
-                    initial={{ opacity: 0, scale: 0.9, y: -5 }}
-                    animate="visible"
-                    exit="exit"
-                    variants={burstVariants}
-                  >
-                    <p className="font-medium">Chuyên ngành: {getSpecializationName(course.specialization)}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           )}
           
           {/* Enhanced course title with better styling and effects */}
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/95 via-black/80 to-transparent">
             <motion.h3 
-              className="font-bold text-xl md:text-2xl line-clamp-2 text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.3)] tracking-wide group-hover:text-epu-accent dark:group-hover:text-epu-accent transition-colors duration-300"
+              className="font-bold text-xl md:text-2xl line-clamp-2 text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.3)] tracking-wide group-hover:text-blue-400 dark:group-hover:text-blue-300 transition-colors duration-300"
               animate={isHovered ? { y: -3, textShadow: "0 0 8px rgba(255,255,255,0.5)" } : { y: 0, textShadow: "0 0 0px rgba(255,255,255,0)" }}
               transition={{ duration: 0.3 }}
             >
@@ -199,11 +146,11 @@ const CourseCard = ({ course, onClick, onEnroll }: CourseCardProps) => {
         
         <CardFooter className="flex justify-between text-sm text-muted-foreground pt-2 pb-4 px-6 bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm">
           <div className="flex items-center gap-1.5">
-            <BookOpen size={16} className="text-epu-primary dark:text-epu-accent" />
+            <BookOpen size={16} className="text-blue-500 dark:text-blue-400" />
             <span className="font-medium">{course.chapterCount || 0} chương</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Users size={16} className="text-epu-primary dark:text-epu-accent" />
+            <Users size={16} className="text-blue-500 dark:text-blue-400" />
             <span className="font-medium">{course.enrollmentCount || 0} học viên</span>
           </div>
         </CardFooter>
@@ -211,7 +158,7 @@ const CourseCard = ({ course, onClick, onEnroll }: CourseCardProps) => {
         {/* Enroll button when not already enrolled */}
         {!course.enrolled && onEnroll && (
           <div 
-            className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-epu-primary via-blue-600 to-epu-accent overflow-hidden flex items-center justify-center text-white font-medium shadow-lg h-0"
+            className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-400 overflow-hidden flex items-center justify-center text-white font-medium shadow-lg h-0"
             style={{ 
               height: isHovered ? '40px' : '0',
               opacity: isHovered ? 1 : 0,

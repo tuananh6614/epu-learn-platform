@@ -139,7 +139,7 @@ const CoursesManagement = () => {
         {
           title: formData.title,
           description: formData.description,
-          thumbnail: formData.thumbnail,
+          thumbnail: formData.thumbnail || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
           major_id: formData.major_id ? parseInt(formData.major_id) : null
         },
         {
@@ -207,7 +207,7 @@ const CoursesManagement = () => {
         {
           title: formData.title,
           description: formData.description,
-          thumbnail: formData.thumbnail,
+          thumbnail: formData.thumbnail || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
           major_id: formData.major_id ? parseInt(formData.major_id) : null
         },
         {
@@ -342,6 +342,9 @@ const CoursesManagement = () => {
                   onChange={handleInputChange}
                   placeholder="URL hình ảnh khóa học"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Nếu không nhập URL, hệ thống sẽ sử dụng hình ảnh mặc định
+                </p>
               </div>
             </div>
             <DialogFooter>
@@ -405,6 +408,9 @@ const CoursesManagement = () => {
                   onChange={handleInputChange}
                   placeholder="URL hình ảnh khóa học"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Nếu không nhập URL, hệ thống sẽ sử dụng hình ảnh mặc định
+                </p>
               </div>
             </div>
             <DialogFooter>

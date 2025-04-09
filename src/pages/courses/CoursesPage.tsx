@@ -219,8 +219,8 @@ export default function CoursesPage() {
               <CourseCard
                 key={course.course_id}
                 course={mapCourseToCardProps(course)}
-                onEnroll={() => handleEnrollCourse(course.course_id)}
                 onClick={() => handleCourseClick(course.course_id)}
+                onEnroll={() => handleEnrollCourse(course.course_id)}
               />
             ))}
           </div>
