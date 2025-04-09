@@ -138,6 +138,22 @@ export default function CoursesPage() {
     return matchesSearch && matchesMajor;
   });
 
+  // Convert DB course objects to CourseType objects for the CourseCard component
+  const mapCourseToCardProps = (course: Course) => {
+    return {
+      id: course.course_id,
+      title: course.title || "",
+      description: course.description || "",
+      thumbnail: course.thumbnail || "/placeholder.svg",
+      specialization: course.major_name || undefined,
+      // We don't have these fields in the DB response, so use defaults
+      chapterCount: 0,
+      lessonCount: 0,
+      enrollmentCount: 0,
+      enrolled: false
+    };
+  };
+
   return (
     <div className="container mx-auto py-8 px-4 md:px-6">
       <div className="space-y-6">
@@ -202,13 +218,9 @@ export default function CoursesPage() {
             {filteredCourses.map((course) => (
               <CourseCard
                 key={course.course_id}
-                id={course.course_id}
-                title={course.title}
-                description={course.description || ""}
-                imageUrl={course.thumbnail || "/placeholder.svg"}
-                category={course.major_name || "Chưa phân loại"}
-                onClick={() => handleCourseClick(course.course_id)}
+                course={mapCourseToCardProps(course)}
                 onEnroll={() => handleEnrollCourse(course.course_id)}
+                onClick={() => handleCourseClick(course.course_id)}
               />
             ))}
           </div>
