@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Plus, Pencil, Trash, ChevronRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -159,7 +159,15 @@ const CoursesManagement = () => {
       resetForm();
 
       // Navigate to publish course page for the new course
-      navigate(`/admin/publish/courses?courseId=${response.data.course_id}`);
+      if (response.data && response.data.course_id) {
+        navigate(`/admin/publish/courses?courseId=${response.data.course_id}`);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Lỗi",
+          description: "Không nhận được ID khóa học mới"
+        });
+      }
     } catch (err) {
       console.error("Error adding course:", err);
       toast({
@@ -275,6 +283,14 @@ const CoursesManagement = () => {
   };
 
   const handleEditContent = (courseId: number) => {
+    if (!courseId) {
+      toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: "ID khóa học không hợp lệ"
+      });
+      return;
+    }
     navigate(`/admin/publish/courses?courseId=${courseId}`);
   };
 

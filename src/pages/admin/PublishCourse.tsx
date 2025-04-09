@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -60,6 +59,7 @@ interface Course {
 const PublishCourse = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const courseId = searchParams.get("courseId");
   
   const [course, setCourse] = useState<Course | null>(null);
@@ -92,11 +92,17 @@ const PublishCourse = () => {
     if (courseId) {
       fetchCourseDetails(parseInt(courseId));
     } else {
-      setLoading(false);
+      toast({
+        variant: "destructive",
+        title: "Thiếu thông tin",
+        description: "Không tìm thấy ID khóa học"
+      });
+      navigate("/admin/courses");
+      return;
     }
     
     fetchMajors();
-  }, [courseId]);
+  }, [courseId, navigate]);
 
   const fetchCourseDetails = async (id: number) => {
     try {
@@ -120,7 +126,6 @@ const PublishCourse = () => {
       
       setCourse(response.data);
       
-      // Convert chapters data format if course has chapters
       if (response.data.chapters && response.data.chapters.length > 0) {
         const formattedChapters = response.data.chapters.map((chapter: any) => {
           return {
@@ -158,7 +163,7 @@ const PublishCourse = () => {
   
   const fetchMajors = async () => {
     try {
-      const response = await axios.get('/api/majors');
+      const response = await axios.get('http://localhost:5000/api/majors');
       setMajors(response.data || []);
     } catch (error) {
       console.error("Error fetching majors:", error);
@@ -339,13 +344,12 @@ const PublishCourse = () => {
         return;
       }
       
-      // Add chapter
       const chapterResponse = await axios.post(
         "http://localhost:5000/api/courses/chapter",
         {
           course_id: parseInt(courseId),
           title: chapter.title,
-          description: chapter.title // Using title as description for now
+          description: chapter.title
         },
         {
           headers: {
@@ -356,7 +360,6 @@ const PublishCourse = () => {
       
       const chapterId = chapterResponse.data.chapter_id;
       
-      // Add lessons for the chapter
       for (let lessonIndex = 0; lessonIndex < chapter.lessons.length; lessonIndex++) {
         const lesson = chapter.lessons[lessonIndex];
         
@@ -385,7 +388,6 @@ const PublishCourse = () => {
         
         const lessonId = lessonResponse.data.lesson_id;
         
-        // Add pages for the lesson
         for (let pageIndex = 0; pageIndex < lesson.pages.length; pageIndex++) {
           const page = lesson.pages[pageIndex];
           
@@ -427,6 +429,7 @@ const PublishCourse = () => {
         title: "Thiếu thông tin",
         description: "Không tìm thấy ID khóa học",
       });
+      navigate("/admin/courses");
       return;
     }
     
@@ -485,7 +488,6 @@ const PublishCourse = () => {
         return;
       }
       
-      // Submit all chapters sequentially
       for (let i = 0; i < chapters.length; i++) {
         await submitChapter(i);
       }
@@ -494,6 +496,8 @@ const PublishCourse = () => {
         title: "Đã đăng khóa học",
         description: "Khóa học của bạn đã được đăng thành công",
       });
+      
+      navigate("/admin/courses");
       
     } catch (error) {
       console.error("Error submitting course:", error);
@@ -853,7 +857,7 @@ const PublishCourse = () => {
       </Card>
       
       <div className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
-        <Button variant="outline">Lưu nháp</Button>
+        <Button variant="outline" onClick={() => navigate("/admin/courses")}>Hủy</Button>
         <Button onClick={handleSubmitCourse}>Đăng khóa học</Button>
       </div>
     </div>
