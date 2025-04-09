@@ -128,7 +128,7 @@ const CoursesManagement = () => {
         toast({
           variant: "destructive",
           title: "Chưa đăng nhập",
-          description: "Vui lòng đăng nhập để thực hiện chức n��ng này"
+          description: "Vui lòng đăng nhập để thực hiện chức năng này"
         });
         return;
       }
@@ -158,7 +158,7 @@ const CoursesManagement = () => {
       resetForm();
 
       if (response.data && response.data.course_id) {
-        navigate(`/admin/publish/courses?courseId=${response.data.course_id}`);
+        navigate(`/admin/courses/publish?courseId=${response.data.course_id}`);
       } else {
         toast({
           variant: "destructive",
@@ -289,7 +289,7 @@ const CoursesManagement = () => {
       });
       return;
     }
-    navigate(`/admin/publish/courses?courseId=${courseId}`);
+    navigate(`/admin/courses/publish?courseId=${courseId}`);
   };
 
   return (
