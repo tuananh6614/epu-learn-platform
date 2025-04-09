@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -158,7 +157,6 @@ const CoursesManagement = () => {
       setShowAddDialog(false);
       resetForm();
 
-      // Navigate to publish course page for the new course
       if (response.data && response.data.course_id) {
         navigate(`/admin/publish/courses?courseId=${response.data.course_id}`);
       } else {
@@ -340,7 +338,7 @@ const CoursesManagement = () => {
                     <SelectValue placeholder="Chọn chuyên ngành" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">-- Không chọn --</SelectItem>
+                    <SelectItem value="none">-- Không chọn --</SelectItem>
                     {majors.map((major) => (
                       <SelectItem key={major.major_id} value={major.major_id.toString()}>
                         {major.major_name}
@@ -406,7 +404,7 @@ const CoursesManagement = () => {
                     <SelectValue placeholder="Chọn chuyên ngành" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">-- Không chọn --</SelectItem>
+                    <SelectItem value="none">-- Không chọn --</SelectItem>
                     {majors.map((major) => (
                       <SelectItem key={major.major_id} value={major.major_id.toString()}>
                         {major.major_name}

@@ -184,7 +184,7 @@ export default function CoursesPage() {
                 <SelectValue placeholder="Chuyên ngành" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tất cả</SelectItem>
+                <SelectItem value="all">Tất cả</SelectItem>
                 {majors.map((major) => (
                   <SelectItem key={major.major_id} value={major.major_id.toString()}>
                     {major.major_name}
