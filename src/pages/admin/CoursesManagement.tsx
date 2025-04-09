@@ -128,7 +128,7 @@ const CoursesManagement = () => {
         toast({
           variant: "destructive",
           title: "Chưa đăng nhập",
-          description: "Vui lòng đăng nhập để thực hiện chức năng này"
+          description: "Vui lòng đăng nhập để thực hiện chức n��ng này"
         });
         return;
       }

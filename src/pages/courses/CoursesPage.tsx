@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
@@ -109,7 +108,6 @@ export default function CoursesPage() {
         description: "Bạn đã đăng ký khóa học thành công"
       });
       
-      // Navigate to course detail
       navigate(`/courses/${courseId}`);
     } catch (error: any) {
       console.error("Error enrolling course:", error);
@@ -138,7 +136,6 @@ export default function CoursesPage() {
     return matchesSearch && matchesMajor;
   });
 
-  // Convert DB course objects to CourseType objects for the CourseCard component
   const mapCourseToCardProps = (course: Course) => {
     return {
       id: course.course_id,
@@ -146,7 +143,6 @@ export default function CoursesPage() {
       description: course.description || "",
       thumbnail: course.thumbnail || "/placeholder.svg",
       specialization: course.major_name || undefined,
-      // We don't have these fields in the DB response, so use defaults
       chapterCount: 0,
       lessonCount: 0,
       enrollmentCount: 0,
