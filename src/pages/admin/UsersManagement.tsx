@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,21 +70,35 @@ const UsersManagement = () => {
   const [roleFilter, setRoleFilter] = useState("all");
   
   useEffect(() => {
-    // This would be replaced with an actual API call
     const fetchUsers = async () => {
       try {
         setIsLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 800));
         
-        // In a real app, this would fetch from the backend
-        setUsers([]);
+        // Lấy token từ localStorage
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast({
+            variant: "destructive",
+            title: "Chưa đăng nhập",
+            description: "Vui lòng đăng nhập để xem danh sách người dùng"
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await axios.get("http://localhost:5000/api/users", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        setUsers(response.data);
         setIsLoading(false);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching users:", error);
         toast({
           title: "Lỗi",
-          description: "Không thể tải danh sách người dùng",
+          description: error.response?.data?.message || "Không thể tải danh sách người dùng",
           variant: "destructive",
         });
         setIsLoading(false);
@@ -120,43 +135,122 @@ const UsersManagement = () => {
     setDialogOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    // In a real app, this would be an API call
-    setUsers(users.filter((u) => u.id !== id));
-    toast({
-      title: "Xóa thành công",
-      description: "Người dùng đã được xóa khỏi hệ thống",
-    });
+  const handleDelete = async (id: number) => {
+    try {
+      // Lấy token từ localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast({
+          variant: "destructive",
+          title: "Chưa đăng nhập",
+          description: "Vui lòng đăng nhập để thực hiện chức năng này"
+        });
+        return;
+      }
+
+      await axios.delete(`http://localhost:5000/api/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      setUsers(users.filter((u) => u.id !== id));
+      toast({
+        title: "Xóa thành công",
+        description: "Người dùng đã được xóa khỏi hệ thống",
+      });
+    } catch (error: any) {
+      console.error("Error deleting user:", error);
+      toast({
+        title: "Lỗi",
+        description: error.response?.data?.message || "Không thể xóa người dùng",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!currentUser) return;
     
-    // In a real app, this would be an API call
-    if (isEditing && currentUser.id) {
-      setUsers(
-        users.map((u) => (u.id === currentUser.id ? { ...currentUser as User } : u))
-      );
+    // Lấy token từ localStorage
+    const token = localStorage.getItem('token');
+    if (!token) {
       toast({
-        title: "Cập nhật thành công",
-        description: "Thông tin người dùng đã được cập nhật",
+        variant: "destructive",
+        title: "Chưa đăng nhập",
+        description: "Vui lòng đăng nhập để thực hiện chức năng này"
       });
-    } else {
-      const newUser = {
-        ...currentUser,
-        id: users.length ? Math.max(...users.map(u => u.id)) + 1 : 1,
-        created_at: new Date().toISOString().split('T')[0]
-      } as User;
-      
-      setUsers([...users, newUser]);
+      return;
+    }
+    
+    try {
+      if (isEditing && currentUser.id) {
+        // Cập nhật người dùng
+        const response = await axios.put(
+          `http://localhost:5000/api/users/${currentUser.id}`,
+          {
+            fullName: currentUser.fullName,
+            email: currentUser.email,
+            role: currentUser.role,
+            // Nếu form có nhập password, thêm vào đây
+            ...(document.getElementById('password') && (document.getElementById('password') as HTMLInputElement).value 
+              ? { password: (document.getElementById('password') as HTMLInputElement).value } 
+              : {})
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        
+        // Cập nhật state với người dùng đã được cập nhật
+        setUsers(
+          users.map((u) => (u.id === currentUser.id ? response.data : u))
+        );
+        
+        toast({
+          title: "Cập nhật thành công",
+          description: "Thông tin người dùng đã được cập nhật",
+        });
+      } else {
+        // Thêm người dùng mới
+        const password = (document.getElementById('password') as HTMLInputElement).value;
+        
+        const response = await axios.post(
+          "http://localhost:5000/api/users",
+          {
+            fullName: currentUser.fullName,
+            email: currentUser.email,
+            password: password,
+            role: currentUser.role || "user"
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        
+        // Thêm người dùng mới vào state
+        setUsers([...users, response.data]);
+        
+        toast({
+          title: "Thêm mới thành công",
+          description: "Người dùng mới đã được thêm vào hệ thống",
+        });
+      }
+      setDialogOpen(false);
+    } catch (error: any) {
+      console.error("Error saving user:", error);
       toast({
-        title: "Thêm mới thành công",
-        description: "Người dùng mới đã được thêm vào hệ thống",
+        title: "Lỗi",
+        description: error.response?.data?.message || "Không thể lưu thông tin người dùng",
+        variant: "destructive",
       });
     }
-    setDialogOpen(false);
   };
 
   return (
@@ -371,7 +465,7 @@ const UsersManagement = () => {
               <div className="grid gap-2">
                 <Label htmlFor="role">Vai trò</Label>
                 <Select
-                  value={currentUser?.role}
+                  value={currentUser?.role || "user"}
                   onValueChange={(value) =>
                     setCurrentUser({
                       ...currentUser,
@@ -399,6 +493,19 @@ const UsersManagement = () => {
                   />
                   <p className="text-xs text-muted-foreground">
                     Mật khẩu phải có ít nhất 8 ký tự.
+                  </p>
+                </div>
+              )}
+              {isEditing && (
+                <div className="grid gap-2">
+                  <Label htmlFor="password">Mật khẩu mới (không điền nếu không thay đổi)</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Để trống nếu không muốn thay đổi mật khẩu.
                   </p>
                 </div>
               )}
